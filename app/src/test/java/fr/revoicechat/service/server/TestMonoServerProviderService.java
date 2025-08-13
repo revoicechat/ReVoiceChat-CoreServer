@@ -21,7 +21,7 @@ import fr.revoicechat.repository.ServerRepository;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class  {
+class TestMonoServerProviderService {
 
   @Mock private ServerRepository serverRepository;
   @Mock private NewServerCreator newServerCreator;
