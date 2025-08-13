@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import fr.revoicechat.model.Message;
+import fr.revoicechat.model.Room;
 import fr.revoicechat.representation.message.CreatedMessageRepresentation;
+import fr.revoicechat.service.RoomService;
 import fr.revoicechat.service.TextualChatService;
 import jakarta.annotation.PostConstruct;
 
@@ -25,12 +27,20 @@ public class ChatController {
   private static final Logger LOG = LoggerFactory.getLogger(ChatController.class);
 
   private final TextualChatService textualChatService;
+  private final RoomService roomService;
 
-  public ChatController(final TextualChatService textualChatService) {
+  public ChatController(final TextualChatService textualChatService, final RoomService roomService) {
     this.textualChatService = textualChatService;
+    this.roomService = roomService;
   }
 
   @GetMapping
+  public Room get(@PathVariable("id") UUID roomId) {
+    return roomService.get(roomId);
+  }
+
+
+  @GetMapping("/messages")
   public List<Message> messages(@PathVariable("id") UUID roomId) {
     return textualChatService.findAllMessage(roomId);
   }

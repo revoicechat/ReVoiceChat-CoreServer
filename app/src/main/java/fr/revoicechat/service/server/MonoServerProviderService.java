@@ -1,7 +1,6 @@
 package fr.revoicechat.service.server;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +18,11 @@ public class MonoServerProviderService implements ServerProviderService {
   private static final Logger LOG = LoggerFactory.getLogger(ServerProviderService.class);
 
   private final ServerRepository serverRepository;
+  private final NewServerCreator newServerCreator;
 
-  public MonoServerProviderService(final ServerRepository serverRepository) {this.serverRepository = serverRepository;}
+  public MonoServerProviderService(final ServerRepository serverRepository, final NewServerCreator newServerCreator) {this.serverRepository = serverRepository;
+    this.newServerCreator = newServerCreator;
+  }
 
   /** This can only be used if we have only one {@link Server} */
   @Override
@@ -41,15 +43,8 @@ public class MonoServerProviderService implements ServerProviderService {
     } else if (servers.size() == 1) {
       return servers;
     }
-    Server server = createNewServer();
+    Server server = newServerCreator.create(new Server());
     return List.of(server);
-  }
-
-  private Server createNewServer() {
-    Server server = new Server();
-    server.setId(UUID.randomUUID());
-    server.setName("server");
-    return serverRepository.save(server);
   }
 
   private static void throwEx() {
