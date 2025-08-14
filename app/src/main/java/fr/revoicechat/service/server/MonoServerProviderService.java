@@ -18,7 +18,7 @@ import jakarta.transaction.Transactional;
  */
 @Service
 public class MonoServerProviderService implements ServerProviderService {
-  private static final Logger LOG = LoggerFactory.getLogger(ServerProviderService.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MonoServerProviderService.class);
 
   private final ServerRepository serverRepository;
   private final NewServerCreator newServerCreator;

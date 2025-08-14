@@ -16,7 +16,7 @@ import fr.revoicechat.repository.ServerRepository;
  */
 @Service
 public class MultiServerProviderService implements ServerProviderService {
-  private static final Logger LOG = LoggerFactory.getLogger(ServerProviderService.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MultiServerProviderService.class);
 
   private final ServerRepository serverRepository;
 

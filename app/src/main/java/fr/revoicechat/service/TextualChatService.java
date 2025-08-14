@@ -5,7 +5,6 @@ import static java.util.Collections.synchronizedSet;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,10 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import fr.revoicechat.model.Message;
-import fr.revoicechat.repository.MessageRepository;
-import fr.revoicechat.repository.RoomRepository;
-import jakarta.transaction.Transactional;
+import fr.revoicechat.representation.message.MessageRepresentation;
 
 /**
  * Service that manages textual chat messages and real-time updates via Server-Sent Events (SSE).
@@ -38,24 +34,6 @@ public class TextualChatService {
   private static final Logger LOG = LoggerFactory.getLogger(TextualChatService.class);
 
   private final Map<UUID, Collection<SseEmitter>> emitters = new ConcurrentHashMap<>();
-
-  private final MessageRepository messageRepository;
-  private final RoomRepository roomRepository;
-
-  public TextualChatService(final MessageRepository messageRepository, final RoomRepository roomRepository) {
-    this.messageRepository = messageRepository;
-    this.roomRepository = roomRepository;
-  }
-
-  /**
-   * Retrieves all messages for a given chat room.
-   *
-   * @param roomId the unique identifier of the chat room
-   * @return list of messages in the room, possibly empty if no messages exist
-   */
-  public List<Message> findAllMessage(final UUID roomId) {
-    return messageRepository.findByRoomId(roomId);
-  }
 
   /**
    * Registers a new client connection to receive real-time updates for a given room.
@@ -84,11 +62,7 @@ public class TextualChatService {
    * @param message the message to send and persist
    * @throws java.util.NoSuchElementException if the room does not exist
    */
-  @Transactional
-  public void send(final UUID roomId, Message message) {
-    var room = roomRepository.findById(roomId).orElseThrow();
-    message.setRoom(room);
-    messageRepository.save(message);
+  public void send(final UUID roomId, MessageRepresentation message) {
     getSseEmitters(roomId).forEach(sse -> sendSSE(sse, message));
   }
 
@@ -96,7 +70,7 @@ public class TextualChatService {
     return emitters.computeIfAbsent(roomId, key -> synchronizedSet(new HashSet<>()));
   }
 
-  private void sendSSE(final SseEmitter sse, final Message message) {
+  private void sendSSE(final SseEmitter sse, final MessageRepresentation message) {
     try {
       sse.send(message);
     } catch (IOException e) {

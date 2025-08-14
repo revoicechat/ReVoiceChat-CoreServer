@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties("revoicechat.global")
 public class RevoiceChatGlobalConfig {
 
-  public SeverAppMode severMode;
+  private SeverAppMode severMode;
 
   public SeverAppMode getSeverMode() {
     return severMode;
