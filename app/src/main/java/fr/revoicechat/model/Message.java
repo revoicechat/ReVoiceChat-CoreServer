@@ -21,6 +21,9 @@ public class Message implements Serializable {
   @ManyToOne
   @JoinColumn(name="ROOM_ID", nullable=false)
   private Room room;
+  @ManyToOne
+  @JoinColumn(name="USER_ID", nullable=false)
+  private User user;
 
   public Message() {
     super();
@@ -56,6 +59,14 @@ public class Message implements Serializable {
 
   public void setRoom(final Room room) {
     this.room = room;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(final User user) {
+    this.user = user;
   }
 
   @Override

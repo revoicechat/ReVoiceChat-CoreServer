@@ -14,6 +14,8 @@ import fr.revoicechat.repository.MessageRepository;
 import fr.revoicechat.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.representation.message.MessageRepresentation;
 import fr.revoicechat.representation.message.MessageRepresentation.ActionType;
+import fr.revoicechat.representation.message.MessageRepresentation.UserRepresentation;
+import fr.revoicechat.security.UserHolder;
 import jakarta.transaction.Transactional;
 
 /**
@@ -46,11 +48,13 @@ public class MessageService {
   private final MessageRepository messageRepository;
   private final TextualChatService textualChatService;
   private final RoomService roomService;
+  private final UserHolder userHolder;
 
-  public MessageService(final MessageRepository messageRepository, final TextualChatService textualChatService, final RoomService roomService) {
+  public MessageService(final MessageRepository messageRepository, final TextualChatService textualChatService, final RoomService roomService, final UserHolder userHolder) {
     this.messageRepository = messageRepository;
     this.textualChatService = textualChatService;
     this.roomService = roomService;
+    this.userHolder = userHolder;
   }
 
   /**
@@ -82,6 +86,7 @@ public class MessageService {
     message.setText(creation.text());
     message.setCreatedDate(LocalDateTime.now());
     message.setRoom(room);
+    message.setUser(userHolder.get());
     messageRepository.save(message);
     var representation = toRepresantation(message, ActionType.ADD);
     textualChatService.send(room.getId(), representation);
@@ -129,7 +134,7 @@ public class MessageService {
     var message = getMessage(id);
     var room = message.getRoom().getId();
     messageRepository.deleteById(id);
-    textualChatService.send(room, new MessageRepresentation(id, null, room, null, ActionType.REMOVE));
+    textualChatService.send(room, new MessageRepresentation(id, null, room, null, null, ActionType.REMOVE));
     return id;
   }
 
@@ -150,6 +155,10 @@ public class MessageService {
         message.getId(),
         message.getText(),
         message.getRoom().getId(),
+        new UserRepresentation(
+            message.getUser().getId(),
+            message.getUser().getUsername()
+        ),
         message.getCreatedDate(),
         actionType
     );
