@@ -15,10 +15,11 @@ public class CorsConfig {
       @Override
       public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/**") // apply to all paths
-                .allowedOrigins("*") // allow all origins
+                // TODO - add Origin patterns with config file
+                .allowedOriginPatterns("*") // allow all origins
                 .allowedMethods("*") // allow all HTTP methods
                 .allowedHeaders("*") // allow all headers
-                .allowCredentials(false); // must be false when origins = "*"
+                .allowCredentials(true); // must be false when origins = "*"
       }
     };
   }
