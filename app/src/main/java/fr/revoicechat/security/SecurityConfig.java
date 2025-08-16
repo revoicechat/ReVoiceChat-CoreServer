@@ -25,13 +25,13 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    return http
-        .csrf(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/signup", "/login").permitAll()
-            .anyRequest().authenticated()
-        )
-        .formLogin(Customizer.withDefaults())
-        .build();
+    return http.csrf(AbstractHttpConfigurer::disable)
+               .cors(AbstractHttpConfigurer::disable)
+               .authorizeHttpRequests(auth -> auth
+                   .requestMatchers("/signup", "/login").permitAll()
+                   .anyRequest().authenticated()
+               )
+               .formLogin(Customizer.withDefaults())
+               .build();
   }
 }
