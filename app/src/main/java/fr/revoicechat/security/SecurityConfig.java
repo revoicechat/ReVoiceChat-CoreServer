@@ -31,7 +31,6 @@ public class SecurityConfig {
                    .requestMatchers("/signup", "/login").permitAll()
                    .anyRequest().authenticated()
                )
-               .formLogin(Customizer.withDefaults())
                .build();
   }
 }
