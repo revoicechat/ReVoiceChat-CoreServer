@@ -14,7 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import fr.revoicechat.model.User;
 import fr.revoicechat.representation.message.MessageRepresentation;
+import fr.revoicechat.service.user.RoomUserFinder;
 
 /**
  * Service that manages textual chat messages and real-time updates via Server-Sent Events (SSE).
@@ -34,6 +36,9 @@ public class TextualChatService {
   private static final Logger LOG = LoggerFactory.getLogger(TextualChatService.class);
 
   private final Map<UUID, Collection<SseEmitter>> emitters = new ConcurrentHashMap<>();
+  private final RoomUserFinder roomUserFinder;
+
+  public TextualChatService(final RoomUserFinder roomUserFinder) {this.roomUserFinder = roomUserFinder;}
 
   /**
    * Registers a new client connection to receive real-time updates for a given room.
@@ -41,15 +46,15 @@ public class TextualChatService {
    * The returned {@link SseEmitter} will remain open indefinitely until the client disconnects
    * or an error/timeout occurs. When any of these events happen, the emitter is removed from the registry.
    *
-   * @param roomId the unique identifier of the chat room
+   * @param user the unique identifier of the chat room
    * @return the SSE emitter for streaming messages to the client
    */
-  public SseEmitter register(final UUID roomId) {
+  public SseEmitter register(final User user) {
     SseEmitter emitter = new SseEmitter(0L);
-    emitter.onCompletion(() -> remove(roomId, emitter, () -> LOG.info("complete")));
-    emitter.onError(e -> remove(roomId, emitter, () -> LOG.error("error", e)));
-    emitter.onTimeout(() -> remove(roomId, emitter, () -> LOG.error("timeout")));
-    getSseEmitters(roomId).add(emitter);
+    emitter.onCompletion(() -> remove(user, emitter, () -> LOG.info("complete")));
+    emitter.onError(e -> remove(user, emitter, () -> LOG.error("error", e)));
+    emitter.onTimeout(() -> remove(user, emitter, () -> LOG.error("timeout")));
+    getSseEmitters(user).add(emitter);
     return emitter;
   }
 
@@ -63,11 +68,10 @@ public class TextualChatService {
    * @throws java.util.NoSuchElementException if the room does not exist
    */
   public void send(final UUID roomId, MessageRepresentation message) {
-    getSseEmitters(roomId).forEach(sse -> sendSSE(sse, message));
-  }
-
-  private Collection<SseEmitter> getSseEmitters(final UUID roomId) {
-    return emitters.computeIfAbsent(roomId, key -> synchronizedSet(new HashSet<>()));
+    roomUserFinder.find(roomId)
+                  .map(this::getSseEmitters)
+                  .flatMap(Collection::stream)
+                  .forEach(sse -> sendSSE(sse, message));
   }
 
   private void sendSSE(final SseEmitter sse, final MessageRepresentation message) {
@@ -78,8 +82,12 @@ public class TextualChatService {
     }
   }
 
-  private void remove(final UUID roomId, SseEmitter emitter, Runnable log) {
-    getSseEmitters(roomId).remove(emitter);
+  private Collection<SseEmitter> getSseEmitters(final User user) {
+    return emitters.computeIfAbsent(user.getId(), key -> synchronizedSet(new HashSet<>()));
+  }
+
+  private void remove(final User user, SseEmitter emitter, Runnable log) {
+    getSseEmitters(user).remove(emitter);
     log.run();
   }
 }

@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.revoicechat.model.Room;
 import fr.revoicechat.model.Server;
+import fr.revoicechat.representation.room.RoomRepresentation;
 import fr.revoicechat.representation.server.ServerCreationRepresentation;
+import fr.revoicechat.service.RoomService;
 import fr.revoicechat.service.ServerService;
 
 @RestController
@@ -20,9 +23,11 @@ import fr.revoicechat.service.ServerService;
 public class ServerController {
 
   private final ServerService serverService;
+  private final RoomService roomService;
 
-  public ServerController(ServerService serverService) {
+  public ServerController(ServerService serverService, final RoomService roomService) {
     this.serverService = serverService;
+    this.roomService = roomService;
   }
 
   @GetMapping
@@ -44,5 +49,15 @@ public class ServerController {
   public Server updateServer(@PathVariable UUID id,
                              @RequestBody ServerCreationRepresentation representation) {
     return serverService.update(id, representation.toEntity());
+  }
+
+  @GetMapping("/{id}/room")
+  public List<Room> getRooms(@PathVariable final UUID id) {
+    return roomService.findAll(id);
+  }
+
+  @PutMapping("/{id}/room")
+  public Room createRoom(@PathVariable final UUID id, @RequestBody RoomRepresentation representation) {
+    return roomService.create(id, representation);
   }
 }
