@@ -24,8 +24,8 @@ public class NewServerCreator {
   public Server create(Server server) {
     server.setId(UUID.randomUUID());
     serverRepository.save(server);
-    createRoom(server, "General",  RoomType.TEXT);
-    createRoom(server, "Random",   RoomType.TEXT);
+    createRoom(server, "📝 General",  RoomType.TEXT);
+    createRoom(server, "📝 Random",   RoomType.TEXT);
     createRoom(server, "🔊 Vocal", RoomType.WEBRTC);
     return server;
   }

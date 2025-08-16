@@ -44,9 +44,9 @@ class TestNewServerCreator {
     softly.assertThat(server.getId()).isNotNull();
     assertThat(rooms).hasSize(3);
     var room1 = rooms.get(0);
-    assertRoom(softly, room1, "General", server, RoomType.TEXT);
+    assertRoom(softly, room1, "📝 General", server, RoomType.TEXT);
     var room2 = rooms.get(1);
-    assertRoom(softly, room2, "Random", server, RoomType.TEXT);
+    assertRoom(softly, room2, "📝 Random", server, RoomType.TEXT);
     var room3 = rooms.get(2);
     assertRoom(softly, room3, "🔊 Vocal", server, RoomType.WEBRTC);
 
