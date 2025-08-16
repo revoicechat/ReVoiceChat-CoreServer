@@ -27,20 +27,20 @@ class GenerateOneUserAtTheBeginning {
   public void init() {
     if (userRepository.count() == 0) {
       LOG.info("default admin user generated");
-      addUser("user");
-      addUser("admin");
-      addUser("rex_woof");
-      addUser("nyphew");
+      addUser("user", "-no-email-");
+      addUser("admin", "--no-email--");
+      addUser("rex_woof", "---no-email---");
+      addUser("nyphew", "no-email");
     }
   }
 
-  private void addUser(final String login) {
+  private void addUser(final String login, final String mail) {
     var user = new User();
     user.setId(UUID.randomUUID());
     user.setLogin(login);
     user.setUsername(login);
     user.setPassword("psw");
-    user.setEmail("--no-email--");
+    user.setEmail(mail);
     user.setCreatedDate(LocalDateTime.now());
     userRepository.save(user);
   }
