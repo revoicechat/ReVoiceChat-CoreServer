@@ -15,12 +15,12 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Profile("dev")
-class GenerateOneUserAtTheBeginning {
-  private static final Logger LOG = LoggerFactory.getLogger(GenerateOneUserAtTheBeginning.class);
+class GenerateFictiveUsers {
+  private static final Logger LOG = LoggerFactory.getLogger(GenerateFictiveUsers.class);
 
   private final UserRepository userRepository;
 
-  public GenerateOneUserAtTheBeginning(final UserRepository userRepository) {this.userRepository = userRepository;}
+  public GenerateFictiveUsers(final UserRepository userRepository) {this.userRepository = userRepository;}
 
   @PostConstruct
   @Transactional
