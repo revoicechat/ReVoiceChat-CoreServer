@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class RevoiceChatGlobalConfig {
 
   private SeverAppMode severMode;
+  private String mediaServerUrl;
 
   public SeverAppMode getSeverMode() {
     return severMode;
@@ -15,5 +16,13 @@ public class RevoiceChatGlobalConfig {
 
   public void setSeverMode(final SeverAppMode severMode) {
     this.severMode = severMode;
+  }
+
+  public String getMediaServerUrl() {
+    return mediaServerUrl;
+  }
+
+  public void setMediaServerUrl(final String mediaServerUrl) {
+    this.mediaServerUrl = mediaServerUrl;
   }
 }

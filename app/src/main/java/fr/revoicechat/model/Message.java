@@ -2,13 +2,17 @@ package fr.revoicechat.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,6 +28,11 @@ public class Message implements Serializable {
   @ManyToOne
   @JoinColumn(name="USER_ID", nullable=false)
   private User user;
+  @OneToMany
+  @JoinTable(name = "RVC_MEASSAGE_MEDIA",
+      joinColumns = @JoinColumn(name = "MEASSAGE_ID", referencedColumnName = "ID"),
+      inverseJoinColumns = @JoinColumn(name = "MEDIA_ID", referencedColumnName = "ID"))
+  private List<MediaData> mediaData;
 
   public Message() {
     super();
@@ -67,6 +76,14 @@ public class Message implements Serializable {
 
   public void setUser(final User user) {
     this.user = user;
+  }
+
+  public List<MediaData> getMediaData() {
+    return mediaData;
+  }
+
+  public void setMediaData(final List<MediaData> mediaData) {
+    this.mediaData = mediaData;
   }
 
   @Override
