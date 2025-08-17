@@ -3,8 +3,6 @@ package fr.revoicechat.web;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.revoicechat.model.Room;
@@ -32,28 +30,27 @@ public class ServerControllerImpl implements ServerController {
   }
 
   @Override
-  public Server getServer(@PathVariable UUID id) {
+  public Server getServer(UUID id) {
     return serverService.get(id);
   }
 
   @Override
-  public Server createServer(@RequestBody ServerCreationRepresentation representation) {
+  public Server createServer(ServerCreationRepresentation representation) {
     return serverService.create(representation.toEntity());
   }
 
   @Override
-  public Server updateServer(@PathVariable UUID id,
-                             @RequestBody ServerCreationRepresentation representation) {
+  public Server updateServer(UUID id, ServerCreationRepresentation representation) {
     return serverService.update(id, representation.toEntity());
   }
 
   @Override
-  public List<Room> getRooms(@PathVariable final UUID id) {
+  public List<Room> getRooms(UUID id) {
     return roomService.findAll(id);
   }
 
   @Override
-  public Room createRoom(@PathVariable final UUID id, @RequestBody RoomRepresentation representation) {
+  public Room createRoom(UUID id, RoomRepresentation representation) {
     return roomService.create(id, representation);
   }
 }

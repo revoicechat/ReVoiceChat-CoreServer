@@ -3,8 +3,6 @@ package fr.revoicechat.web;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.revoicechat.model.Room;
@@ -27,29 +25,27 @@ public class RoomControllerImpl implements RoomController {
   }
 
   @Override
-  public Room read(@PathVariable("id") UUID roomId) {
+  public Room read(UUID roomId) {
     return roomService.read(roomId);
   }
 
   @Override
-  public Room update(@PathVariable("id") UUID roomId,
-                     @RequestBody RoomRepresentation representation) {
+  public Room update(UUID roomId, RoomRepresentation representation) {
     return roomService.update(roomId, representation);
   }
 
   @Override
-  public UUID delete(@PathVariable("id") UUID roomId) {
+  public UUID delete(UUID roomId) {
     return roomService.delete(roomId);
   }
 
   @Override
-  public List<MessageRepresentation> messages(@PathVariable("id") UUID roomId) {
+  public List<MessageRepresentation> messages(UUID roomId) {
     return messageService.findAll(roomId);
   }
 
   @Override
-  public MessageRepresentation sendMessage(@PathVariable("id") UUID roomId,
-                                           @RequestBody CreatedMessageRepresentation representation) {
+  public MessageRepresentation sendMessage(UUID roomId, CreatedMessageRepresentation representation) {
     return messageService.create(roomId, representation);
   }
 }
