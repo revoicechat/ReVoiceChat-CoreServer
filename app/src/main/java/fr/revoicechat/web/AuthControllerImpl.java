@@ -5,10 +5,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.revoicechat.model.User;
 import fr.revoicechat.representation.user.SignupRepresentation;
 import fr.revoicechat.representation.user.UserRepresentation;
 import fr.revoicechat.service.UserService;
@@ -28,12 +26,12 @@ public class AuthControllerImpl implements AuthController {
   }
 
   @Override
-  public UserRepresentation signup(@RequestBody SignupRepresentation user) {
+  public UserRepresentation signup(SignupRepresentation user) {
     return userService.create(user);
   }
 
   @Override
-  public String login(@RequestBody UserPassword user, HttpServletRequest request) {
+  public String login(UserPassword user, HttpServletRequest request) {
     Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.username(), user.password()));
     // Save authentication into the SecurityContext
     SecurityContext context = SecurityContextHolder.createEmptyContext();

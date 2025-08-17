@@ -2,8 +2,6 @@ package fr.revoicechat.web;
 
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.revoicechat.representation.message.CreatedMessageRepresentation;
@@ -21,17 +19,17 @@ public class MessageControllerImpl implements MessageController {
   }
 
   @Override
-  public MessageRepresentation read(@PathVariable("id") UUID id) {
+  public MessageRepresentation read(UUID id) {
     return messageService.read(id);
   }
 
   @Override
-  public MessageRepresentation update(@PathVariable("id") UUID id, @RequestBody CreatedMessageRepresentation representation) {
+  public MessageRepresentation update(UUID id, CreatedMessageRepresentation representation) {
     return messageService.update(id, representation);
   }
 
   @Override
-  public UUID delete(@PathVariable("id") UUID id) {
+  public UUID delete(UUID id) {
     return messageService.delete(id);
   }
 }
