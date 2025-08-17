@@ -7,12 +7,12 @@ public record MessageRepresentation(
     UUID id,
     String text,
     UUID roomId,
-    UserRepresentation user,
+    UserMessageRepresentation user,
     LocalDateTime createdDate,
     ActionType actionType
 ) {
 
-  public record UserRepresentation(UUID id, String username) {}
+  public record UserMessageRepresentation(UUID id, String username) {}
 
   public enum ActionType {
     ADD, MODIFY, REMOVE

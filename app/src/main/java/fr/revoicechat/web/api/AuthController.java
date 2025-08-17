@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import fr.revoicechat.model.User;
 import fr.revoicechat.representation.user.SignupRepresentation;
+import fr.revoicechat.representation.user.UserRepresentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -39,7 +40,7 @@ public interface AuthController {
           )
       }
   )
-  User signup(@RequestBody SignupRepresentation user);
+  UserRepresentation signup(@RequestBody SignupRepresentation user);
 
   @Operation(
       summary = "Log in with username and password",
