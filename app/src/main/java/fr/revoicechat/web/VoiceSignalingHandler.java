@@ -4,6 +4,7 @@ import java.io.IOError;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +25,11 @@ public class VoiceSignalingHandler extends TextWebSocketHandler {
   }
 
   @Override
-  protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) throws Exception {
+  protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) {
     LOG.debug("handleTextMessage: {}", message);
     sessions.stream()
             .filter(WebSocketSession::isOpen)
-            // TODO - commented for test purpose. you cannot normally ear yourself
-            // .filter(not(session::equals))
+            .filter(Predicate.not(session::equals))
             .forEach(s -> {
               try {
                 s.sendMessage(message);

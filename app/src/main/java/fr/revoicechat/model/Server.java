@@ -16,8 +16,9 @@ public class Server implements Serializable {
   @Id
   private UUID id;
   private String name;
+  /** User can be nullable in case e are in mono server. */
   @ManyToOne
-  @JoinColumn(name="OWNER_ID", nullable=true) // TODO - should not be nullable, but currently, there is no user
+  @JoinColumn(name="OWNER_ID")
   private User owner;
 
   public Server() {
