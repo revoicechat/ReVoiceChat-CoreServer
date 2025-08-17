@@ -3,20 +3,27 @@ package fr.revoicechat.service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import fr.revoicechat.model.User;
 import fr.revoicechat.repository.UserRepository;
 import fr.revoicechat.representation.user.SignupRepresentation;
+import fr.revoicechat.representation.user.UserRepresentation;
+import fr.revoicechat.security.UserHolder;
 
 @Service
 public class UserService {
 
   private final UserRepository userRepository;
+  private final UserHolder userHolder;
 
-  public UserService(final UserRepository userRepository) {this.userRepository = userRepository;}
+  public UserService(final UserRepository userRepository, final UserHolder userHolder) {
+    this.userRepository = userRepository;
+    this.userHolder = userHolder;
+  }
 
-  public User create(final SignupRepresentation signer) {
+  public UserRepresentation create(final SignupRepresentation signer) {
     var user = new User();
     user.setId(UUID.randomUUID());
     user.setCreatedDate(LocalDateTime.now());
@@ -24,6 +31,27 @@ public class UserService {
     user.setLogin(signer.username());
     user.setEmail(signer.email());
     user.setPassword(signer.password());
-    return userRepository.save(user);
+    userRepository.save(user);
+    return map(user);
+  }
+
+  public UserRepresentation findCurrentUser() {
+    var user = userHolder.get();
+    return map(user);
+  }
+
+  public UserRepresentation get(final UUID id) {
+    return userRepository.findById(id)
+                         .map(this::map)
+                         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+  }
+
+  private UserRepresentation map(final User user) {
+    return new UserRepresentation(
+        user.getId(),
+        user.getUsername(),
+        user.getLogin(),
+        user.getCreatedDate()
+    );
   }
 }

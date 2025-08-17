@@ -14,7 +14,7 @@ import fr.revoicechat.repository.MessageRepository;
 import fr.revoicechat.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.representation.message.MessageRepresentation;
 import fr.revoicechat.representation.message.MessageRepresentation.ActionType;
-import fr.revoicechat.representation.message.MessageRepresentation.UserRepresentation;
+import fr.revoicechat.representation.message.MessageRepresentation.UserMessageRepresentation;
 import fr.revoicechat.security.UserHolder;
 import jakarta.transaction.Transactional;
 
@@ -155,7 +155,7 @@ public class MessageService {
         message.getId(),
         message.getText(),
         message.getRoom().getId(),
-        new UserRepresentation(
+        new UserMessageRepresentation(
             message.getUser().getId(),
             message.getUser().getUsername()
         ),

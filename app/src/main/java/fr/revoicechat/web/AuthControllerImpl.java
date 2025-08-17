@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.revoicechat.model.User;
 import fr.revoicechat.representation.user.SignupRepresentation;
+import fr.revoicechat.representation.user.UserRepresentation;
 import fr.revoicechat.service.UserService;
 import fr.revoicechat.web.api.AuthController;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +28,7 @@ public class AuthControllerImpl implements AuthController {
   }
 
   @Override
-  public User signup(@RequestBody SignupRepresentation user) {
+  public UserRepresentation signup(@RequestBody SignupRepresentation user) {
     return userService.create(user);
   }
 
