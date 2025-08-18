@@ -9,6 +9,7 @@ This repository provide the source code of server-side of `RevoiceChat`
 ### Prerequisite
 
  - JDK 21
+ - PostGreSQL
 
 ### How to :
 ```sh
