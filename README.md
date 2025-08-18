@@ -18,7 +18,8 @@ cd ./ReVoiceChat-server
 ./mvnw spring-boot:run -pl "app"
 ```
 
-for server purpose, you can copy the `revoicechat-core-server.properties` file on the root of the server
+for server purpose, you can copy the `server.exemple.properties` file in `/app`,
+rename it `server.properties`
 and complete it with your postgres database
 
 ## Voice (VoIP)

@@ -36,4 +36,5 @@ build/
 latest.log
 latest.log.*.gz
 
+/**/server.properties
 /**/application-dynamic-*.yml
