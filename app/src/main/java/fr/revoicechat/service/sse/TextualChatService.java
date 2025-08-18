@@ -1,5 +1,6 @@
-package fr.revoicechat.service;
+package fr.revoicechat.service.sse;
 
+import static fr.revoicechat.representation.sse.SseData.SseTypeData.*;
 import static java.util.Collections.synchronizedSet;
 
 import java.io.IOException;
@@ -12,10 +13,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import fr.revoicechat.model.User;
 import fr.revoicechat.representation.message.MessageRepresentation;
+import fr.revoicechat.representation.sse.SseData;
 import fr.revoicechat.service.user.RoomUserFinder;
 
 /**
@@ -46,14 +49,14 @@ public class TextualChatService {
    * The returned {@link SseEmitter} will remain open indefinitely until the client disconnects
    * or an error/timeout occurs. When any of these events happen, the emitter is removed from the registry.
    *
-   * @param user the unique identifier of the chat room
+   * @param userId the unique identifier of the user
    * @return the SSE emitter for streaming messages to the client
    */
   public SseEmitter register(final UUID userId) {
     SseEmitter emitter = new SseEmitter(0L);
     emitter.onCompletion(() -> remove(userId, emitter, () -> LOG.info("complete")));
-    emitter.onError(e       -> remove(userId, emitter, () -> LOG.error("error", e)));
-    emitter.onTimeout(()    -> remove(userId, emitter, () -> LOG.error("timeout")));
+    emitter.onError(e -> remove(userId, emitter, () -> LOG.error("error", e)));
+    emitter.onTimeout(() -> remove(userId, emitter, () -> LOG.error("timeout")));
     getSseEmitters(userId).add(emitter);
     return emitter;
   }
@@ -72,15 +75,7 @@ public class TextualChatService {
                   .map(User::getId)
                   .map(this::getSseEmitters)
                   .flatMap(Collection::stream)
-                  .forEach(sse -> sendSSE(sse, message));
-  }
-
-  private void sendSSE(final SseEmitter sse, final MessageRepresentation message) {
-    try {
-      sse.send(message);
-    } catch (IOException e) {
-      sse.completeWithError(e);
-    }
+                  .forEach(sse -> sendSSE(sse, new SseData(ROOM_MESSAGE, message)));
   }
 
   private Collection<SseEmitter> getSseEmitters(final UUID userId) {
@@ -98,13 +93,22 @@ public class TextualChatService {
   }
 
   private void ping(User user) {
-    getSseEmitters(user.getId()).forEach(sse -> {
-      try {
-        sse.send(SseEmitter.event().data("ping"));
-      } catch (IOException e) {
-        // Client disconnected
-        sse.complete();
-      }
-    });
+    getSseEmitters(user.getId()).forEach(sse -> sendSSE(sse, new SseData(PING)));
+  }
+
+  private void sendSSE(final SseEmitter sse, final SseData data) {
+    try {
+      sse.send(data);
+    } catch (IOException e) {
+      sse.completeWithError(e);
+    }
+  }
+
+  void shutdownSseEmitters() {
+    LOG.info("Closing all sse connections..");
+    emitters.values().stream()
+            .flatMap(Collection::stream)
+            .forEach(ResponseBodyEmitter::complete);
+    emitters.clear();
   }
 }

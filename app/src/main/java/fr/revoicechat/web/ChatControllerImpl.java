@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import fr.revoicechat.security.UserHolder;
-import fr.revoicechat.service.TextualChatService;
+import fr.revoicechat.service.sse.TextualChatService;
 import fr.revoicechat.web.api.ChatController;
 
 @RestController

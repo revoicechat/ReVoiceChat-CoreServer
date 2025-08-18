@@ -16,6 +16,7 @@ import fr.revoicechat.representation.message.MessageRepresentation;
 import fr.revoicechat.representation.message.MessageRepresentation.ActionType;
 import fr.revoicechat.representation.message.MessageRepresentation.UserMessageRepresentation;
 import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.service.sse.TextualChatService;
 import jakarta.transaction.Transactional;
 
 /**

@@ -12,6 +12,7 @@ import fr.revoicechat.repository.UserRepository;
 import fr.revoicechat.representation.user.SignupRepresentation;
 import fr.revoicechat.representation.user.UserRepresentation;
 import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.service.sse.TextualChatService;
 
 @Service
 public class UserService {
