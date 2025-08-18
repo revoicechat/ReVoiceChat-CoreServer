@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import fr.revoicechat.model.ActiveStatus;
 import fr.revoicechat.model.User;
 import fr.revoicechat.repository.UserRepository;
 import fr.revoicechat.representation.user.SignupRepresentation;
@@ -17,10 +18,12 @@ public class UserService {
 
   private final UserRepository userRepository;
   private final UserHolder userHolder;
+  private final TextualChatService textualChatService;
 
-  public UserService(final UserRepository userRepository, final UserHolder userHolder) {
+  public UserService(final UserRepository userRepository, final UserHolder userHolder, final TextualChatService textualChatService) {
     this.userRepository = userRepository;
     this.userHolder = userHolder;
+    this.textualChatService = textualChatService;
   }
 
   public UserRepresentation create(final SignupRepresentation signer) {
@@ -51,7 +54,12 @@ public class UserService {
         user.getId(),
         user.getUsername(),
         user.getLogin(),
-        user.getCreatedDate()
+        user.getCreatedDate(),
+        getActiveStatus(user)
     );
+  }
+
+  private ActiveStatus getActiveStatus(final User user) {
+    return textualChatService.isRegister(user) ? ActiveStatus.ONLINE : ActiveStatus.OFFLINE;
   }
 }

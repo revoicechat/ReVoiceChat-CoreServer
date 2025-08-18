@@ -92,4 +92,20 @@ public class TextualChatService {
     getSseEmitters(userId).remove(emitter);
     log.run();
   }
+
+  public boolean isRegister(final User user) {
+    ping(user);
+    return !getSseEmitters(user.getId()).isEmpty();
+  }
+
+  private void ping(User user) {
+    getSseEmitters(user.getId()).forEach(sse -> {
+      try {
+        sse.send(SseEmitter.event().data("ping"));
+      } catch (IOException e) {
+        // Client disconnected
+        sse.complete();
+      }
+    });
+  }
 }
