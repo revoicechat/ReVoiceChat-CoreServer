@@ -1,6 +1,6 @@
 spring:
   config:
-    import: optional:file:/revoicechat-core-server.properties
+    import: optional:file:server.properties
 logging:
   file:
     path: /var/log/revoicechat
