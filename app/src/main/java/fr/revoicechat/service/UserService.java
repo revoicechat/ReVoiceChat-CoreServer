@@ -39,8 +39,7 @@ public class UserService {
   }
 
   public UserRepresentation findCurrentUser() {
-    var user = userHolder.get();
-    return map(user);
+    return map(userHolder.get());
   }
 
   public UserRepresentation get(final UUID id) {

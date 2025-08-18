@@ -49,13 +49,12 @@ public class TextualChatService {
    * @param user the unique identifier of the chat room
    * @return the SSE emitter for streaming messages to the client
    */
-  public SseEmitter register(final User user) {
-    var id = user.getId();
+  public SseEmitter register(final UUID userId) {
     SseEmitter emitter = new SseEmitter(0L);
-    emitter.onCompletion(() -> remove(id, emitter, () -> LOG.info("complete")));
-    emitter.onError(e       -> remove(id, emitter, () -> LOG.error("error", e)));
-    emitter.onTimeout(()    -> remove(id, emitter, () -> LOG.error("timeout")));
-    getSseEmitters(id).add(emitter);
+    emitter.onCompletion(() -> remove(userId, emitter, () -> LOG.info("complete")));
+    emitter.onError(e       -> remove(userId, emitter, () -> LOG.error("error", e)));
+    emitter.onTimeout(()    -> remove(userId, emitter, () -> LOG.error("timeout")));
+    getSseEmitters(userId).add(emitter);
     return emitter;
   }
 

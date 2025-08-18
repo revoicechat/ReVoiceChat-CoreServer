@@ -21,6 +21,6 @@ public class ChatControllerImpl implements ChatController {
   @Override
   public SseEmitter generateSseEmitter() {
     var user = userHolder.get();
-    return textualChatService.register(user);
+    return textualChatService.register(user.getId());
   }
 }

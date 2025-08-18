@@ -12,7 +12,9 @@ public class UserHolder {
 
   private final UserRepository userRepository;
 
-  public UserHolder(final UserRepository userRepository) {this.userRepository = userRepository;}
+  public UserHolder(final UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
 
   public User get() {
     var auth = SecurityContextHolder.getContext().getAuthentication();
