@@ -4,16 +4,6 @@ spring:
     username: sa
     password: password
     driverClassName: org.h2.Driver
-    hikari:
-      maximum-pool-size: 50
-      minimum-idle: 10
-      idle-timeout: 300000
-      max-lifetime: 1800000
-      connection-timeout: 30000
-      leak-detection-threshold: 30000
-  jpa:
-    defer-datasource-initialization: true
-    open-in-view: false
 logging:
   level:
     fr.revoicechat: debug

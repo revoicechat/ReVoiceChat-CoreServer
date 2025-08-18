@@ -1,9 +1,22 @@
 spring:
   application:
     name: RevoiceChat
+  datasource:
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      leak-detection-threshold: 30000
+  jpa:
+    defer-datasource-initialization: true
+    open-in-view: false
 revoicechat:
   global:
     sever-mode: MONO_SERVER
 logging:
   file:
     name: latest.log
+  level:
+    root: info
