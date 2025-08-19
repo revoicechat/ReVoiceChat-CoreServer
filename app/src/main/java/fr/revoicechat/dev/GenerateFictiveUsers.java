@@ -38,7 +38,7 @@ class GenerateFictiveUsers {
     var user = new User();
     user.setId(UUID.randomUUID());
     user.setLogin(login);
-    user.setUsername(login);
+    user.setDisplayName(login);
     user.setPassword("psw");
     user.setEmail(mail);
     user.setCreatedDate(LocalDateTime.now());
