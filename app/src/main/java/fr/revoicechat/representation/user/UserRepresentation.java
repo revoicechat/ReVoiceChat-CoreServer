@@ -7,7 +7,7 @@ import fr.revoicechat.model.ActiveStatus;
 
 public record UserRepresentation(
     UUID id,
-    String username,
+    String displayName,
     String login,
     LocalDateTime createdDate,
     ActiveStatus status

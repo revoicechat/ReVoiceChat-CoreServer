@@ -14,7 +14,7 @@ public record MessageRepresentation(
     List<MediaDataRepresentation> medias
 ) {
 
-  public record UserMessageRepresentation(UUID id, String username) {}
+  public record UserMessageRepresentation(UUID id, String displayName) {}
 
   public enum ActionType {
     ADD, MODIFY, REMOVE

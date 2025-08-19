@@ -168,7 +168,7 @@ public class MessageService {
         message.getRoom().getId(),
         new UserMessageRepresentation(
             message.getUser().getId(),
-            message.getUser().getUsername()
+            message.getUser().getDisplayName()
         ),
         message.getCreatedDate(),
         actionType,

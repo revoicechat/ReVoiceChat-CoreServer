@@ -18,7 +18,7 @@ public class UserHolder {
 
   public User get() {
     var auth = SecurityContextHolder.getContext().getAuthentication();
-    var user = userRepository.findByUsername(auth.getName());
+    var user = userRepository.findByLogin(auth.getName());
     if (user == null) {
       throw new UsernameNotFoundException("User not found");
     }

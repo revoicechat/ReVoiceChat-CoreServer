@@ -23,8 +23,8 @@ public class UsernameOnlyAuthenticationProvider implements AuthenticationProvide
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
     String username = authentication.getName();
-    if (userRepository.findByUsername(username) == null) {
-      throw new BadCredentialsException("no user found with username %s".formatted(username));
+    if (userRepository.findByLogin(username) == null) {
+      throw new BadCredentialsException("no user found with displayName %s".formatted(username));
     }
     return new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
   }

@@ -25,7 +25,7 @@ public class User implements Serializable {
   @Column(unique = true, nullable = false)
   private String login;
   @Column(nullable = false)
-  private String username;
+  private String displayName;
   private String password;
   @ManyToMany
   @JoinTable(name = "RVC_SERVER_USER",
@@ -63,12 +63,12 @@ public class User implements Serializable {
     this.login = login;
   }
 
-  public String getUsername() {
-    return username;
+  public String getDisplayName() {
+    return displayName;
   }
 
-  public void setUsername(final String username) {
-    this.username = username;
+  public void setDisplayName(final String username) {
+    this.displayName = username;
   }
 
   public String getPassword() {

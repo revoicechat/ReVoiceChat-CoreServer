@@ -43,11 +43,11 @@ public interface AuthController {
   UserRepresentation signup(@RequestBody SignupRepresentation user);
 
   @Operation(
-      summary = "Log in with username and password",
+      summary = "Log in with displayName and password",
       description = "Authenticates the user with given credentials and creates a session. "
                     + "Future requests will be authenticated with this session.",
       requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-          description = "The username and password of the user",
+          description = "The displayName and password of the user",
           required = true,
           content = @Content(schema = @Schema(implementation = UserPassword.class))
       ),
@@ -55,10 +55,10 @@ public interface AuthController {
           @ApiResponse(responseCode = "200", description = "User successfully logged in"),
           @ApiResponse(
               responseCode = "401",
-              description = "Invalid username or password",
+              description = "Invalid displayName or password",
               content = @Content(
                   mediaType = "text/plain",
-                  schema = @Schema(type = "string", example = "Invalid username or password")
+                  schema = @Schema(type = "string", example = "Invalid displayName or password")
               )
           )
       }

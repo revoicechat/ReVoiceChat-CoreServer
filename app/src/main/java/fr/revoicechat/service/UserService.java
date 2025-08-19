@@ -31,7 +31,7 @@ public class UserService {
     var user = new User();
     user.setId(UUID.randomUUID());
     user.setCreatedDate(LocalDateTime.now());
-    user.setUsername(signer.username());
+    user.setDisplayName(signer.username());
     user.setLogin(signer.username());
     user.setEmail(signer.email());
     user.setPassword(signer.password());
@@ -52,7 +52,7 @@ public class UserService {
   private UserRepresentation map(final User user) {
     return new UserRepresentation(
         user.getId(),
-        user.getUsername(),
+        user.getDisplayName(),
         user.getLogin(),
         user.getCreatedDate(),
         getActiveStatus(user)
