@@ -29,7 +29,7 @@ public interface UserController extends LoggedApi {
   @Operation(
       summary = "Get details of a user",
       description = "Retrieve the details of a specific user by its id.",
-      tags = { "Room", "Message" },
+      tags = { "User" },
       responses = {
           @ApiResponse(responseCode = "200"),
           @ApiResponse(
