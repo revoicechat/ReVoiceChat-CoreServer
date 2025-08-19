@@ -12,6 +12,7 @@ import fr.revoicechat.error.ResourceNotFoundException;
 import fr.revoicechat.model.Message;
 import fr.revoicechat.repository.MessageRepository;
 import fr.revoicechat.representation.message.CreatedMessageRepresentation;
+import fr.revoicechat.representation.message.MediaDataRepresentation;
 import fr.revoicechat.representation.message.MessageRepresentation;
 import fr.revoicechat.representation.message.MessageRepresentation.ActionType;
 import fr.revoicechat.representation.message.MessageRepresentation.UserMessageRepresentation;
@@ -142,6 +143,9 @@ public class MessageService {
   private void isValid(final CreatedMessageRepresentation creation) {
     if (StringUtils.isBlank(creation.text())) {
       throw new BadRequestException("message cannot be empty");
+    }
+    if (creation.medias().stream().map(MediaDataRepresentation::name).anyMatch(StringUtils::isBlank)) {
+      throw new BadRequestException("a media should have a name");
     }
   }
 

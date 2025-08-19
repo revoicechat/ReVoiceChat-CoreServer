@@ -1,3 +1,9 @@
 package fr.revoicechat.representation.message;
 
-public record CreatedMessageRepresentation(String text) {}
+import java.util.List;
+
+public record CreatedMessageRepresentation(
+    String text,
+    List<CreatedMediaDataRepresentation> medias) {
+  public record CreatedMediaDataRepresentation(String name) {}
+}
