@@ -88,12 +88,21 @@ public class TextualChatService {
   }
 
   public boolean isRegister(final User user) {
-    ping(user);
-    return !getSseEmitters(user.getId()).isEmpty();
+    return ping(user);
   }
 
-  private void ping(User user) {
-    getSseEmitters(user.getId()).forEach(sse -> sendSSE(sse, new SseData(PING)));
+  private boolean ping(User user) {
+    return getSseEmitters(user.getId()).stream().anyMatch(this::ping);
+  }
+
+  private boolean ping(final SseEmitter sse) {
+    try {
+      sse.send(new SseData(PING));
+      return true;
+    } catch (IOException e) {
+      sse.completeWithError(e);
+      return false;
+    }
   }
 
   private void sendSSE(final SseEmitter sse, final SseData data) {
