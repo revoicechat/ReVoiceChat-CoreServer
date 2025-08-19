@@ -14,7 +14,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 
 @Service
-@Profile("dev")
+@Profile({"create-false-user", "dev"})
 class GenerateFictiveUsers {
   private static final Logger LOG = LoggerFactory.getLogger(GenerateFictiveUsers.class);
 
@@ -27,18 +27,18 @@ class GenerateFictiveUsers {
   public void init() {
     if (userRepository.count() == 0) {
       LOG.info("default admin user generated");
-      addUser("user", "-no-email-");
-      addUser("admin", "--no-email--");
-      addUser("rex_woof", "---no-email---");
-      addUser("nyphew", "no-email");
+      addUser("user", "The user", "-no-email-");
+      addUser("admin", "The admin", "--no-email--");
+      addUser("rex_woof", "Rex_Woof", "---no-email---");
+      addUser("nyphew", "Nyphew", "no-email");
     }
   }
 
-  private void addUser(final String login, final String mail) {
+  private void addUser(final String login, String displayName, final String mail) {
     var user = new User();
     user.setId(UUID.randomUUID());
     user.setLogin(login);
-    user.setDisplayName(login);
+    user.setDisplayName(displayName);
     user.setPassword("psw");
     user.setEmail(mail);
     user.setCreatedDate(LocalDateTime.now());

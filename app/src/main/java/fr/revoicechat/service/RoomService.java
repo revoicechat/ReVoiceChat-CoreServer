@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import fr.revoicechat.error.BadRequestException;
 import fr.revoicechat.error.ResourceNotFoundException;
 import fr.revoicechat.model.Room;
+import fr.revoicechat.nls.RoomErrorCode;
 import fr.revoicechat.repository.RoomRepository;
 import fr.revoicechat.representation.room.RoomRepresentation;
 
@@ -83,7 +84,7 @@ public class RoomService {
   public Room update(final UUID id, final RoomRepresentation representation) {
     var room = getRoom(id);
     if (representation.type() != null && room.getType() != representation.type()) {
-      throw new BadRequestException("You cannot change the type of a room. please create a new one.");
+      throw new BadRequestException(RoomErrorCode.ROOM_TYPE_CANNOT_BE_CHANGED);
     }
     room.setName(representation.name());
     return repository.save(room);

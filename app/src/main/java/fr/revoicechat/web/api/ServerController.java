@@ -14,6 +14,7 @@ import fr.revoicechat.model.Room;
 import fr.revoicechat.model.Server;
 import fr.revoicechat.representation.room.RoomRepresentation;
 import fr.revoicechat.representation.server.ServerCreationRepresentation;
+import fr.revoicechat.representation.user.UserRepresentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -128,4 +129,23 @@ public interface ServerController extends LoggedApi {
   )
   @PutMapping("/{id}/room")
   Room createRoom(@PathVariable final UUID id, @RequestBody RoomRepresentation representation);
+
+  @Operation(
+      summary = "Get all user for a server",
+      description = "Retrieve the list of user using a specific server.",
+      tags = { "Server", "User" },
+      responses = {
+          @ApiResponse(responseCode = "200", description = "List of user successfully retrieved"),
+          @ApiResponse(
+              responseCode = "404",
+              description = "Server not found",
+              content = @Content(
+                  mediaType = "text/plain",
+                  schema = @Schema(type = "string", example = "Server not found")
+              )
+          )
+      }
+  )
+  @GetMapping("/{id}/user")
+  List<UserRepresentation> fetchUsers(@PathVariable UUID id);
 }

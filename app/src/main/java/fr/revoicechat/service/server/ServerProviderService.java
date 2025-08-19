@@ -1,8 +1,11 @@
 package fr.revoicechat.service.server;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
 
 import fr.revoicechat.model.Server;
+import fr.revoicechat.model.User;
 
 /**
  * Defines the contract for services that provide access to available {@link Server} instances.
@@ -33,4 +36,6 @@ public interface ServerProviderService {
    * @throws IllegalStateException if the mode cannot be used
    */
   List<Server> getServers();
+
+  Stream<User> getUsers(UUID id);
 }

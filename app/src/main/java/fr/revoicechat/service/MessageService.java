@@ -4,12 +4,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import fr.revoicechat.error.BadRequestException;
 import fr.revoicechat.error.ResourceNotFoundException;
+import fr.revoicechat.model.FileType;
+import fr.revoicechat.model.MediaData;
+import fr.revoicechat.model.MediaDataStatus;
+import fr.revoicechat.model.MediaOrigin;
 import fr.revoicechat.model.Message;
+import fr.revoicechat.repository.MediaDataRepository;
 import fr.revoicechat.repository.MessageRepository;
 import fr.revoicechat.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.representation.message.CreatedMessageRepresentation.CreatedMediaDataRepresentation;
@@ -17,6 +20,7 @@ import fr.revoicechat.representation.message.MessageRepresentation;
 import fr.revoicechat.representation.message.MessageRepresentation.ActionType;
 import fr.revoicechat.representation.message.MessageRepresentation.UserMessageRepresentation;
 import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.service.message.MessageValidation;
 import fr.revoicechat.service.sse.TextualChatService;
 import jakarta.transaction.Transactional;
 
@@ -51,12 +55,16 @@ public class MessageService {
   private final TextualChatService textualChatService;
   private final RoomService roomService;
   private final UserHolder userHolder;
+  private final MediaDataRepository mediaDataRepository;
+  private final MessageValidation messageValidation;
 
-  public MessageService(final MessageRepository messageRepository, final TextualChatService textualChatService, final RoomService roomService, final UserHolder userHolder) {
+  public MessageService(final MessageRepository messageRepository, final TextualChatService textualChatService, final RoomService roomService, final UserHolder userHolder, final MediaDataRepository mediaDataRepository, final MessageValidation messageValidation) {
     this.messageRepository = messageRepository;
     this.textualChatService = textualChatService;
     this.roomService = roomService;
     this.userHolder = userHolder;
+    this.mediaDataRepository = mediaDataRepository;
+    this.messageValidation = messageValidation;
   }
 
   /**
@@ -81,7 +89,7 @@ public class MessageService {
    * @return a representation of the created message
    */
   public MessageRepresentation create(UUID roomId, CreatedMessageRepresentation creation) {
-    isValid(creation);
+    messageValidation.isValid(creation);
     var room = roomService.read(roomId);
     var message = new Message();
     message.setId(UUID.randomUUID());
@@ -89,10 +97,24 @@ public class MessageService {
     message.setCreatedDate(LocalDateTime.now());
     message.setRoom(room);
     message.setUser(userHolder.get());
+    creation.medias().stream().map(this::create).forEach(message::addMediaData);
     messageRepository.save(message);
     var representation = toRepresantation(message, ActionType.ADD);
     textualChatService.send(room.getId(), representation);
     return representation;
+  }
+
+  // TODO - move to a specific service
+  private MediaData create(final CreatedMediaDataRepresentation creation) {
+    MediaData mediaData = new MediaData();
+    mediaData.setId(UUID.randomUUID());
+    mediaData.setName(creation.name());
+    // TODO - determine file type
+    mediaData.setType(FileType.PICTURE);
+    mediaData.setOrigin(MediaOrigin.ATTACHMENT);
+    mediaData.setStatus(MediaDataStatus.DOWNLOADING);
+    mediaDataRepository.save(mediaData);
+    return mediaData;
   }
 
   /**
@@ -144,15 +166,6 @@ public class MessageService {
         ActionType.REMOVE,
         null));
     return id;
-  }
-
-  private void isValid(final CreatedMessageRepresentation creation) {
-    if (StringUtils.isBlank(creation.text())) {
-      throw new BadRequestException("message cannot be empty");
-    }
-    if (creation.medias().stream().map(CreatedMediaDataRepresentation::name).anyMatch(StringUtils::isBlank)) {
-      throw new BadRequestException("a media should have a name");
-    }
   }
 
   private Message getMessage(final UUID id) {

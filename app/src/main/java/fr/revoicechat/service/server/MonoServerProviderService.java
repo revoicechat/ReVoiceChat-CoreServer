@@ -1,13 +1,17 @@
 package fr.revoicechat.service.server;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import fr.revoicechat.model.Server;
+import fr.revoicechat.model.User;
 import fr.revoicechat.repository.ServerRepository;
+import fr.revoicechat.repository.UserRepository;
 import jakarta.transaction.Transactional;
 
 /**
@@ -26,9 +30,11 @@ public class MonoServerProviderService implements ServerProviderService {
 
   private final ServerRepository serverRepository;
   private final NewServerCreator newServerCreator;
+  private final UserRepository userRepository;
 
-  public MonoServerProviderService(final ServerRepository serverRepository, final NewServerCreator newServerCreator) {this.serverRepository = serverRepository;
+  public MonoServerProviderService(final ServerRepository serverRepository, final NewServerCreator newServerCreator, final UserRepository userRepository) {this.serverRepository = serverRepository;
     this.newServerCreator = newServerCreator;
+    this.userRepository = userRepository;
   }
 
   /**
@@ -69,4 +75,8 @@ public class MonoServerProviderService implements ServerProviderService {
     return List.of(newServerCreator.create(server));
   }
 
+  @Override
+  public Stream<User> getUsers(UUID id) {
+    return userRepository.findAll().stream();
+  }
 }
