@@ -1,5 +1,7 @@
 package fr.revoicechat.security;
 
+import static fr.revoicechat.nls.CommonErrorCode.INVALID_CREDENTIALS;
+
 import java.util.Collections;
 
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -12,19 +14,21 @@ import org.springframework.stereotype.Component;
 import fr.revoicechat.repository.UserRepository;
 
 @Component
-public class UsernameOnlyAuthenticationProvider implements AuthenticationProvider {
+public class UserPswAuthenticationProvider implements AuthenticationProvider {
 
   private final UserRepository userRepository;
 
-  public UsernameOnlyAuthenticationProvider(UserRepository userRepository) {
+  public UserPswAuthenticationProvider(UserRepository userRepository) {
     this.userRepository = userRepository;
   }
 
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
     String username = authentication.getName();
-    if (userRepository.findByLogin(username) == null) {
-      throw new BadCredentialsException("no user found with displayName %s".formatted(username));
+    Object credential = authentication.getCredentials();
+    var user = userRepository.findByLogin(username);
+    if (user == null || !PasswordUtil.matches(credential.toString(), user.getPassword())) {
+      throw new BadCredentialsException(INVALID_CREDENTIALS.translate());
     }
     return new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
   }

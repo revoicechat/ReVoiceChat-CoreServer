@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import fr.revoicechat.model.User;
 import fr.revoicechat.repository.UserRepository;
+import fr.revoicechat.security.PasswordUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 
@@ -39,7 +40,7 @@ class GenerateFictiveUsers {
     user.setId(UUID.randomUUID());
     user.setLogin(login);
     user.setDisplayName(displayName);
-    user.setPassword("psw");
+    user.setPassword(PasswordUtil.encodePassword("psw"));
     user.setEmail(mail);
     user.setCreatedDate(LocalDateTime.now());
     userRepository.save(user);

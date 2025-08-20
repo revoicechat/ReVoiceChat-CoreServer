@@ -2,6 +2,8 @@ package fr.revoicechat.nls;
 
 import java.util.Locale;
 
+import fr.revoicechat.nls.utils.TranslationUtils;
+
 public interface LocalizedMessage {
 
   String name();
@@ -15,6 +17,6 @@ public interface LocalizedMessage {
   }
 
   default String translate(Object... args) {
-    return translate(Locale.ENGLISH, args);
+    return translate(TranslationUtils.getCurrentRequestLocale(), args);
   }
 }

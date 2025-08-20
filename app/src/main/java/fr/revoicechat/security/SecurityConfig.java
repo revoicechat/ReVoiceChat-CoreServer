@@ -19,10 +19,10 @@ public class SecurityConfig {
 
   private static final String[] SWAGGER_WHITELIST = { "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**" };
 
-  private final UsernameOnlyAuthenticationProvider authenticationProvider;
+  private final UserPswAuthenticationProvider authenticationProvider;
   private final ContentAwareAccessDeniedHandler contentAwareAccessDeniedHandler;
 
-  public SecurityConfig(UsernameOnlyAuthenticationProvider authenticationProvider, final ContentAwareAccessDeniedHandler contentAwareAccessDeniedHandler) {
+  public SecurityConfig(UserPswAuthenticationProvider authenticationProvider, final ContentAwareAccessDeniedHandler contentAwareAccessDeniedHandler) {
     this.authenticationProvider = authenticationProvider;
     this.contentAwareAccessDeniedHandler = contentAwareAccessDeniedHandler;
   }

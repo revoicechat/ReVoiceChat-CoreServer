@@ -1,5 +1,7 @@
 package fr.revoicechat.security;
 
+import static fr.revoicechat.nls.CommonErrorCode.USER_NOT_FOUND;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,7 @@ public class UserHolder {
     var auth = SecurityContextHolder.getContext().getAuthentication();
     var user = userRepository.findByLogin(auth.getName());
     if (user == null) {
-      throw new UsernameNotFoundException("User not found");
+      throw new UsernameNotFoundException(USER_NOT_FOUND.translate());
     }
     return user;
   }
