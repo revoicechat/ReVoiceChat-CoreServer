@@ -40,7 +40,7 @@ public class ServerControllerImpl implements ServerController {
 
   @Override
   public Server createServer(ServerCreationRepresentation representation) {
-    return serverService.create(representation.toEntity());
+    return serverService.create(representation);
   }
 
   @Override

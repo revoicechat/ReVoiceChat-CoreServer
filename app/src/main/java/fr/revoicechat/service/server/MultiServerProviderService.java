@@ -45,4 +45,12 @@ public class MultiServerProviderService implements ServerProviderService {
   public Stream<User> getUsers(UUID id) {
     return userRepository.findByServers(id);
   }
+
+  @Override
+  public Server create(final Server entity) {
+    LOG.info("Creation of server {}", entity.getName());
+    return serverRepository.save(entity);
+  }
+
+
 }

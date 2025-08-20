@@ -3,16 +3,18 @@ package fr.revoicechat.service.server;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
+import jakarta.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import fr.revoicechat.error.BadRequestException;
 import fr.revoicechat.model.Server;
 import fr.revoicechat.model.User;
+import fr.revoicechat.nls.ServerErrorCode;
 import fr.revoicechat.repository.ServerRepository;
 import fr.revoicechat.repository.UserRepository;
-import jakarta.transaction.Transactional;
 
 /**
  * {@link ServerProviderService} implementation for single-server mode.
@@ -78,5 +80,11 @@ public class MonoServerProviderService implements ServerProviderService {
   @Override
   public Stream<User> getUsers(UUID id) {
     return userRepository.findAll().stream();
+  }
+
+  @Override
+  public Server create(final Server entity) {
+    LOG.error(ServerErrorCode.ROOM_TYPE_CANNOT_BE_CHANGED.translate());
+    throw new BadRequestException(ServerErrorCode.ROOM_TYPE_CANNOT_BE_CHANGED);
   }
 }
