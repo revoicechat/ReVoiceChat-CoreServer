@@ -1,8 +1,8 @@
 package fr.revoicechat.web;
 
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.revoicechat.model.Room;
@@ -40,8 +40,8 @@ public class RoomControllerImpl implements RoomController {
   }
 
   @Override
-  public List<MessageRepresentation> messages(UUID roomId) {
-    return messageService.findAll(roomId);
+  public Page<MessageRepresentation> messages(UUID roomId, int page, int size) {
+    return messageService.getMessagesByRoom(roomId, page, size);
   }
 
   @Override
