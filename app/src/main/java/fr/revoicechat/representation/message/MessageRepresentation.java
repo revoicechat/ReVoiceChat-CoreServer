@@ -1,6 +1,6 @@
 package fr.revoicechat.representation.message;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,7 +9,7 @@ public record MessageRepresentation(
     String text,
     UUID roomId,
     UserMessageRepresentation user,
-    LocalDateTime createdDate,
+    OffsetDateTime createdDate,
     ActionType actionType,
     List<MediaDataRepresentation> medias
 ) {

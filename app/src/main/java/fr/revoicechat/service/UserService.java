@@ -1,6 +1,7 @@
 package fr.revoicechat.service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,7 +61,7 @@ public class UserService {
         user.getId(),
         user.getDisplayName(),
         user.getLogin(),
-        user.getCreatedDate(),
+        user.getCreatedDate().atOffset(ZoneOffset.UTC),
         getActiveStatus(user)
     );
   }
