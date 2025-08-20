@@ -13,6 +13,7 @@ import fr.revoicechat.model.User;
 import fr.revoicechat.repository.UserRepository;
 import fr.revoicechat.representation.user.SignupRepresentation;
 import fr.revoicechat.representation.user.UserRepresentation;
+import fr.revoicechat.security.PasswordUtil;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.service.server.ServerProviderService;
 import fr.revoicechat.service.sse.TextualChatService;
@@ -39,7 +40,7 @@ public class UserService {
     user.setDisplayName(signer.username());
     user.setLogin(signer.username());
     user.setEmail(signer.email());
-    user.setPassword(signer.password());
+    user.setPassword(PasswordUtil.encodePassword(signer.password()));
     userRepository.save(user);
     return map(user);
   }
