@@ -11,6 +11,7 @@ import fr.revoicechat.error.ResourceNotFoundException;
 import fr.revoicechat.model.Server;
 import fr.revoicechat.repository.ServerRepository;
 import fr.revoicechat.representation.server.ServerCreationRepresentation;
+import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.service.server.ServerProviderService;
 
 /**
@@ -34,10 +35,12 @@ public class ServerService {
 
   private final ServerProviderService serverProviderService;
   private final ServerRepository serverRepository;
+  private final UserHolder userHolder;
 
-  public ServerService(ServerProviderService serverProviderService, final ServerRepository serverRepository) {
+  public ServerService(ServerProviderService serverProviderService, final ServerRepository serverRepository, final UserHolder userHolder) {
     this.serverProviderService = serverProviderService;
     this.serverRepository = serverRepository;
+    this.userHolder = userHolder;
   }
 
   /**
@@ -72,7 +75,11 @@ public class ServerService {
    * @return the persisted server entity with its generated ID
    */
   public Server create(final ServerCreationRepresentation representation) {
-    return serverProviderService.create(representation.toEntity());
+    Server server = new Server();
+    server.setId(UUID.randomUUID());
+    server.setName(representation.name());
+    server.setOwner(userHolder.get());
+    return serverProviderService.create(server);
   }
 
   /**
@@ -82,11 +89,12 @@ public class ServerService {
    * before persisting.
    *
    * @param id     the ID of the server to update
-   * @param entity the updated server data
+   * @param representation the updated server data
    * @return the updated and persisted server entity
    */
-  public Server update(final UUID id, final Server entity) {
-    entity.setId(id);
-    return serverRepository.save(entity);
+  public Server update(final UUID id, final ServerCreationRepresentation representation) {
+    var server = get(id);
+    server.setName(representation.name());
+    return serverRepository.save(server);
   }
 }

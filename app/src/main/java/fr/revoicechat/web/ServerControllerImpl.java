@@ -45,7 +45,7 @@ public class ServerControllerImpl implements ServerController {
 
   @Override
   public Server updateServer(UUID id, ServerCreationRepresentation representation) {
-    return serverService.update(id, representation.toEntity());
+    return serverService.update(id, representation);
   }
 
   @Override

@@ -2,20 +2,24 @@ package fr.revoicechat.web;
 
 import static org.assertj.core.api.Assertions.*;
 
+import jakarta.inject.Inject;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 
 import fr.revoicechat.model.ActiveStatus;
 import fr.revoicechat.representation.user.SignupRepresentation;
 import fr.revoicechat.web.api.AuthController;
 import fr.revoicechat.web.api.AuthController.UserPassword;
-import jakarta.inject.Inject;
 
 @SpringBootTest
 @ActiveProfiles({ "test", "test-h2" })
+@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 class TestAuthController {
 
   @Inject private AuthController authController;

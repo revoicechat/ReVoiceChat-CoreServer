@@ -5,6 +5,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import fr.revoicechat.config.RevoiceChatGlobalConfig;
+import fr.revoicechat.repository.UserRepository;
+import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.security.UserHolderImpl;
 import fr.revoicechat.service.server.MonoServerProviderService;
 import fr.revoicechat.service.server.MultiServerProviderService;
 import fr.revoicechat.service.server.ServerProviderService;
@@ -26,5 +29,10 @@ public class RevoiceChatBeans {
     };
     service.canBeUsed();
     return service;
+  }
+
+  @Bean
+  public UserHolder userHolder(UserRepository userRepository) {
+    return new UserHolderImpl(userRepository);
   }
 }

@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -97,8 +96,12 @@ public class User implements Serializable {
 
   @Override
   public boolean equals(final Object o) {
-    if (this == o) { return true; }
-    if (!(o instanceof User user)) { return false; }
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof User user)) {
+      return false;
+    }
     return Objects.equals(getId(), user.getId());
   }
 

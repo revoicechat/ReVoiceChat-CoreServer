@@ -3,7 +3,6 @@ package fr.revoicechat.model;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;

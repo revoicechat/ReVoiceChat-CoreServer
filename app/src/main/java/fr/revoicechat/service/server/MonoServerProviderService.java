@@ -84,7 +84,7 @@ public class MonoServerProviderService implements ServerProviderService {
 
   @Override
   public Server create(final Server entity) {
-    LOG.error(ServerErrorCode.ROOM_TYPE_CANNOT_BE_CHANGED.translate());
-    throw new BadRequestException(ServerErrorCode.ROOM_TYPE_CANNOT_BE_CHANGED);
+    LOG.error(ServerErrorCode.APPLICATION_DOES_NOT_ALLOW_SERVER_CREATION.translate());
+    throw new BadRequestException(ServerErrorCode.APPLICATION_DOES_NOT_ALLOW_SERVER_CREATION);
   }
 }
