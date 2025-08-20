@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import fr.revoicechat.error.ResourceNotFoundException;
 import fr.revoicechat.model.Server;
 import fr.revoicechat.repository.ServerRepository;
+import fr.revoicechat.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.service.server.ServerProviderService;
 
 /**
@@ -67,11 +68,11 @@ public class ServerService {
   /**
    * Creates and stores a new server in the database.
    *
-   * @param entity the server entity to persist
+   * @param representation the server entity to persist
    * @return the persisted server entity with its generated ID
    */
-  public Server create(final Server entity) {
-    return serverRepository.save(entity);
+  public Server create(final ServerCreationRepresentation representation) {
+    return serverProviderService.create(representation.toEntity());
   }
 
   /**

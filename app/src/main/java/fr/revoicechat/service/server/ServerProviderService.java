@@ -38,4 +38,9 @@ public interface ServerProviderService {
   List<Server> getServers();
 
   Stream<User> getUsers(UUID id);
+
+  /**
+   * Check if we can create a server, and create it.
+   */
+  Server create(Server entity);
 }
