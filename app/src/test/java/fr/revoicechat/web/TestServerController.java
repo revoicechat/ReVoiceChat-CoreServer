@@ -24,7 +24,6 @@ import fr.revoicechat.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.representation.user.SignupRepresentation;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.stub.IntegrationTestConfiguration;
-import fr.revoicechat.web.api.AuthController;
 import fr.revoicechat.web.api.ServerController;
 
 /** @see ServerControllerImpl */

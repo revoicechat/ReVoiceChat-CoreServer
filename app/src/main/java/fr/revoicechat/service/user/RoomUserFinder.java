@@ -2,13 +2,12 @@ package fr.revoicechat.service.user;
 
 import java.util.UUID;
 import java.util.stream.Stream;
-
-import org.springframework.stereotype.Component;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import fr.revoicechat.model.User;
 import fr.revoicechat.repository.UserRepository;
 
-@Component
+@ApplicationScoped
 public class RoomUserFinder {
 
   private final UserRepository userRepository;

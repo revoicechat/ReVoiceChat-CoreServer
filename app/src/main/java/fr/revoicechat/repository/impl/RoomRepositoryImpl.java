@@ -2,15 +2,14 @@ package fr.revoicechat.repository.impl;
 
 import java.util.List;
 import java.util.UUID;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-
-import org.springframework.stereotype.Repository;
 
 import fr.revoicechat.model.Room;
 import fr.revoicechat.repository.RoomRepository;
 
-@Repository
+@ApplicationScoped
 public class RoomRepositoryImpl implements RoomRepository {
 
   @PersistenceContext

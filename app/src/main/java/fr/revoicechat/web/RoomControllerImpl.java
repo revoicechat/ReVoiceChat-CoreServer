@@ -2,8 +2,6 @@ package fr.revoicechat.web;
 
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.RestController;
-
 import fr.revoicechat.model.Room;
 import fr.revoicechat.repository.page.PageResult;
 import fr.revoicechat.representation.message.CreatedMessageRepresentation;
@@ -13,7 +11,6 @@ import fr.revoicechat.service.MessageService;
 import fr.revoicechat.service.RoomService;
 import fr.revoicechat.web.api.RoomController;
 
-@RestController
 public class RoomControllerImpl implements RoomController {
 
   private final RoomService roomService;
@@ -38,6 +35,7 @@ public class RoomControllerImpl implements RoomController {
   public UUID delete(UUID roomId) {
     return roomService.delete(roomId);
   }
+
 
   @Override
   public PageResult<MessageRepresentation> messages(UUID roomId, int page, int size) {

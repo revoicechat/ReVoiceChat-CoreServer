@@ -3,12 +3,12 @@ package fr.revoicechat.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import fr.revoicechat.error.ResourceNotFoundException;
 import fr.revoicechat.model.Server;
@@ -32,7 +32,7 @@ import fr.revoicechat.service.server.ServerProviderService;
  * The list of servers returned by {@link #getAll()} comes from {@link ServerProviderService},
  * whereas other CRUD operations.
  */
-@Service
+@ApplicationScoped
 public class ServerService {
   private static final Logger LOG = LoggerFactory.getLogger(ServerService.class);
 

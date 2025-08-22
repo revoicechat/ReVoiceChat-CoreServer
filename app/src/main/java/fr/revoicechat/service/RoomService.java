@@ -3,10 +3,10 @@ package fr.revoicechat.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-
-import org.springframework.stereotype.Service;
 
 import fr.revoicechat.error.BadRequestException;
 import fr.revoicechat.error.ResourceNotFoundException;
@@ -27,7 +27,7 @@ import fr.revoicechat.representation.room.RoomRepresentation;
  * </ul>
  * <p>
  */
-@Service
+@ApplicationScoped
 public class RoomService {
 
   private final EntityManager entityManager;
