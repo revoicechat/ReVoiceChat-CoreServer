@@ -5,37 +5,34 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
+
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
 import fr.revoicechat.model.ActiveStatus;
 import fr.revoicechat.model.User;
-import fr.revoicechat.repository.UserRepository;
 import fr.revoicechat.representation.user.SignupRepresentation;
 import fr.revoicechat.representation.user.UserRepresentation;
+import fr.revoicechat.security.PasswordUtil;
 import fr.revoicechat.security.UserHolder;
-import fr.revoicechat.security.utils.PasswordUtils;
 import fr.revoicechat.service.server.ServerProviderService;
 import fr.revoicechat.service.sse.TextualChatService;
 
-@ApplicationScoped
+@Service
 public class UserService {
 
   private final EntityManager entityManager;
-  private final UserRepository userRepository;
   private final UserHolder userHolder;
   private final TextualChatService textualChatService;
   private final ServerProviderService serverProviderService;
 
   public UserService(EntityManager entityManager,
-                     UserRepository userRepository,
                      UserHolder userHolder,
                      TextualChatService textualChatService,
                      ServerProviderService serverProviderService) {
     this.entityManager = entityManager;
-    this.userRepository = userRepository;
     this.userHolder = userHolder;
     this.textualChatService = textualChatService;
     this.serverProviderService = serverProviderService;
@@ -49,13 +46,9 @@ public class UserService {
     user.setDisplayName(signer.username());
     user.setLogin(signer.username());
     user.setEmail(signer.email());
-    user.setPassword(PasswordUtils.encodePassword(signer.password()));
+    user.setPassword(PasswordUtil.encodePassword(signer.password()));
     entityManager.persist(user);
     return map(user);
-  }
-
-  public User findByLogin(final String username) {
-    return userRepository.findByLogin(username);
   }
 
   public UserRepresentation findCurrentUser() {
@@ -65,7 +58,7 @@ public class UserService {
   public UserRepresentation get(final UUID id) {
     return Optional.ofNullable(entityManager.find(User.class, id))
                    .map(this::map)
-                   .orElseThrow(() -> new NotFoundException("User not found"));
+                   .orElseThrow(() -> new UsernameNotFoundException("User not found"));
   }
 
   private UserRepresentation map(final User user) {

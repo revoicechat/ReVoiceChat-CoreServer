@@ -1,31 +1,31 @@
 package fr.revoicechat.web;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 
 import fr.revoicechat.junit.ClearDataBase;
 import fr.revoicechat.model.ActiveStatus;
-import fr.revoicechat.representation.login.UserPassword;
 import fr.revoicechat.representation.user.SignupRepresentation;
+import fr.revoicechat.web.api.AuthController;
+import fr.revoicechat.web.api.AuthController.UserPassword;
 
-/** @see AuthController */
+/** @see AuthControllerImpl */
 @SpringBootTest
 @ActiveProfiles({ "test", "test-h2" })
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 @ClearDataBase
 class TestAuthController {
 
-  @Inject AuthController authController;
+  @Inject private AuthController authController;
 
   @Test
   void test() {
@@ -37,15 +37,14 @@ class TestAuthController {
     assertThat(user.login()).isEqualTo("testUser");
     assertThat(user.createdDate()).isNotNull();
     assertThat(user.status()).isEqualTo(ActiveStatus.OFFLINE);
+    var req = new MockHttpServletRequest();
     var wrongUserPassword = new UserPassword("testUser", "pswwwww");
-    try (var response = authController.login(wrongUserPassword)) {
-      assertThat(response.getStatus()).isEqualTo(Response.Status.UNAUTHORIZED.getStatusCode());
-      assertThat(response.getEntity()).isEqualTo("Invalid credentials");
-    }
+    assertThatThrownBy(() -> authController.login(wrongUserPassword, req)).isInstanceOf(BadCredentialsException.class);
     var goodUserPassword = new UserPassword("testUser", "psw");
-    try (var result = authController.login(goodUserPassword)) {
-      assertThat(result.getStatus()).isEqualTo(Status.OK.getStatusCode());
-      assertThat(result.getEntity()).isEqualTo("User testUser logged in");
-    }
+    var result = authController.login(goodUserPassword, req);
+    assertThat(result).isEqualTo("User testUser logged in");
+    var session = req.getSession(true);
+    assertThat(session).isNotNull();
+    assertThat(session.getAttribute("SPRING_SECURITY_CONTEXT")).isNotNull();
   }
 }

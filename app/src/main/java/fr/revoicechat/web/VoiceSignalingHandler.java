@@ -1,5 +1,3 @@
-/* TODO - migrate this class
-
 package fr.revoicechat.web;
 
 import java.io.IOError;
@@ -47,4 +45,3 @@ public class VoiceSignalingHandler extends TextWebSocketHandler {
     sessions.remove(session);
   }
 }
-*/
