@@ -3,11 +3,10 @@ package fr.revoicechat.service.server;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Vetoed;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import fr.revoicechat.model.Server;
 import fr.revoicechat.model.User;
@@ -19,7 +18,7 @@ import fr.revoicechat.repository.UserRepository;
  * <p>
  * In this mode, any number of {@link Server} instances may exist in the system.
  */
-@Vetoed
+@Service
 public class MultiServerProviderService implements ServerProviderService {
   private static final Logger LOG = LoggerFactory.getLogger(MultiServerProviderService.class);
 
