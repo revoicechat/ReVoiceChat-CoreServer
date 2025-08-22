@@ -3,9 +3,11 @@ package fr.revoicechat.web.api;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import fr.revoicechat.representation.user.UpdatableUserData;
 import fr.revoicechat.representation.user.UserRepresentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,6 +27,15 @@ public interface UserController extends LoggedApi {
   )
   @GetMapping("/me")
   UserRepresentation me();
+
+  @Operation(
+      summary = "Update details of the connected user",
+      description = "Update the details of the specific connected user.",
+      tags = { "User" },
+      responses = { @ApiResponse(responseCode = "200"), }
+  )
+  @PatchMapping("/me")
+  UserRepresentation me(UpdatableUserData userData);
 
   @Operation(
       summary = "Get details of a user",

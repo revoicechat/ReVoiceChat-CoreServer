@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.revoicechat.representation.user.UpdatableUserData;
 import fr.revoicechat.representation.user.UserRepresentation;
 import fr.revoicechat.service.UserService;
 import fr.revoicechat.web.api.UserController;
@@ -17,6 +18,11 @@ public class UserControllerImpl implements UserController {
   @Override
   public UserRepresentation me() {
     return userService.findCurrentUser();
+  }
+
+  @Override
+  public UserRepresentation me(final UpdatableUserData userData) {
+    return userService.updateConnectedUser(userData);
   }
 
   @Override

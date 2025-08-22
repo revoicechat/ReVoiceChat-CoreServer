@@ -1,24 +1,29 @@
 package fr.revoicechat.service;
 
+import static fr.revoicechat.nls.UserErrorCode.*;
+
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import fr.revoicechat.error.BadRequestException;
 import fr.revoicechat.model.ActiveStatus;
 import fr.revoicechat.model.User;
 import fr.revoicechat.representation.user.SignupRepresentation;
+import fr.revoicechat.representation.user.UpdatableUserData;
 import fr.revoicechat.representation.user.UserRepresentation;
 import fr.revoicechat.security.PasswordUtil;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.service.server.ServerProviderService;
 import fr.revoicechat.service.sse.TextualChatService;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
@@ -61,6 +66,30 @@ public class UserService {
                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
   }
 
+  @Transactional
+  public List<UserRepresentation> fetchUserForServer(final UUID id) {
+    return serverProviderService.getUsers(id).map(this::map).toList();
+  }
+
+  @Transactional
+  public UserRepresentation updateConnectedUser(final UpdatableUserData userData) {
+    var user = userHolder.get();
+    if (userData.newPassword() != null) {
+      if (PasswordUtil.matches(userData.password(), user.getPassword())) {
+        throw new BadRequestException(USER_PASSWORD_WRONG);
+      }
+      if (Objects.equals(userData.password(), userData.confirmPassword())) {
+        user.setPassword(PasswordUtil.encodePassword(userData.password()));
+      } else {
+        throw new BadRequestException(USER_PASSWORD_WRONG_CONFIRMATION);
+      }
+    }
+    user.setDisplayName(userData.displayName());
+    user.setStatus(userData.status());
+    entityManager.persist(user);
+    return map(user);
+  }
+
   private UserRepresentation map(final User user) {
     return new UserRepresentation(
         user.getId(),
@@ -72,11 +101,6 @@ public class UserService {
   }
 
   private ActiveStatus getActiveStatus(final User user) {
-    return textualChatService.isRegister(user) ? ActiveStatus.ONLINE : ActiveStatus.OFFLINE;
-  }
-
-  @Transactional
-  public List<UserRepresentation> fetchUserForServer(final UUID id) {
-    return serverProviderService.getUsers(id).map(this::map).toList();
+    return textualChatService.isRegister(user) ? user.getStatus() : ActiveStatus.OFFLINE;
   }
 }
