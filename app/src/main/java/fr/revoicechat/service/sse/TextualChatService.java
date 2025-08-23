@@ -74,6 +74,7 @@ public class TextualChatService {
     roomUserFinder.find(roomId)
                   .map(User::getId)
                   .map(this::getSseEmitters)
+                  .map(HashSet::new)
                   .flatMap(Collection::stream)
                   .forEach(sse -> sendSSE(sse, new SseData(ROOM_MESSAGE, message)));
   }
@@ -92,7 +93,7 @@ public class TextualChatService {
   }
 
   private boolean ping(User user) {
-    return getSseEmitters(user.getId()).stream().anyMatch(this::ping);
+    return new HashSet<>(getSseEmitters(user.getId())).stream().anyMatch(this::ping);
   }
 
   private boolean ping(final SseEmitter sse) {
