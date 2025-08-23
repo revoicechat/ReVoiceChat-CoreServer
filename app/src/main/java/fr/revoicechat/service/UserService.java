@@ -1,6 +1,7 @@
 package fr.revoicechat.service;
 
 import static fr.revoicechat.nls.UserErrorCode.*;
+import static java.util.function.Predicate.not;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -19,6 +20,7 @@ import fr.revoicechat.model.ActiveStatus;
 import fr.revoicechat.model.User;
 import fr.revoicechat.representation.user.SignupRepresentation;
 import fr.revoicechat.representation.user.UpdatableUserData;
+import fr.revoicechat.representation.user.UpdatableUserData.PasswordUpdated;
 import fr.revoicechat.representation.user.UserRepresentation;
 import fr.revoicechat.security.PasswordUtil;
 import fr.revoicechat.security.UserHolder;
@@ -76,20 +78,22 @@ public class UserService {
   @Transactional
   public UserRepresentation updateConnectedUser(final UpdatableUserData userData) {
     var user = userHolder.get();
-    if (userData.newPassword() != null) {
-      if (PasswordUtil.matches(userData.password(), user.getPassword())) {
-        throw new BadRequestException(USER_PASSWORD_WRONG);
-      }
-      if (Objects.equals(userData.password(), userData.confirmPassword())) {
-        user.setPassword(PasswordUtil.encodePassword(userData.password()));
-      } else {
-        throw new BadRequestException(USER_PASSWORD_WRONG_CONFIRMATION);
-      }
-    }
-    user.setDisplayName(userData.displayName());
-    user.setStatus(userData.status());
+    Optional.ofNullable(userData.password()).ifPresent(psw -> setPassword(user, psw));
+    Optional.ofNullable(userData.displayName()).filter(not(String::isBlank)).ifPresent(user::setDisplayName);
+    Optional.ofNullable(userData.status()).ifPresent(user::setStatus);
     entityManager.persist(user);
     return map(user);
+  }
+
+  private void setPassword(final User user, final PasswordUpdated password) {
+    if (PasswordUtil.matches(password.password(), user.getPassword())) {
+      throw new BadRequestException(USER_PASSWORD_WRONG);
+    }
+    if (Objects.equals(password.newPassword(), password.confirmPassword())) {
+      user.setPassword(PasswordUtil.encodePassword(password.newPassword()));
+    } else {
+      throw new BadRequestException(USER_PASSWORD_WRONG_CONFIRMATION);
+    }
   }
 
   private UserRepresentation map(final User user) {

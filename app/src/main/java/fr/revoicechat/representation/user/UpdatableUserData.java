@@ -4,8 +4,10 @@ import fr.revoicechat.model.ActiveStatus;
 
 public record UpdatableUserData(
     String displayName,
-    String password,
-    String newPassword,
-    String confirmPassword,
+    PasswordUpdated password,
     ActiveStatus status
-) {}
+) {
+  public record PasswordUpdated(String password,
+                                String newPassword,
+                                String confirmPassword) {}
+}

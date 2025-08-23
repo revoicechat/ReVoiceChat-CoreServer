@@ -27,6 +27,17 @@ public interface UserController extends LoggedApi {
   UserRepresentation me();
 
   @Operation(
+      summary = "Update details of the connected user",
+      description = """
+        Update the details of the specific connected user.
+        Only no null data are updated""",
+      tags = { "User" },
+      responses = { @ApiResponse(responseCode = "200"), }
+  )
+  @PatchMapping("/me")
+  UserRepresentation me(UpdatableUserData userData);
+
+  @Operation(
       summary = "Get details of a user",
       description = "Retrieve the details of a specific user by its id.",
       tags = { "User" },
