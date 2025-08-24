@@ -10,33 +10,33 @@
 
 ## Install and configure PostGreSQL
 
-```sudo apt install postgresql```
+`sudo apt install postgresql`
 
-```sudo -i -u postgres```
+`sudo -i -u postgres`
 
-```psql```
+`psql`
 
-```CREATE USER revoicechat_user WITH PASSWORD 'secure_password';```
+`CREATE USER revoicechat_user WITH PASSWORD 'secure_password';`
 
-```CREATE DATABASE revoicechat_db OWNER = revoicechat_user;```
+`CREATE DATABASE revoicechat_db OWNER = revoicechat_user;`
 
-```exit``` to quit psql
+`exit` to quit psql
 
-```exit``` to quit postgres user
+`exit` to quit postgres user
 
 ## Clone this repository
 
-For this guide, we will use ```/srv/rvc``` but you can use any directory (don't forget to change ```/srv/rvc``` to your path)
+For this guide, we will use `/srv/rvc` but you can use any directory (don't forget to change `/srv/rvc` to your path)
 
-```git clone https://github.com/revoicechat/ReVoiceChat-server```
+`git clone https://github.com/revoicechat/ReVoiceChat-server`
 
 ## Configure server.properties
 
-Copy ```server.exemple.properties``` to ```app/server.properties```
+Copy `server.exemple.properties` to `app/server.properties`
 
-```cp ./server.exemple.properties ./app/server.properties```
+`cp ./server.exemple.properties ./app/server.properties`
 
-Edit ```./app/server.properties``` : 
+Edit `./app/server.properties` :
 
 ```properties
 spring.datasource.url=jdbc:postgresql://127.0.0.1:5432/revoicechat_db

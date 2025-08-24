@@ -20,11 +20,19 @@ This repository provide the source code of server-side of `RevoiceChat`
  - run `java -jar ./revoicechat-app.jar --spring.profiles.active=linux,pg`
 
 ### Run as a service (systemd)
-- Rename `rvc-core.service.example` to `rvc-core.service`
-- Edit rvc-core.service and change `WorkingDirectory` and `ExecStart` path
+- Copy `rvc-core.service.example` to `rvc-core.service`
+- Edit `rvc-core.service` and change `WorkingDirectory` and `ExecStart` path
 - Link the service file : `sudo systemctl link /[YOUR-PATH]/rvc-core.service`
 - Enable service : `sudo systemctl enable rvc-core.service`
 - Start service : `sudo systemctl start rvc-core.service`
+- Check service status : `sudo systemctl status rvc-core.service`
+
+Expected output : 
+```log 
+* rvc-core.service - ReVoiceChat Core Server
+     Loaded: loaded (/etc/systemd/system/rvc-core.service; enabled; preset: enabled)
+     Active: active (running) since Sun 2025-08-24 12:14:11 UTC; 1s ago
+```
 
 ## Voice (VoIP)
 
