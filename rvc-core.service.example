@@ -6,8 +6,8 @@ Type=simple
 User=administrateur
 Group=administrateur
 
-WorkingDirectory=/srv/rvc/ReVoiceChat-CoreServer/
-ExecStart=/srv/rvc/ReVoiceChat-CoreServer/mvnw spring-boot:run -pl "app" -Dspring-boot.run.profiles=linux,pg
+WorkingDirectory=[PATH TO YOUR DIR]
+ExecStart=[PATH TO YOUR DIR]/mvnw spring-boot:run -pl "app" -Dspring-boot.run.profiles=linux,pg
 
 [Install]
 WantedBy=multi-user.target
