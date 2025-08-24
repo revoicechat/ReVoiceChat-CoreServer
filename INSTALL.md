@@ -2,39 +2,59 @@
 
 ## Install Java 21
 
-```wget https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.deb```
+```sh
+wget https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.deb
+```
 
-```sudo dpkg -i jdk-21_linux-x64_bin.deb```
+```sh 
+sudo dpkg -i jdk-21_linux-x64_bin.deb
+```
 
-```java --version```
+```sh
+java --version
+```
 
 ## Install and configure PostGreSQL
 
-`sudo apt install postgresql`
+```sh 
+sudo apt install postgresql
+```
 
-`sudo -i -u postgres`
+```sh 
+sudo -i -u postgres
+```
 
-`psql`
+```sh 
+psql
+```
 
-`CREATE USER revoicechat_user WITH PASSWORD 'secure_password';`
+```sql
+CREATE USER revoicechat_user WITH PASSWORD 'secure_password';
+```
 
-`CREATE DATABASE revoicechat_db OWNER = revoicechat_user;`
+```sql
+CREATE DATABASE revoicechat_db OWNER = revoicechat_user;
+```
 
 `exit` to quit psql
 
-`exit` to quit postgres user
+```exit``` to quit postgres user
 
 ## Clone this repository
 
 For this guide, we will use `/srv/rvc` but you can use any directory (don't forget to change `/srv/rvc` to your path)
 
-`git clone https://github.com/revoicechat/ReVoiceChat-server`
+```sh
+git clone https://github.com/revoicechat/ReVoiceChat-server
+```
 
 ## Configure server.properties
 
 Copy `server.exemple.properties` to `app/server.properties`
 
-`cp ./server.exemple.properties ./app/server.properties`
+```sh 
+cp ./server.exemple.properties ./app/server.properties
+```
 
 Edit `./app/server.properties` :
 
