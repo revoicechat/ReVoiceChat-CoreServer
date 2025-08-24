@@ -11,16 +11,7 @@ This repository provide the source code of server-side of `RevoiceChat`
  - JDK 21
  - PostGreSQL
 
-### How to :
-```sh
-git clone https://github.com/revoicechat/ReVoiceChat-server.git
-cd ./ReVoiceChat-server
-./mvnw spring-boot:run -pl "app"
-```
-
-for server purpose, you can copy the `server.exemple.properties` file in `/app`,
-rename it `server.properties`
-and complete it with your postgres database
+### [How to install](INSTALL.md)
 
 ### Run as an app (.jar)
 
