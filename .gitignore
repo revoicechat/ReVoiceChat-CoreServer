@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 *.log
 rvc-server.service
+!rvc-server.service.example
 
 ### STS ###
 .apt_generated
