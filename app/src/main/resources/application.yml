@@ -1,3 +1,6 @@
+server:
+  error:
+    include-message: always
 spring:
   application:
     name: RevoiceChat
@@ -15,6 +18,7 @@ spring:
 revoicechat:
   global:
     sever-mode: MONO_SERVER
+    app-only-accessible-by-invitation: true
 logging:
   file:
     name: latest.log

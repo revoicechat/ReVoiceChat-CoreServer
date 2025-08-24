@@ -1,5 +1,7 @@
 package fr.revoicechat.service;
 
+import static fr.revoicechat.model.InvitationLinkStatus.CREATED;
+import static fr.revoicechat.model.InvitationType.*;
 import static fr.revoicechat.nls.UserErrorCode.*;
 import static java.util.function.Predicate.not;
 
@@ -15,8 +17,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import fr.revoicechat.config.RevoiceChatGlobalConfig;
 import fr.revoicechat.error.BadRequestException;
 import fr.revoicechat.model.ActiveStatus;
+import fr.revoicechat.model.InvitationLink;
+import fr.revoicechat.model.InvitationLinkStatus;
 import fr.revoicechat.model.User;
 import fr.revoicechat.representation.user.SignupRepresentation;
 import fr.revoicechat.representation.user.UpdatableUserData;
@@ -36,19 +41,27 @@ public class UserService {
   private final UserHolder userHolder;
   private final TextualChatService textualChatService;
   private final ServerProviderService serverProviderService;
+  private final RevoiceChatGlobalConfig globalConfig;
 
   public UserService(EntityManager entityManager,
                      UserHolder userHolder,
                      TextualChatService textualChatService,
-                     ServerProviderService serverProviderService) {
+                     ServerProviderService serverProviderService, final RevoiceChatGlobalConfig globalConfig) {
     this.entityManager = entityManager;
     this.userHolder = userHolder;
     this.textualChatService = textualChatService;
     this.serverProviderService = serverProviderService;
+    this.globalConfig = globalConfig;
   }
 
   @Transactional
   public UserRepresentation create(final SignupRepresentation signer) {
+    var invitationLink = Optional.ofNullable(signer.invitationLink())
+                                 .map(id -> entityManager.find(InvitationLink.class, id))
+                                 .orElse(null);
+    if (globalConfig.isAppOnlyAccessibleByInvitation() && !isValideInvitation(invitationLink)) {
+      throw new BadRequestException(USER_WITH_NO_VALID_INVITATION);
+    }
     var user = new User();
     user.setId(UUID.randomUUID());
     user.setCreatedDate(LocalDateTime.now());
@@ -57,7 +70,18 @@ public class UserService {
     user.setEmail(signer.email());
     user.setPassword(PasswordUtil.encodePassword(signer.password()));
     entityManager.persist(user);
+    if (invitationLink != null) {
+      invitationLink.setStatus(InvitationLinkStatus.USED);
+      invitationLink.setApplier(user);
+      entityManager.persist(invitationLink);
+    }
     return map(user);
+  }
+
+  private static boolean isValideInvitation(final InvitationLink invitationLink) {
+    return invitationLink != null
+           && APPLICATION_JOIN.equals(invitationLink.getType())
+           && CREATED.equals(invitationLink.getStatus());
   }
 
   public UserRepresentation findCurrentUser() {

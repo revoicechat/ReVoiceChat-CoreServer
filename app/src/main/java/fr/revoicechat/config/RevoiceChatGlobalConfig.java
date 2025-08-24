@@ -9,6 +9,7 @@ public class RevoiceChatGlobalConfig {
 
   private SeverAppMode severMode;
   private String mediaServerUrl;
+  private boolean appOnlyAccessibleByInvitation;
 
   public SeverAppMode getSeverMode() {
     return severMode;
@@ -24,5 +25,13 @@ public class RevoiceChatGlobalConfig {
 
   public void setMediaServerUrl(final String mediaServerUrl) {
     this.mediaServerUrl = mediaServerUrl;
+  }
+
+  public boolean isAppOnlyAccessibleByInvitation() {
+    return appOnlyAccessibleByInvitation;
+  }
+
+  public void setAppOnlyAccessibleByInvitation(final boolean appOnlyAccessibleByInvitation) {
+    this.appOnlyAccessibleByInvitation = appOnlyAccessibleByInvitation;
   }
 }
