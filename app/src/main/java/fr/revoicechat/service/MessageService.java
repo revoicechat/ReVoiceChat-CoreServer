@@ -96,6 +96,7 @@ public class MessageService {
    * @param creation the message data to create
    * @return a representation of the created message
    */
+  @Transactional
   public MessageRepresentation create(UUID roomId, CreatedMessageRepresentation creation) {
     messageValidation.isValid(creation);
     var room = roomService.read(roomId);
