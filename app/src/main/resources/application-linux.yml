@@ -1,6 +1,0 @@
-spring:
-  config:
-    import: optional:file:server.properties
-logging:
-  file:
-    path: /var/log/revoicechat

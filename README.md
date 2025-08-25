@@ -17,7 +17,8 @@ This repository provide the source code of server-side of `RevoiceChat`
 
  - copy the jar where you want and rename it `revoicechat-app.jar`
  - copy the `server.properties` in the same place of `revoicechat-app.jar`
- - run `java -jar ./revoicechat-app.jar --spring.profiles.active=linux,pg`
+ - run `./scripts/build-app.sh`
+ - run `./scripts/run-app.sh`
 
 ### Run as a service (systemd)
 - Copy `rvc-core.service.example` to `rvc-core.service`
