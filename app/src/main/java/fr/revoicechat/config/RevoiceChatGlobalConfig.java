@@ -1,16 +1,15 @@
 package fr.revoicechat.config;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-@ApplicationScoped
+@Configuration
+@ConfigurationProperties("revoicechat.global")
 public class RevoiceChatGlobalConfig {
 
-  @ConfigProperty(name = "revoicechat.global.sever-mode")
-  SeverAppMode severMode;
-  @ConfigProperty(name = "revoicechat.global.media-server-url")
-  String mediaServerUrl;
+  private SeverAppMode severMode;
+  private String mediaServerUrl;
+  private boolean appOnlyAccessibleByInvitation;
 
   public SeverAppMode getSeverMode() {
     return severMode;
@@ -26,5 +25,13 @@ public class RevoiceChatGlobalConfig {
 
   public void setMediaServerUrl(final String mediaServerUrl) {
     this.mediaServerUrl = mediaServerUrl;
+  }
+
+  public boolean isAppOnlyAccessibleByInvitation() {
+    return appOnlyAccessibleByInvitation;
+  }
+
+  public void setAppOnlyAccessibleByInvitation(final boolean appOnlyAccessibleByInvitation) {
+    this.appOnlyAccessibleByInvitation = appOnlyAccessibleByInvitation;
   }
 }

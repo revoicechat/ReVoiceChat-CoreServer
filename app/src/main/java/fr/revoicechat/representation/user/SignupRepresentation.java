@@ -1,8 +1,10 @@
 package fr.revoicechat.representation.user;
 
+import java.util.UUID;
+
 public record SignupRepresentation(
     String username,
     String password,
-    String email
-) {
-}
+    String email,
+    UUID invitationLink
+) {}

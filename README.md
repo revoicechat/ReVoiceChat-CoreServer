@@ -11,22 +11,28 @@ This repository provide the source code of server-side of `RevoiceChat`
  - JDK 21
  - PostGreSQL
 
-### How to :
-```sh
-git clone https://github.com/revoicechat/ReVoiceChat-server.git
-cd ./ReVoiceChat-server
-./mvnw spring-boot:run -pl "app"
-```
+### [How to install](INSTALL.md)
 
-for server purpose, you can copy the `server.exemple.properties` file in `/app`,
-rename it `server.properties`
-and complete it with your postgres database
-
-### run the jar
+### Run as an app (.jar)
 
  - copy the jar where you want and rename it `revoicechat-app.jar`
  - copy the `server.properties` in the same place of `revoicechat-app.jar`
  - run `java -jar ./revoicechat-app.jar --spring.profiles.active=linux,pg`
+
+### Run as a service (systemd)
+- Copy `rvc-core.service.example` to `rvc-core.service`
+- Edit `rvc-core.service` and change `WorkingDirectory` and `ExecStart` path
+- Link the service file : `sudo systemctl link /[YOUR-PATH]/rvc-core.service`
+- Enable service : `sudo systemctl enable rvc-core.service`
+- Start service : `sudo systemctl start rvc-core.service`
+- Check service status : `sudo systemctl status rvc-core.service`
+
+Expected output : 
+```log 
+* rvc-core.service - ReVoiceChat Core Server
+     Loaded: loaded (/etc/systemd/system/rvc-core.service; enabled; preset: enabled)
+     Active: active (running) since Sun 2025-08-24 12:14:11 UTC; 1s ago
+```
 
 ## Voice (VoIP)
 

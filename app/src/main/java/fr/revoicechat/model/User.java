@@ -22,6 +22,8 @@ public class User implements Serializable {
   @Column(nullable = false)
   private String displayName;
   private String password;
+  @Column(nullable = false)
+  private ActiveStatus status = ActiveStatus.ONLINE;
 
   private LocalDateTime createdDate;
 
@@ -75,6 +77,14 @@ public class User implements Serializable {
 
   public void setCreatedDate(final LocalDateTime createdDate) {
     this.createdDate = createdDate;
+  }
+
+  public ActiveStatus getStatus() {
+    return status;
+  }
+
+  public void setStatus(final ActiveStatus status) {
+    this.status = status;
   }
 
   @Override

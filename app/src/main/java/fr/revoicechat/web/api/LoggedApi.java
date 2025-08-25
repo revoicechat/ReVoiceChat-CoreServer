@@ -1,27 +1,26 @@
 package fr.revoicechat.web.api;
 
-import jakarta.annotation.security.RolesAllowed;
-import jakarta.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
 
-import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
-@APIResponse(
+@ApiResponse(
     responseCode = "401",
     description = "Unauthorized – user not logged in",
     content = {
         @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = String.class, examples = """
+            mediaType = MediaType.APPLICATION_JSON_VALUE,
+            schema = @Schema(type = "string", example = """
                 {
                   "error": "Forbidden",
                   "message": "You do not have permission to access this resource.",
-                  "swaggerDoc": "/swagger-ui/index.html"
+                  "swaggerDoc": "/api/swagger-ui/index.html"
                 }""")
         ),
         @Content(
-            schema = @Schema(implementation = String.class, examples = """
+            schema = @Schema(type = "string", example = """
                 <!DOCTYPE>
                 <html lang="en">
                 <head>
@@ -31,13 +30,12 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                 <div class="container">
                     <h1>Access Denied</h1>
                     <p>You do not have permission to access this resource.</p>
-                    <p>See the <a href="/swagger-ui/index.html">API documentation</a>.</p>
+                    <p>See the <a href="/api/swagger-ui/index.html">API documentation</a>.</p>
                 </div>
                 </body>
                 </html>""")
         )
     }
 )
-@RolesAllowed("USER") // only authenticated users
 public interface LoggedApi {
 }

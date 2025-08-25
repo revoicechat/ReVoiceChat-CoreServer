@@ -1,0 +1,13 @@
+[Unit]
+Description=ReVoiceChat Core Server
+
+[Service]
+Type=simple
+User=administrateur
+Group=administrateur
+
+WorkingDirectory=[PATH TO YOUR DIR]
+ExecStart=/usr/bin/java -jar [PATH TO YOUR DIR]/revoicechat-app.jar --spring.profiles.active=linux,pg
+
+[Install]
+WantedBy=multi-user.target

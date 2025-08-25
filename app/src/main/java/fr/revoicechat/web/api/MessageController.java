@@ -1,57 +1,80 @@
 package fr.revoicechat.web.api;
 
 import java.util.UUID;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PATCH;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 
-import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import fr.revoicechat.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.representation.message.MessageRepresentation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Path("message/{id}")
+@RequestMapping("message/{id}")
 @Tag(name = "Message", description = "Endpoints for managing chat messages")
 public interface MessageController extends LoggedApi {
 
-  @Operation(summary = "Get a message", description = "Retrieve a message by its unique identifier.")
-  @APIResponse(responseCode = "200", description = "Message successfully retrieved")
-  @APIResponse(
-      responseCode = "404",
-      description = "Message not found",
-      content = @Content(
-          mediaType = "text/plain",
-          schema = @Schema(implementation = String.class, examples = "Message not found")
-      )
+  @Operation(
+      summary = "Get a message",
+      description = "Retrieve a message by its unique identifier.",
+      tags = {"Message"},
+      responses = {
+          @ApiResponse(responseCode = "200", description = "Message successfully retrieved"),
+          @ApiResponse(
+              responseCode = "404",
+              description = "Message not found",
+              content = @Content(
+                  mediaType = "text/plain",
+                  schema = @Schema(type = "string", example = "Message not found")
+              )
+          )
+      }
   )
-  @GET
-  MessageRepresentation read(@PathParam("id") UUID id);
+  @GetMapping
+  MessageRepresentation read(@PathVariable("id") UUID id);
 
-  @Operation(summary = "Update a message", description = "Partially update an existing message using its ID.")
-  @APIResponse(responseCode = "200", description = "Message successfully updated")
-  @APIResponse(responseCode = "404",
-      description = "Message not found",
-      content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class, examples = "Message not found"))
+  @Operation(
+      summary = "Update a message",
+      description = "Partially update an existing message using its ID.",
+      tags = {"Message"},
+      responses = {
+          @ApiResponse(responseCode = "200", description = "Message successfully updated"),
+          @ApiResponse(
+              responseCode = "404",
+              description = "Message not found",
+              content = @Content(
+                  mediaType = "text/plain",
+                  schema = @Schema(type = "string", example = "Message not found")
+              )
+          )
+      }
   )
-  @PATCH
-  MessageRepresentation update(@PathParam("id") UUID id, CreatedMessageRepresentation representation);
+  @PatchMapping
+  MessageRepresentation update(@PathVariable("id") UUID id, @RequestBody CreatedMessageRepresentation representation);
 
-  @Operation(summary = "Delete a message", description = "Delete a message by its unique identifier.")
-  @APIResponse(responseCode = "204", description = "Message successfully deleted")
-  @APIResponse(
-      responseCode = "404",
-      description = "Message not found",
-      content = @Content(
-          mediaType = "text/plain",
-          schema = @Schema(implementation = String.class, examples = "Message not found")
-      )
+  @Operation(
+      summary = "Delete a message",
+      description = "Delete a message by its unique identifier.",
+      tags = {"Message"},
+      responses = {
+          @ApiResponse(responseCode = "204", description = "Message successfully deleted"),
+          @ApiResponse(
+              responseCode = "404",
+              description = "Message not found",
+              content = @Content(
+                  mediaType = "text/plain",
+                  schema = @Schema(type = "string", example = "Message not found")
+              )
+          )
+      }
   )
-  @DELETE
-  UUID delete(@PathParam("id") UUID id);
+  @DeleteMapping
+  UUID delete(@PathVariable("id") UUID id);
 }

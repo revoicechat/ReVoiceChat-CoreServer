@@ -1,39 +1,60 @@
 package fr.revoicechat.web.api;
 
 import java.util.UUID;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 
-import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import fr.revoicechat.representation.user.UpdatableUserData;
 import fr.revoicechat.representation.user.UserRepresentation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Path("/user")
+@RequestMapping("/user")
 @Tag(name = "User", description = "Endpoints for managing user")
 public interface UserController extends LoggedApi {
 
-  @Operation(summary = "Get details of the connected user", description = "Retrieve the details of the specific connected user.")
-  @APIResponse(responseCode = "200")
-  @GET
-  @Path("/me")
+  @Operation(
+      summary = "Get details of the connected user",
+      description = "Retrieve the details of the specific connected user.",
+      tags = { "User" },
+      responses = { @ApiResponse(responseCode = "200"), }
+  )
+  @GetMapping("/me")
   UserRepresentation me();
 
-  @Operation(summary = "Get details of a user", description = "Retrieve the details of a specific user by its id.")
-  @APIResponse(responseCode = "200")
-  @APIResponse(
-      responseCode = "404",
-      description = "User not found",
-      content = @Content(
-          mediaType = "text/plain",
-          schema = @Schema(implementation = String.class, examples = "User not found")
-      )
+  @Operation(
+      summary = "Update details of the connected user",
+      description = """
+        Update the details of the specific connected user.
+        Only no null data are updated""",
+      tags = { "User" },
+      responses = { @ApiResponse(responseCode = "200"), }
   )
-  @GET
-  @Path("/{id}")
-  UserRepresentation get(@PathParam("id") UUID id);
+  @PatchMapping("/me")
+  UserRepresentation me(UpdatableUserData userData);
+
+  @Operation(
+      summary = "Get details of a user",
+      description = "Retrieve the details of a specific user by its id.",
+      tags = { "User" },
+      responses = {
+          @ApiResponse(responseCode = "200"),
+          @ApiResponse(
+              responseCode = "404",
+              description = "User not found",
+              content = @Content(
+                  mediaType = "text/plain",
+                  schema = @Schema(type = "string", example = "User not found")
+              )
+          )
+      }
+  )
+  @GetMapping("/{id}")
+  UserRepresentation get(@PathVariable UUID id);
 }
