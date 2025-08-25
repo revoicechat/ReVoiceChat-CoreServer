@@ -2,16 +2,15 @@ package fr.revoicechat.repository.impl;
 
 import java.util.List;
 import java.util.UUID;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-
-import org.springframework.stereotype.Repository;
 
 import fr.revoicechat.model.Message;
 import fr.revoicechat.repository.MessageRepository;
 import fr.revoicechat.repository.page.PageResult;
 
-@Repository
+@ApplicationScoped
 public class MessageRepositoryImpl implements MessageRepository {
 
   @PersistenceContext

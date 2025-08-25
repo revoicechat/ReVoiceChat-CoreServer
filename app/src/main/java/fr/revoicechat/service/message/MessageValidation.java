@@ -2,22 +2,19 @@ package fr.revoicechat.service.message;
 
 import static fr.revoicechat.nls.MessageErrorCode.*;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import jakarta.enterprise.context.ApplicationScoped;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import fr.revoicechat.error.BadRequestException;
 import fr.revoicechat.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.representation.message.CreatedMessageRepresentation.CreatedMediaDataRepresentation;
 
-@Component
+@ApplicationScoped
 public class MessageValidation {
 
-  private final int messageSize;
-
-  public MessageValidation(@Value("${revoicechat.message.max-length:2000}") int messageSize) {
-    this.messageSize = messageSize;
-  }
+  @ConfigProperty(name = "revoicechat.message.max-length")
+  int messageSize;
 
   public void isValid(final CreatedMessageRepresentation creation) {
     if (creation.text().isBlank() && creation.medias().isEmpty()) {
@@ -26,7 +23,7 @@ public class MessageValidation {
     if (creation.text().length() > messageSize) {
       throw new BadRequestException(MESSAGE_TOO_LONG, messageSize);
     }
-    if (creation.medias().stream().map(CreatedMediaDataRepresentation::name).anyMatch(StringUtils::isBlank)) {
+    if (creation.medias().stream().map(CreatedMediaDataRepresentation::name).anyMatch(String::isBlank)) {
       throw new BadRequestException(MEDIA_DATA_SHOULD_HAVE_A_NAME);
     }
   }

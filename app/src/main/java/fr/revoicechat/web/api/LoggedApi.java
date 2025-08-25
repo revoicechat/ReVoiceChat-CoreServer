@@ -1,18 +1,19 @@
 package fr.revoicechat.web.api;
 
-import org.springframework.http.MediaType;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ws.rs.core.MediaType;
 
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
-@ApiResponse(
+@APIResponse(
     responseCode = "401",
     description = "Unauthorized – user not logged in",
     content = {
         @Content(
-            mediaType = MediaType.APPLICATION_JSON_VALUE,
-            schema = @Schema(type = "string", example = """
+            mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = String.class, examples = """
                 {
                   "error": "Forbidden",
                   "message": "You do not have permission to access this resource.",
@@ -20,7 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
                 }""")
         ),
         @Content(
-            schema = @Schema(type = "string", example = """
+            schema = @Schema(implementation = String.class, examples = """
                 <!DOCTYPE>
                 <html lang="en">
                 <head>
@@ -37,5 +38,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
         )
     }
 )
+@RolesAllowed("USER") // only authenticated users
 public interface LoggedApi {
 }

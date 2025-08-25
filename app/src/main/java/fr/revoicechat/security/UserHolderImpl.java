@@ -2,19 +2,30 @@ package fr.revoicechat.security;
 
 import static fr.revoicechat.nls.CommonErrorCode.USER_NOT_FOUND;
 
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.NotFoundException;
 
 import fr.revoicechat.model.User;
 import fr.revoicechat.repository.UserRepository;
+import io.quarkus.security.identity.SecurityIdentity;
 
-public record UserHolderImpl(UserRepository userRepository) implements UserHolder {
+@ApplicationScoped
+public class UserHolderImpl implements UserHolder {
 
+  private final UserRepository userRepository;
+  private final SecurityIdentity securityIdentity;
+
+  public UserHolderImpl(final UserRepository userRepository, final SecurityIdentity securityIdentity) {
+    this.userRepository = userRepository;
+    this.securityIdentity = securityIdentity;
+  }
+
+  @Override
   public User get() {
-    var auth = SecurityContextHolder.getContext().getAuthentication();
-    var user = userRepository.findByLogin(auth.getName());
+    String username = securityIdentity.getPrincipal().getName();
+    var user = userRepository.findByLogin(username);
     if (user == null) {
-      throw new UsernameNotFoundException(USER_NOT_FOUND.translate());
+      throw new NotFoundException(USER_NOT_FOUND.translate());
     }
     return user;
   }
