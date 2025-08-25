@@ -2,13 +2,13 @@ package fr.revoicechat.web;
 
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.annotation.security.RolesAllowed;
 
 import fr.revoicechat.representation.invitation.InvitationRepresentation;
 import fr.revoicechat.service.invitation.InvitationLinkService;
 import fr.revoicechat.web.api.InvitationLinkController;
 
-@RestController
+@RolesAllowed("USER") // only authenticated users
 public class InvitationLinkControllerImpl implements InvitationLinkController {
   private final InvitationLinkService invitationLinkService;
 

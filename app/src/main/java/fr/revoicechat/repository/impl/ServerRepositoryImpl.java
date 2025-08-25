@@ -1,15 +1,14 @@
 package fr.revoicechat.repository.impl;
 
 import java.util.List;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-
-import org.springframework.stereotype.Repository;
 
 import fr.revoicechat.model.Server;
 import fr.revoicechat.repository.ServerRepository;
 
-@Repository
+@ApplicationScoped
 public class ServerRepositoryImpl implements ServerRepository {
   @PersistenceContext
   private EntityManager entityManager;

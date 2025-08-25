@@ -1,6 +1,12 @@
 package fr.revoicechat.representation.sse;
 
-public record SseData(SseTypeData type, Object data) {
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+public record SseData(SseTypeData type,
+                      @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+                      SsePayload data) implements Serializable {
   public SseData(final SseTypeData type) {
     this(type, null);
   }

@@ -3,7 +3,7 @@ package fr.revoicechat.web;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.annotation.security.RolesAllowed;
 
 import fr.revoicechat.model.Room;
 import fr.revoicechat.model.Server;
@@ -15,7 +15,7 @@ import fr.revoicechat.service.ServerService;
 import fr.revoicechat.service.UserService;
 import fr.revoicechat.web.api.ServerController;
 
-@RestController
+@RolesAllowed("USER") // only authenticated users
 public class ServerControllerImpl implements ServerController {
 
   private final ServerService serverService;

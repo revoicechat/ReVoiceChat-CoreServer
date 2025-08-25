@@ -5,10 +5,9 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-
-import org.springframework.stereotype.Service;
 
 import fr.revoicechat.error.ResourceNotFoundException;
 import fr.revoicechat.model.FileType;
@@ -50,7 +49,7 @@ import fr.revoicechat.service.sse.TextualChatService;
  * @see TextualChatService
  * @see RoomService
  */
-@Service
+@ApplicationScoped
 public class MessageService {
 
   private final EntityManager entityManager;

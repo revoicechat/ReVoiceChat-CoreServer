@@ -16,7 +16,8 @@ class TestMessageValidation {
   @Test
   void testBlankMessageAndNoMedia() {
     CreatedMessageRepresentation creation = new CreatedMessageRepresentation("", List.of());
-    var validation = new MessageValidation(10);
+    var validation = new MessageValidation();
+    validation.messageSize = 10;
     Assertions.assertThatThrownBy(() -> validation.isValid(creation))
               .isInstanceOf(BadRequestException.class)
               .hasMessage(MESSAGE_CANNOT_BE_EMPTY.translate());
@@ -25,7 +26,8 @@ class TestMessageValidation {
   @Test
   void testNoMediaAndTooLongMessage() {
     CreatedMessageRepresentation creation = new CreatedMessageRepresentation("0123456789+", List.of());
-    var validation = new MessageValidation(10);
+    var validation = new MessageValidation();
+    validation.messageSize = 10;
     Assertions.assertThatThrownBy(() -> validation.isValid(creation))
               .isInstanceOf(BadRequestException.class)
               .hasMessage(MESSAGE_TOO_LONG.translate(10));
@@ -34,7 +36,8 @@ class TestMessageValidation {
   @Test
   void testNoMediaAndMaxSizeMessage() {
     CreatedMessageRepresentation creation = new CreatedMessageRepresentation("0123456789", List.of());
-    var validation = new MessageValidation(10);
+    var validation = new MessageValidation();
+    validation.messageSize = 10;
     Assertions.assertThatCode(() -> validation.isValid(creation)).doesNotThrowAnyException();
   }
 
@@ -43,9 +46,10 @@ class TestMessageValidation {
     CreatedMessageRepresentation creation = new CreatedMessageRepresentation(
         "",
         List.of(new CreatedMediaDataRepresentation("test"),
-            new CreatedMediaDataRepresentation(""))
+                new CreatedMediaDataRepresentation(""))
     );
-    var validation = new MessageValidation(10);
+    var validation = new MessageValidation();
+    validation.messageSize = 10;
     Assertions.assertThatThrownBy(() -> validation.isValid(creation))
               .isInstanceOf(BadRequestException.class)
               .hasMessage(MEDIA_DATA_SHOULD_HAVE_A_NAME.translate());
@@ -57,7 +61,8 @@ class TestMessageValidation {
         "1234",
         List.of(new CreatedMediaDataRepresentation("test"), new CreatedMediaDataRepresentation("test2"))
     );
-    var validation = new MessageValidation(10);
+    var validation = new MessageValidation();
+    validation.messageSize = 10;
     Assertions.assertThatCode(() -> validation.isValid(creation)).doesNotThrowAnyException();
   }
 }

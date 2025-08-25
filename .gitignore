@@ -41,3 +41,5 @@ latest.log.*.gz
 /**/server.properties
 /**/server.docker.properties
 /**/application-dynamic-*.yml
+
+/jwt

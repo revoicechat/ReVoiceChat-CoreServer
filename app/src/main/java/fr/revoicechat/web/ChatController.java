@@ -1,0 +1,48 @@
+package fr.revoicechat.web;
+
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.sse.Sse;
+import jakarta.ws.rs.sse.SseEventSink;
+
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.resteasy.annotations.SseElementType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import fr.revoicechat.representation.sse.SseData;
+import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.service.sse.TextualChatService;
+import fr.revoicechat.web.api.LoggedApi;
+import io.smallrye.common.annotation.Blocking;
+import io.smallrye.mutiny.Multi;
+
+@Path("/sse")
+@RolesAllowed("USER") // only authenticated users
+@Tag(name = "Chat", description = "Endpoints for real-time chat using Server-Sent Events (SSE)")
+public class ChatController implements LoggedApi {
+  private static final Logger LOG = LoggerFactory.getLogger(ChatController.class);
+
+  private final TextualChatService textualChatService;
+  private final UserHolder userHolder;
+
+  public ChatController(TextualChatService textualChatService, UserHolder userHolder) {
+    this.textualChatService = textualChatService;
+    this.userHolder = userHolder;
+  }
+
+  @APIResponse(responseCode = "200", description = "SSE stream successfully opened")
+  @GET
+  @Produces(MediaType.SERVER_SENT_EVENTS)
+  @SseElementType(MediaType.APPLICATION_JSON)
+  public void generateSseEmitter(@Context Sse sse, @Context SseEventSink sink) {
+    var user = userHolder.get();
+    textualChatService.register(user.getId(), sse, sink);
+    LOG.debug("sse connection for user {}", user.getId());
+  }
+}
