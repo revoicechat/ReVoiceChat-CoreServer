@@ -34,10 +34,3 @@ Expected output :
      Loaded: loaded (/etc/systemd/system/rvc-core.service; enabled; preset: enabled)
      Active: active (running) since Sun 2025-08-24 12:14:11 UTC; 1s ago
 ```
-
-## Voice (VoIP)
-
-### Prerequisite
-The following ports need to be open and forwarded to your server :
-- 3478 TCP/UDP (TURN)
-- 49152–65535 UDP (Voice data)
