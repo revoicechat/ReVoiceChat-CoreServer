@@ -1,5 +1,5 @@
 {
   "error": "Forbidden",
   "message": "You do not have permission to access this resource.",
-  "swaggerDoc": "/swagger-ui/index.html"
+  "swaggerDoc": "/api/swagger-ui/index.html"
 }

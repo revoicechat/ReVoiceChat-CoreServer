@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
                 {
                   "error": "Forbidden",
                   "message": "You do not have permission to access this resource.",
-                  "swaggerDoc": "/swagger-ui/index.html"
+                  "swaggerDoc": "/api/swagger-ui/index.html"
                 }""")
         ),
         @Content(
@@ -30,7 +30,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
                 <div class="container">
                     <h1>Access Denied</h1>
                     <p>You do not have permission to access this resource.</p>
-                    <p>See the <a href="/swagger-ui/index.html">API documentation</a>.</p>
+                    <p>See the <a href="/api/swagger-ui/index.html">API documentation</a>.</p>
                 </div>
                 </body>
                 </html>""")
