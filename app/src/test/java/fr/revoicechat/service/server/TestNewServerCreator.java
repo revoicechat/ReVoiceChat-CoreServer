@@ -42,11 +42,11 @@ class TestNewServerCreator {
     softly.assertThat(server.getId()).isNotNull();
     assertThat(saved).hasSize(4);
     Room room1 = (Room) saved.get(1);
-    assertRoom(softly, room1, "📝 General", server, RoomType.TEXT);
+    assertRoom(softly, room1, "General", server, RoomType.TEXT);
     Room room2 = (Room) saved.get(2);
-    assertRoom(softly, room2, "📝 Random", server, RoomType.TEXT);
+    assertRoom(softly, room2, "Random", server, RoomType.TEXT);
     Room room3 = (Room) saved.get(3);
-    assertRoom(softly, room3, "🔊 Vocal", server, RoomType.WEBRTC);
+    assertRoom(softly, room3, "Vocal", server, RoomType.WEBRTC);
 
     verify(entityManager).persist(server);
     verify(entityManager).persist(room1);
