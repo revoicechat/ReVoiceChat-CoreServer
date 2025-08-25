@@ -1,49 +1,38 @@
 package fr.revoicechat.web.api;
 
 import java.util.UUID;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import fr.revoicechat.model.User;
 import fr.revoicechat.representation.invitation.InvitationRepresentation;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(
-    name = "Invitation",
-    description = "Endpoints for server or application invitations"
-)
-@RequestMapping("invitation")
+@Tag(name = "Invitation", description = "Endpoints for server or application invitations")
+@Path("invitation")
 public interface InvitationLinkController extends LoggedApi {
 
-  @PostMapping("/application")
-  @Operation(
-      summary = "Generate an invitation to join the application",
-      description = "Generate an invitation to join the application.",
-      responses = {
-          @ApiResponse(responseCode = "200", description = "invitation successfully generated",
-              content = @Content(schema = @Schema(implementation = User.class))
-          )
-      }
+  @Operation(summary = "Generate an invitation to join the application",
+      description = "Generate an invitation to join the application.")
+  @APIResponse(responseCode = "200", description = "invitation successfully generated",
+      content = @Content(schema = @Schema(implementation = User.class))
   )
+  @POST
+  @Path("/application")
   InvitationRepresentation generateApplicationInvitation();
 
-  @DeleteMapping("/{id}")
-  @Operation(
-      summary = "Revoke an unused invitation",
-      description = "Revoke an unused invitation.",
-      responses = {
-          @ApiResponse(responseCode = "200", description = "invitation successfully revoked",
-              content = @Content(schema = @Schema(implementation = User.class))
-          )
-      }
+  @Operation(summary = "Revoke an unused invitation", description = "Revoke an unused invitation.")
+  @APIResponse(responseCode = "200", description = "invitation successfully revoked",
+      content = @Content(schema = @Schema(implementation = User.class))
   )
-  void revoke(@PathVariable("id") UUID id);
+  @DELETE
+  @Path("/{id}")
+  void revoke(@PathParam("id") UUID id);
 }

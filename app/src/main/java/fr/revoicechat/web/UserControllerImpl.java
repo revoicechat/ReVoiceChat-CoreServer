@@ -2,11 +2,14 @@ package fr.revoicechat.web;
 
 import java.util.UUID;
 
+import jakarta.annotation.security.RolesAllowed;
+
 import fr.revoicechat.representation.user.UpdatableUserData;
 import fr.revoicechat.representation.user.UserRepresentation;
 import fr.revoicechat.service.UserService;
 import fr.revoicechat.web.api.UserController;
 
+@RolesAllowed("USER") // only authenticated users
 public class UserControllerImpl implements UserController {
   private final UserService userService;
 

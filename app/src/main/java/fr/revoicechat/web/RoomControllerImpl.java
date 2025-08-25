@@ -2,6 +2,8 @@ package fr.revoicechat.web;
 
 import java.util.UUID;
 
+import jakarta.annotation.security.RolesAllowed;
+
 import fr.revoicechat.model.Room;
 import fr.revoicechat.repository.page.PageResult;
 import fr.revoicechat.representation.message.CreatedMessageRepresentation;
@@ -11,6 +13,7 @@ import fr.revoicechat.service.MessageService;
 import fr.revoicechat.service.RoomService;
 import fr.revoicechat.web.api.RoomController;
 
+@RolesAllowed("USER") // only authenticated users
 public class RoomControllerImpl implements RoomController {
 
   private final RoomService roomService;

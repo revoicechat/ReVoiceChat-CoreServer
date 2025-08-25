@@ -1,18 +1,17 @@
 package fr.revoicechat.service.invitation;
 
 import java.util.UUID;
-
-import org.springframework.stereotype.Service;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 import fr.revoicechat.model.InvitationLink;
 import fr.revoicechat.model.InvitationLinkStatus;
 import fr.revoicechat.model.InvitationType;
 import fr.revoicechat.representation.invitation.InvitationRepresentation;
 import fr.revoicechat.security.UserHolder;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
-@Service
+@ApplicationScoped
 public class InvitationLinkService {
 
   private final UserHolder userHolder;

@@ -38,6 +38,5 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
         )
     }
 )
-@RolesAllowed("USER") // only authenticated users
 public interface LoggedApi {
 }

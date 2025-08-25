@@ -7,9 +7,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import fr.revoicechat.error.ResourceNotFoundException;
 import fr.revoicechat.model.Server;
 import fr.revoicechat.model.ServerUser;
@@ -34,8 +31,6 @@ import fr.revoicechat.service.server.ServerProviderService;
  */
 @ApplicationScoped
 public class ServerService {
-  private static final Logger LOG = LoggerFactory.getLogger(ServerService.class);
-
   private final ServerProviderService serverProviderService;
   private final UserHolder userHolder;
   private final EntityManager entityManager;
@@ -57,9 +52,7 @@ public class ServerService {
    * @return a list of available servers, possibly empty
    */
   public List<Server> getAll() {
-    var servers = serverProviderService.getServers();
-    LOG.info("servers LIST / {}", servers);
-    return servers;
+    return serverProviderService.getServers();
   }
 
   /**
@@ -86,7 +79,7 @@ public class ServerService {
     server.setId(UUID.randomUUID());
     server.setName(representation.name());
     var owner = userHolder.get();
-    server.setOwner(userHolder.get());
+    server.setOwner(owner);
     serverProviderService.create(server);
     ServerUser serverUser = new ServerUser();
     serverUser.setServer(server);

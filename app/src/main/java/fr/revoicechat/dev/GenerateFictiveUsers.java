@@ -8,10 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.revoicechat.repository.UserRepository;
+import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.runtime.Startup;
 
 @ApplicationScoped
 @Startup
+@IfBuildProfile(anyOf = { "create-false-user", "dev" })
 public class GenerateFictiveUsers {
   private static final Logger LOG = LoggerFactory.getLogger(GenerateFictiveUsers.class);
 
@@ -22,22 +24,21 @@ public class GenerateFictiveUsers {
   String activeProfile;
 
   GenerateFictiveUsers(UserRepository userRepository, final UserCreator userCreator) {
+    LOG.info("GenerateFictiveUsers built");
     this.userRepository = userRepository;
     this.userCreator = userCreator;
   }
 
   @PostConstruct
   public void init() {
-    if (!"dev".equals(activeProfile)) {
-      LOG.info("Skipping user generation, active profile is '{}'", activeProfile);
-      return;
-    }
     if (userRepository.count() == 0) {
       LOG.info("default admin user generated");
       userCreator.add("user", "The user", "-no-email-");
       userCreator.add("admin", "The admin", "--no-email--");
       userCreator.add("rex_woof", "Rex_Woof", "---no-email---");
       userCreator.add("nyphew", "Nyphew", "no-email");
+    } else {
+      LOG.info("db has already user in it");
     }
   }
 }

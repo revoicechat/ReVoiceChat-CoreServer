@@ -21,11 +21,10 @@ import fr.revoicechat.representation.login.UserPassword;
 import fr.revoicechat.representation.user.SignupRepresentation;
 import fr.revoicechat.representation.user.UserRepresentation;
 import fr.revoicechat.security.utils.PasswordUtils;
-import fr.revoicechat.service.JwtService;
+import fr.revoicechat.security.jwt.JwtService;
 import fr.revoicechat.service.UserService;
 
 @Path("/auth")
-@Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Authentication", description = "Endpoints for user registration and login")
 public class AuthController {
@@ -48,6 +47,7 @@ public class AuthController {
   )
   @PUT
   @PermitAll
+  @Produces(MediaType.APPLICATION_JSON)
   @Path("/signup")
   public UserRepresentation signup(SignupRepresentation user) {
     return userService.create(user);
@@ -68,7 +68,7 @@ public class AuthController {
   @POST
   @PermitAll
   @Path("/login")
-  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.TEXT_PLAIN)
   public Response login(UserPassword request) {
     var user = userService.findByLogin(request.username());
     if (user != null && PasswordUtils.matches(request.password(), user.getPassword())) {

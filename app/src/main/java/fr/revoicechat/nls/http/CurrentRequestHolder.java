@@ -1,30 +1,29 @@
 package fr.revoicechat.nls.http;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.RequestScoped;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 
 @RequestScoped
 public class CurrentRequestHolder {
 
     private static final ThreadLocal<Locale> CURRENT_LOCALE = new ThreadLocal<>();
 
-    private final HttpServletRequest request;
+    Locale locale;
 
-    @SuppressWarnings("unused") // cal by quarkus
-    CurrentRequestHolder(final HttpServletRequest request) {
-        this.request = request;
+    public CurrentRequestHolder(@Context HttpHeaders headers) {
+        List<Locale> langs = headers.getAcceptableLanguages();
+        this.locale = langs.isEmpty() ? Locale.ENGLISH : langs.getFirst();
     }
 
     @PostConstruct
     void init() {
-        if (request != null) {
-            CURRENT_LOCALE.set(request.getLocale());
-        } else {
-            CURRENT_LOCALE.set(Locale.ENGLISH);
-        }
+      CURRENT_LOCALE.set(Objects.requireNonNullElse(locale, Locale.ENGLISH));
     }
 
     @PreDestroy
