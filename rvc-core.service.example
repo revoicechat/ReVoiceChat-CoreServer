@@ -7,7 +7,7 @@ User=administrateur
 Group=administrateur
 
 WorkingDirectory=[PATH TO YOUR DIR]
-ExecStart=/usr/bin/java -jar [PATH TO YOUR DIR]/revoicechat-app.jar --spring.profiles.active=linux,pg
+ExecStart=/usr/bin/java -Dquarkus.config.locations=server.properties -jar [PATH TO YOUR DIR]/app/target/quarkus-app/quarkus-run.jar
 
 [Install]
 WantedBy=multi-user.target
