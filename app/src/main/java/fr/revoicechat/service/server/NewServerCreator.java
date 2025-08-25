@@ -1,15 +1,15 @@
 package fr.revoicechat.service.server;
 
 import java.util.UUID;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
-
-import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import fr.revoicechat.model.Room;
 import fr.revoicechat.model.RoomType;
 import fr.revoicechat.model.Server;
 
-@Service
+@ApplicationScoped
 public class NewServerCreator {
 
   private final EntityManager entityManager;
@@ -18,6 +18,7 @@ public class NewServerCreator {
     this.entityManager = entityManager;
   }
 
+  @Transactional
   public Server create(Server server) {
     server.setId(UUID.randomUUID());
     entityManager.persist(server);

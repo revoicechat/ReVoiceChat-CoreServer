@@ -1,20 +1,19 @@
 package fr.revoicechat.service.sse;
 
 import static fr.revoicechat.representation.sse.SseData.SseTypeData.*;
-import static java.util.Collections.synchronizedSet;
 
-import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.sse.Sse;
+import jakarta.ws.rs.sse.SseEventSink;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import fr.revoicechat.model.User;
 import fr.revoicechat.representation.message.MessageRepresentation;
@@ -34,91 +33,71 @@ import fr.revoicechat.service.user.RoomUserFinder;
  * SSE emitters are stored in-memory per room and removed automatically when a connection
  * completes, times out, or encounters an error.
  */
-@Service
+@ApplicationScoped
 public class TextualChatService {
   private static final Logger LOG = LoggerFactory.getLogger(TextualChatService.class);
 
-  private final Map<UUID, Collection<SseEmitter>> emitters = new ConcurrentHashMap<>();
+  private final Map<UUID, Collection<SseHolder>> processors = new ConcurrentHashMap<>();
   private final RoomUserFinder roomUserFinder;
 
-  public TextualChatService(final RoomUserFinder roomUserFinder) {this.roomUserFinder = roomUserFinder;}
-
-  /**
-   * Registers a new client connection to receive real-time updates for a given room.
-   * <p>
-   * The returned {@link SseEmitter} will remain open indefinitely until the client disconnects
-   * or an error/timeout occurs. When any of these events happen, the emitter is removed from the registry.
-   *
-   * @param userId the unique identifier of the user
-   * @return the SSE emitter for streaming messages to the client
-   */
-  public SseEmitter register(final UUID userId) {
-    SseEmitter emitter = new SseEmitter(0L);
-    emitter.onCompletion(() -> remove(userId, emitter, () -> LOG.info("complete")));
-    emitter.onError(e -> remove(userId, emitter, () -> LOG.error("error", e)));
-    emitter.onTimeout(() -> remove(userId, emitter, () -> LOG.error("timeout")));
-    getSseEmitters(userId).add(emitter);
-    return emitter;
+  public TextualChatService(RoomUserFinder roomUserFinder) {
+    this.roomUserFinder = roomUserFinder;
   }
 
   /**
-   * Sends a new message to all connected clients in a chat room and stores it in the database.
-   * <p>
-   * If the room does not exist, an exception is thrown.
-   *
-   * @param roomId  the unique identifier of the chat room
-   * @param message the message to send and persist
-   * @throws java.util.NoSuchElementException if the room does not exist
+   * Returns a hot Multi for a user’s SSE stream.
    */
-  public void send(final UUID roomId, MessageRepresentation message) {
+  public void register(UUID userId, Sse sse, SseEventSink sink) {
+    getProcessor(userId).add(new SseHolder(sse, sink));
+  }
+
+  /**
+   * Broadcast a message to all users in a room.
+   */
+  public void send(UUID roomId, MessageRepresentation message) {
     roomUserFinder.find(roomId)
                   .map(User::getId)
-                  .map(this::getSseEmitters)
-                  .map(HashSet::new)
-                  .flatMap(Collection::stream)
-                  .forEach(sse -> sendSSE(sse, new SseData(ROOM_MESSAGE, message)));
+                  .forEach(userId -> sendAndCloseIfNecessary(message, userId));
   }
 
-  private Collection<SseEmitter> getSseEmitters(final UUID userId) {
-    return emitters.computeIfAbsent(userId, key -> synchronizedSet(new HashSet<>()));
+  private void sendAndCloseIfNecessary(final MessageRepresentation message, final UUID userId) {
+    var holders = getProcessor(userId);
+    var emitters = new HashSet<>(holders);
+    for (SseHolder holder : emitters) {
+      var sent = holder.send(new SseData(ROOM_MESSAGE, message));
+      if (!sent) {
+        holders.remove(holder);
+      }
+    }
   }
 
-  private void remove(final UUID userId, SseEmitter emitter, Runnable log) {
-    getSseEmitters(userId).remove(emitter);
-    log.run();
-  }
-
-  public boolean isRegister(final User user) {
+  public boolean isRegister(User user) {
     return ping(user);
   }
 
   private boolean ping(User user) {
-    return new HashSet<>(getSseEmitters(user.getId())).stream().anyMatch(this::ping);
+    return getProcessor(user.getId()).stream().anyMatch(holder -> holder.send(new SseData(PING)));
   }
 
-  private boolean ping(final SseEmitter sse) {
-    try {
-      sse.send(new SseData(PING));
-      return true;
-    } catch (IOException e) {
-      sse.completeWithError(e);
-      return false;
+  private Collection<SseHolder> getProcessor(UUID userId) {
+    return processors.computeIfAbsent(userId, id -> Collections.synchronizedSet(new HashSet<>()));
+  }
+
+  public void shutdownSseEmitters() {
+    LOG.info("Closing all SSE connections..");
+    processors.values().stream().flatMap(Collection::stream).forEach(holder -> holder.sink.close());
+    processors.clear();
+  }
+
+  private record SseHolder(Sse sse, SseEventSink sink) {
+    boolean send(SseData data) {
+      try {
+        sink.send(sse.newEventBuilder().data(data).build());
+        return true;
+      } catch (Exception e) {
+        sink.close();
+        return false;
+      }
     }
-  }
-
-  private void sendSSE(final SseEmitter sse, final SseData data) {
-    try {
-      sse.send(data);
-    } catch (IOException e) {
-      sse.completeWithError(e);
-    }
-  }
-
-  void shutdownSseEmitters() {
-    LOG.info("Closing all sse connections..");
-    emitters.values().stream()
-            .flatMap(Collection::stream)
-            .forEach(ResponseBodyEmitter::complete);
-    emitters.clear();
   }
 }

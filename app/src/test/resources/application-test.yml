@@ -1,6 +1,0 @@
-spring:
-  main:
-    allow-bean-definition-overriding: true
-revoicechat:
-  global:
-    media-server-url: https://media.server.fr

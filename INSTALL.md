@@ -29,11 +29,13 @@ psql
 ```
 
 ```sql
-CREATE USER revoicechat_user WITH PASSWORD 'secure_password';
+CREATE
+USER revoicechat_user WITH PASSWORD 'secure_password';
 ```
 
 ```sql
-CREATE DATABASE revoicechat_db OWNER = revoicechat_user;
+CREATE
+DATABASE revoicechat_db OWNER = revoicechat_user;
 ```
 
 `exit` to quit psql
@@ -48,6 +50,14 @@ For this guide, we will use `/srv/rvc` but you can use any directory (don't forg
 git clone https://github.com/revoicechat/ReVoiceChat-server
 ```
 
+## generate rsa key for JWT tokens
+
+```sh
+./scripts/generate_jwtKey.sh
+```
+
+it will generate two file in `/jwt`
+
 ## Configure server.properties
 
 Copy `server.exemple.properties` to `app/server.properties`
@@ -56,10 +66,4 @@ Copy `server.exemple.properties` to `app/server.properties`
 cp ./server.exemple.properties ./app/server.properties
 ```
 
-Edit `./app/server.properties` :
-
-```properties
-spring.datasource.url=jdbc:postgresql://127.0.0.1:5432/revoicechat_db
-spring.datasource.username=revoicechat_user
-spring.datasource.password=secure_password
-```
+Edit `./app/server.properties`

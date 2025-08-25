@@ -2,14 +2,14 @@ package fr.revoicechat.web;
 
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.annotation.security.RolesAllowed;
 
 import fr.revoicechat.representation.user.UpdatableUserData;
 import fr.revoicechat.representation.user.UserRepresentation;
 import fr.revoicechat.service.UserService;
 import fr.revoicechat.web.api.UserController;
 
-@RestController
+@RolesAllowed("USER") // only authenticated users
 public class UserControllerImpl implements UserController {
   private final UserService userService;
 
@@ -26,7 +26,7 @@ public class UserControllerImpl implements UserController {
   }
 
   @Override
-  public UserRepresentation get(final UUID id) {
+  public UserRepresentation get(UUID id) {
     return userService.get(id);
   }
 }

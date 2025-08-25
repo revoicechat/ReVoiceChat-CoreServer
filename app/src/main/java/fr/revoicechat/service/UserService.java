@@ -1,7 +1,7 @@
 package fr.revoicechat.service;
 
 import static fr.revoicechat.model.InvitationLinkStatus.CREATED;
-import static fr.revoicechat.model.InvitationType.*;
+import static fr.revoicechat.model.InvitationType.APPLICATION_JOIN;
 import static fr.revoicechat.nls.UserErrorCode.*;
 import static java.util.function.Predicate.not;
 
@@ -11,9 +11,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 
 import fr.revoicechat.config.RevoiceChatGlobalConfig;
 import fr.revoicechat.error.BadRequestException;
@@ -21,31 +22,33 @@ import fr.revoicechat.model.ActiveStatus;
 import fr.revoicechat.model.InvitationLink;
 import fr.revoicechat.model.InvitationLinkStatus;
 import fr.revoicechat.model.User;
+import fr.revoicechat.repository.UserRepository;
 import fr.revoicechat.representation.user.SignupRepresentation;
 import fr.revoicechat.representation.user.UpdatableUserData;
 import fr.revoicechat.representation.user.UpdatableUserData.PasswordUpdated;
 import fr.revoicechat.representation.user.UserRepresentation;
-import fr.revoicechat.security.PasswordUtil;
 import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.security.utils.PasswordUtils;
 import fr.revoicechat.service.server.ServerProviderService;
 import fr.revoicechat.service.sse.TextualChatService;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
-@Service
+@ApplicationScoped
 public class UserService {
 
   private final EntityManager entityManager;
+  private final UserRepository userRepository;
   private final UserHolder userHolder;
   private final TextualChatService textualChatService;
   private final ServerProviderService serverProviderService;
   private final RevoiceChatGlobalConfig globalConfig;
 
   public UserService(EntityManager entityManager,
+                     UserRepository userRepository,
                      UserHolder userHolder,
                      TextualChatService textualChatService,
                      ServerProviderService serverProviderService, final RevoiceChatGlobalConfig globalConfig) {
     this.entityManager = entityManager;
+    this.userRepository = userRepository;
     this.userHolder = userHolder;
     this.textualChatService = textualChatService;
     this.serverProviderService = serverProviderService;
@@ -66,7 +69,7 @@ public class UserService {
     user.setDisplayName(signer.username());
     user.setLogin(signer.username());
     user.setEmail(signer.email());
-    user.setPassword(PasswordUtil.encodePassword(signer.password()));
+    user.setPassword(PasswordUtils.encodePassword(signer.password()));
     entityManager.persist(user);
     if (invitationLink != null) {
       invitationLink.setStatus(InvitationLinkStatus.USED);
@@ -74,6 +77,10 @@ public class UserService {
       entityManager.persist(invitationLink);
     }
     return map(user);
+  }
+
+  public User findByLogin(final String username) {
+    return userRepository.findByLogin(username);
   }
 
   private static boolean isValideInvitation(final InvitationLink invitationLink) {
@@ -89,7 +96,7 @@ public class UserService {
   public UserRepresentation get(final UUID id) {
     return Optional.ofNullable(entityManager.find(User.class, id))
                    .map(this::map)
-                   .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                   .orElseThrow(() -> new NotFoundException("User not found"));
   }
 
   @Transactional
@@ -108,11 +115,11 @@ public class UserService {
   }
 
   private void setPassword(final User user, final PasswordUpdated password) {
-    if (PasswordUtil.matches(password.password(), user.getPassword())) {
+    if (PasswordUtils.matches(password.password(), user.getPassword())) {
       throw new BadRequestException(USER_PASSWORD_WRONG);
     }
     if (Objects.equals(password.newPassword(), password.confirmPassword())) {
-      user.setPassword(PasswordUtil.encodePassword(password.newPassword()));
+      user.setPassword(PasswordUtils.encodePassword(password.newPassword()));
     } else {
       throw new BadRequestException(USER_PASSWORD_WRONG_CONFIRMATION);
     }

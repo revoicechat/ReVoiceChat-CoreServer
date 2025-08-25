@@ -1,56 +1,45 @@
 package fr.revoicechat.dev;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManager;
-
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionTemplate;
 
-import fr.revoicechat.model.User;
 import fr.revoicechat.repository.UserRepository;
-import fr.revoicechat.security.PasswordUtil;
+import io.quarkus.arc.profile.IfBuildProfile;
+import io.quarkus.runtime.Startup;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 
-@Service
-@Profile({ "create-false-user", "dev" })
-class GenerateFictiveUsers {
+@ApplicationScoped
+@Startup
+@IfBuildProfile(anyOf = { "create-false-user", "dev" })
+public class GenerateFictiveUsers {
   private static final Logger LOG = LoggerFactory.getLogger(GenerateFictiveUsers.class);
 
-  private final EntityManager entityManager;
   private final UserRepository userRepository;
-  private final TransactionTemplate transactionTemplate;
+  private final UserCreator userCreator;
 
-  GenerateFictiveUsers(EntityManager entityManager, UserRepository userRepository, final TransactionTemplate transactionTemplate) {
-    this.entityManager = entityManager;
+  @ConfigProperty(name = "revoicechat.test.generate-fictive-users")
+  boolean canBeCalled;
+
+  GenerateFictiveUsers(UserRepository userRepository, final UserCreator userCreator) {
+    LOG.info("GenerateFictiveUsers built");
     this.userRepository = userRepository;
-    this.transactionTemplate = transactionTemplate;
+    this.userCreator = userCreator;
   }
 
   @PostConstruct
   public void init() {
-    if (userRepository.count() == 0) {
-      LOG.info("default admin user generated");
-      transactionTemplate.executeWithoutResult(status -> {
-        addUser("user", "The user", "-no-email-");
-        addUser("admin", "The admin", "--no-email--");
-        addUser("rex_woof", "Rex_Woof", "---no-email---");
-        addUser("nyphew", "Nyphew", "no-email");
-      });
+    if (canBeCalled) {
+      if (userRepository.count() == 0) {
+        LOG.info("default admin user generated");
+        userCreator.add("user", "The user", "-no-email-");
+        userCreator.add("admin", "The admin", "--no-email--");
+        userCreator.add("rex_woof", "Rex_Woof", "---no-email---");
+        userCreator.add("nyphew", "Nyphew", "no-email");
+      } else {
+        LOG.info("db has already user in it");
+      }
     }
-  }
-
-  private void addUser(final String login, String displayName, final String mail) {
-    var user = new User();
-    user.setId(UUID.randomUUID());
-    user.setLogin(login);
-    user.setDisplayName(displayName);
-    user.setPassword(PasswordUtil.encodePassword("psw"));
-    user.setEmail(mail);
-    user.setCreatedDate(LocalDateTime.now());
-    entityManager.persist(user);
   }
 }

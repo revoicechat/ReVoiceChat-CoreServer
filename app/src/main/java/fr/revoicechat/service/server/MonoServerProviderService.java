@@ -3,11 +3,11 @@ package fr.revoicechat.service.server;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
+import jakarta.enterprise.inject.Vetoed;
 import jakarta.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import fr.revoicechat.error.BadRequestException;
 import fr.revoicechat.model.Server;
@@ -22,7 +22,7 @@ import fr.revoicechat.repository.UserRepository;
  * In this mode, only one {@link Server} may exist in the system.
  * If no server is found, a new one is automatically created.
  */
-@Service
+@Vetoed
 public class MonoServerProviderService implements ServerProviderService {
   private static final Logger LOG = LoggerFactory.getLogger(MonoServerProviderService.class);
 

@@ -4,6 +4,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import fr.revoicechat.representation.sse.SsePayload;
+
 public record MessageRepresentation(
     UUID id,
     String text,
@@ -12,7 +14,7 @@ public record MessageRepresentation(
     OffsetDateTime createdDate,
     ActionType actionType,
     List<MediaDataRepresentation> medias
-) {
+) implements SsePayload {
 
   public record UserMessageRepresentation(UUID id, String displayName) {}
 

@@ -1,0 +1,25 @@
+package fr.revoicechat.junit;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+
+@ApplicationScoped
+@Transactional
+public class DBCleaner {
+  @PersistenceContext
+  EntityManager entityManager;
+
+  public void clean() {
+    entityManager.flush();
+    entityManager.clear();
+    entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
+    entityManager.getMetamodel().getEntities().forEach(entityType -> {
+      String entityName = entityType.getName();
+      entityManager.createQuery("DELETE FROM " + entityName).executeUpdate();
+    });
+    entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
+    entityManager.flush();
+  }
+}

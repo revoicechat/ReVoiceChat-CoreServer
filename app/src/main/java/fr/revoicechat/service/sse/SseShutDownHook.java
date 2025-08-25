@@ -1,10 +1,12 @@
 package fr.revoicechat.service.sse;
 
-import org.springframework.stereotype.Component;
-
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 
-@Component
+import io.quarkus.runtime.Startup;
+
+@ApplicationScoped
+@Startup
 class SseShutDownHook {
   private final TextualChatService textualChatService;
 
