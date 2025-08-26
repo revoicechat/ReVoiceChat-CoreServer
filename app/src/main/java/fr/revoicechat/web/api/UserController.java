@@ -52,7 +52,11 @@ public interface UserController extends LoggedApi {
   @Path("/{id}")
   UserRepresentation get(@PathParam("id") UUID id);
 
-  @Operation(summary = "Get details of a user", description = "Retrieve the details of a specific user by its id.")
+  @Operation(summary = "Update details of a user",
+      description = """
+    Update specifics details of a specific user by its id.
+    only display name and user type (USER/BOT/ADMIN) can be updated by this method.
+    """)
   @APIResponse(responseCode = "200")
   @APIResponse(responseCode = "404",
       description = "User not found",
