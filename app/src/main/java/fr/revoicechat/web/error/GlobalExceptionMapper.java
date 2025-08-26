@@ -59,7 +59,10 @@ public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {
       case ForbiddenException ignore    -> toResponse(Status.FORBIDDEN,             FORBIDDEN_TITLE,    FORBIDDEN_MESSAGE);
       case NotFoundException ignore     -> toResponse(Status.NOT_FOUND,             NOT_FOUND_TITLE,    NOT_FOUND_MESSAGE);
       case NotAllowedException ignore   -> toResponse(Status.METHOD_NOT_ALLOWED,    NOT_FOUND_TITLE,    NOT_FOUND_MESSAGE);
-      default                           -> toResponse(Status.INTERNAL_SERVER_ERROR, "Server error: " + exception.getMessage());
+      default                           -> {
+        exception.printStackTrace();
+        yield toResponse(Status.INTERNAL_SERVER_ERROR, "Server error: " + exception.getMessage());
+      }
     };
   }
 
