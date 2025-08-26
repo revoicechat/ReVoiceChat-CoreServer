@@ -1,14 +1,5 @@
 package fr.revoicechat.web;
 
-import jakarta.annotation.security.PermitAll;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -20,9 +11,17 @@ import fr.revoicechat.model.User;
 import fr.revoicechat.representation.login.UserPassword;
 import fr.revoicechat.representation.user.SignupRepresentation;
 import fr.revoicechat.representation.user.UserRepresentation;
-import fr.revoicechat.security.utils.PasswordUtils;
 import fr.revoicechat.security.jwt.JwtService;
+import fr.revoicechat.security.utils.PasswordUtils;
 import fr.revoicechat.service.UserService;
+import jakarta.annotation.security.PermitAll;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/auth")
 @Consumes(MediaType.APPLICATION_JSON)
