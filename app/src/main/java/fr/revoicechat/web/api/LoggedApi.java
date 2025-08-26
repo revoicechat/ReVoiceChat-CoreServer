@@ -1,10 +1,13 @@
 package fr.revoicechat.web.api;
 
+import static fr.revoicechat.web.openapi.OpenApiConfig.*;
+
+import jakarta.ws.rs.core.MediaType;
+
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-
-import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 
 @APIResponse(
     responseCode = "401",
@@ -37,5 +40,6 @@ import jakarta.ws.rs.core.MediaType;
         )
     }
 )
-public interface LoggedApi {
-}
+@SecurityRequirement(name = JWT_HEADER)
+@SecurityRequirement(name = JWT_QUERY)
+public interface LoggedApi {}
