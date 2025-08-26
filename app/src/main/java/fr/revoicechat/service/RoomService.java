@@ -105,9 +105,9 @@ public class RoomService {
    * @return the persisted room entity with its generated ID
    * @throws ResourceNotFoundException if no server with the given ID exists
    */
+  @Transactional
   public UUID delete(final UUID id) {
-    Optional.ofNullable(entityManager.find(Room.class, id))
-                .ifPresent(entityManager::remove);
+    Optional.ofNullable(entityManager.find(Room.class, id)).ifPresent(entityManager::remove);
     return id;
   }
 
