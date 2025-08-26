@@ -10,7 +10,7 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 @SecurityScheme(securitySchemeName = JWT_QUERY, type = APIKEY, in = QUERY, apiKeyName = "jwt")
 public class OpenApiConfig {
 
-  private OpenApiConfig() {/*for open API purpose*/}
+  private OpenApiConfig() {/*not instantiable*/}
 
   public static final String JWT_HEADER = "jwtHeader";
   public static final String JWT_QUERY = "jwtQuery";

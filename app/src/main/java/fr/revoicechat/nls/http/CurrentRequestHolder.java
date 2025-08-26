@@ -1,38 +1,30 @@
 package fr.revoicechat.nls.http;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
+import java.util.Optional;
 
-@RequestScoped
 public class CurrentRequestHolder {
 
-    private static final ThreadLocal<Locale> CURRENT_LOCALE = new ThreadLocal<>();
+  private CurrentRequestHolder() {/*not instantiable*/}
 
-    Locale locale;
+  private static final ThreadLocal<List<Locale>> CURRENT_ACCEPTABLE_LANGUAGES = new ThreadLocal<>();
 
-    public CurrentRequestHolder(@Context HttpHeaders headers) {
-        List<Locale> langs = headers.getAcceptableLanguages();
-        this.locale = langs.isEmpty() ? Locale.ENGLISH : langs.getFirst();
-    }
+  public static void setLocale(List<Locale> locale) {
+    CURRENT_ACCEPTABLE_LANGUAGES.set(locale);
+  }
 
-    @PostConstruct
-    void init() {
-      CURRENT_LOCALE.set(Objects.requireNonNullElse(locale, Locale.ENGLISH));
-    }
+  public static List<Locale> getLocale() {
+    var locales = Optional.ofNullable(CURRENT_ACCEPTABLE_LANGUAGES.get())
+                          .map(ArrayList::new)
+                          .orElseGet(ArrayList::new);
+    locales.add(Locale.ENGLISH);
+    return Collections.unmodifiableList(locales);
+  }
 
-    @PreDestroy
-    void cleanup() {
-        CURRENT_LOCALE.remove();
-    }
-
-    public static Locale getLocale() {
-        Locale locale = CURRENT_LOCALE.get();
-        return locale != null ? locale : Locale.ENGLISH;
-    }
+  public static void removeLocale() {
+    CURRENT_ACCEPTABLE_LANGUAGES.remove();
+  }
 }

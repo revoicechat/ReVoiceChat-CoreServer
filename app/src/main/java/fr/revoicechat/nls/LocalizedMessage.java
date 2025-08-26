@@ -1,5 +1,6 @@
 package fr.revoicechat.nls;
 
+import java.util.List;
 import java.util.Locale;
 
 import fr.revoicechat.nls.http.CurrentRequestHolder;
@@ -13,7 +14,7 @@ public interface LocalizedMessage {
     return getClass().getCanonicalName();
   }
 
-  default String translate(Locale locale, Object... args) {
+  default String translate(List<Locale> locale, Object... args) {
     return TranslationUtils.translate(this, locale, args);
   }
 

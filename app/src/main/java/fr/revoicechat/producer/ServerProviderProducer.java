@@ -2,6 +2,7 @@ package fr.revoicechat.producer;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
+import jakarta.persistence.EntityManager;
 
 import fr.revoicechat.config.RevoiceChatGlobalConfig;
 import fr.revoicechat.repository.ServerRepository;
@@ -18,16 +19,19 @@ public class ServerProviderProducer {
   private final ServerRepository serverRepository;
   private final NewServerCreator newServerCreator;
   private final UserRepository userRepository;
+  private final EntityManager entityManager;
 
 
-  public ServerProviderProducer(final RevoiceChatGlobalConfig config,
+  public ServerProviderProducer(RevoiceChatGlobalConfig config,
                                 ServerRepository serverRepository,
                                 NewServerCreator newServerCreator,
-                                UserRepository userRepository) {
+                                UserRepository userRepository,
+                                EntityManager entityManager) {
     this.config = config;
     this.serverRepository = serverRepository;
     this.newServerCreator = newServerCreator;
     this.userRepository = userRepository;
+    this.entityManager = entityManager;
   }
 
   @Produces
@@ -35,7 +39,7 @@ public class ServerProviderProducer {
   public ServerProviderService produceServerProviderService() {
     ServerProviderService service = switch (config.getSeverMode()) {
       case MONO_SERVER  -> new MonoServerProviderService(serverRepository, newServerCreator, userRepository);
-      case MULTI_SERVER -> new MultiServerProviderService(serverRepository, userRepository, newServerCreator);
+      case MULTI_SERVER -> new MultiServerProviderService(serverRepository, userRepository, newServerCreator, entityManager);
     };
     service.canBeUsed();
     return service;

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 import jakarta.enterprise.inject.Vetoed;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +27,13 @@ public class MultiServerProviderService implements ServerProviderService {
   private final ServerRepository serverRepository;
   private final UserRepository userRepository;
   private final NewServerCreator newServerCreator;
+  private final EntityManager entityManager;
 
-  public MultiServerProviderService(final ServerRepository serverRepository, final UserRepository userRepository, final NewServerCreator newServerCreator) {this.serverRepository = serverRepository;
+  public MultiServerProviderService(ServerRepository serverRepository, UserRepository userRepository, NewServerCreator newServerCreator, EntityManager entityManager) {
+    this.serverRepository = serverRepository;
     this.userRepository = userRepository;
     this.newServerCreator = newServerCreator;
+    this.entityManager = entityManager;
   }
 
   /** This implementation always allows usage. */
@@ -54,5 +59,10 @@ public class MultiServerProviderService implements ServerProviderService {
     return newServerCreator.create(entity);
   }
 
-
+  @Override
+  @Transactional
+  public void delete(final UUID id) {
+    var server = entityManager.find(Server.class, id);
+    entityManager.remove(server);
+  }
 }
