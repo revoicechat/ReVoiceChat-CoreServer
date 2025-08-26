@@ -1,6 +1,9 @@
 package fr.revoicechat.web.api;
 
 import java.util.UUID;
+
+import fr.revoicechat.representation.user.AdminUpdatableUserData;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.Path;
@@ -14,8 +17,11 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import fr.revoicechat.representation.user.UpdatableUserData;
 import fr.revoicechat.representation.user.UserRepresentation;
+import jakarta.ws.rs.core.MediaType;
 
 @Path("/user")
+@Consumes(MediaType.APPLICATION_JSON)
+@Tag(name = "User", description = "Endpoints for managing user")
 @Tag(name = "User", description = "Endpoints for managing user")
 public interface UserController extends LoggedApi {
 
@@ -45,4 +51,16 @@ public interface UserController extends LoggedApi {
   @GET
   @Path("/{id}")
   UserRepresentation get(@PathParam("id") UUID id);
+
+  @Operation(summary = "Get details of a user", description = "Retrieve the details of a specific user by its id.")
+  @APIResponse(responseCode = "200")
+  @APIResponse(responseCode = "404",
+      description = "User not found",
+      content = @Content(
+          mediaType = "text/plain",
+          schema = @Schema(implementation = String.class, examples = "User not found"))
+  )
+  @PATCH
+  @Path("/{id}")
+  UserRepresentation updateAsAdmin(@PathParam("id") UUID id, AdminUpdatableUserData userData);
 }

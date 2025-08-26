@@ -11,10 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
 
 import fr.revoicechat.config.RevoiceChatGlobalConfig;
 import fr.revoicechat.error.BadRequestException;
@@ -24,6 +20,7 @@ import fr.revoicechat.model.InvitationLinkStatus;
 import fr.revoicechat.model.User;
 import fr.revoicechat.model.UserType;
 import fr.revoicechat.repository.UserRepository;
+import fr.revoicechat.representation.user.AdminUpdatableUserData;
 import fr.revoicechat.representation.user.SignupRepresentation;
 import fr.revoicechat.representation.user.UpdatableUserData;
 import fr.revoicechat.representation.user.UpdatableUserData.PasswordUpdated;
@@ -32,6 +29,10 @@ import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.security.utils.PasswordUtils;
 import fr.revoicechat.service.server.ServerProviderService;
 import fr.revoicechat.service.sse.TextualChatService;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
 public class UserService {
@@ -103,14 +104,25 @@ public class UserService {
   }
 
   public UserRepresentation get(final UUID id) {
-    return Optional.ofNullable(entityManager.find(User.class, id))
-                   .map(this::map)
-                   .orElseThrow(() -> new NotFoundException("User not found"));
+    return map(getUser(id));
   }
 
   @Transactional
   public List<UserRepresentation> fetchUserForServer(final UUID id) {
     return serverProviderService.getUsers(id).map(this::map).toList();
+  }
+
+  @Transactional
+  public UserRepresentation updateAsAdmin(final UUID id, final AdminUpdatableUserData userData) {
+    var user = getUser(id);
+    Optional.ofNullable(userData.displayName()).filter(not(String::isBlank)).ifPresent(user::setDisplayName);
+    Optional.ofNullable(userData.type()).ifPresent(user::setType);
+    entityManager.persist(user);
+    return map(user);
+  }
+
+  private User getUser(final UUID id) {
+    return Optional.ofNullable(entityManager.find(User.class, id)).orElseThrow(() -> new NotFoundException("User not found"));
   }
 
   @Transactional

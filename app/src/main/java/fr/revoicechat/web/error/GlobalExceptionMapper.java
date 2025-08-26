@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.NotAllowedException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -57,6 +58,7 @@ public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {
       case UnauthorizedException ignore -> toResponse(Status.UNAUTHORIZED,          UNAUTHORIZED_TITLE, UNAUTHORIZED_MESSAGE);
       case ForbiddenException ignore    -> toResponse(Status.FORBIDDEN,             FORBIDDEN_TITLE,    FORBIDDEN_MESSAGE);
       case NotFoundException ignore     -> toResponse(Status.NOT_FOUND,             NOT_FOUND_TITLE,    NOT_FOUND_MESSAGE);
+      case NotAllowedException ignore   -> toResponse(Status.METHOD_NOT_ALLOWED,    NOT_FOUND_TITLE,    NOT_FOUND_MESSAGE);
       default                           -> toResponse(Status.INTERNAL_SERVER_ERROR, "Server error");
     };
   }

@@ -2,6 +2,8 @@ package fr.revoicechat.dev;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import fr.revoicechat.model.UserType;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -19,7 +21,7 @@ public class UserCreator {
     this.entityManager = entityManager;
   }
 
-  public void add(final String login, String displayName, final String mail) {
+  public void add(String login, String displayName, String mail, UserType type) {
     var user = new User();
     user.setId(UUID.randomUUID());
     user.setLogin(login);
@@ -27,6 +29,7 @@ public class UserCreator {
     user.setPassword(PasswordUtils.encodePassword("psw"));
     user.setEmail(mail);
     user.setCreatedDate(LocalDateTime.now());
+    user.setType(type);
     entityManager.persist(user);
   }
 }

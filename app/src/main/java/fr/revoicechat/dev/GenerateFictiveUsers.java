@@ -4,6 +4,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.revoicechat.model.UserType;
 import fr.revoicechat.repository.UserRepository;
 import io.quarkus.runtime.Startup;
 import jakarta.annotation.PostConstruct;
@@ -31,8 +32,8 @@ public class GenerateFictiveUsers {
     if (canBeCalled) {
       if (userRepository.count() == 0) {
         LOG.info("default admin user generated");
-        userCreator.add("user", "The user", "-no-email-");
-        userCreator.add("admin", "The admin", "--no-email--");
+        userCreator.add("user", "The user", "-no-email-", UserType.USER);
+        userCreator.add("admin", "The admin", "--no-email--", UserType.ADMIN);
       } else {
         LOG.info("db has already user in it");
       }
