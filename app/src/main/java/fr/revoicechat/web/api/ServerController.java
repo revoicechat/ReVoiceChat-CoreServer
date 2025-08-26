@@ -2,8 +2,11 @@ package fr.revoicechat.web.api;
 
 import java.util.List;
 import java.util.UUID;
+
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -21,6 +24,8 @@ import fr.revoicechat.model.Server;
 import fr.revoicechat.representation.room.RoomRepresentation;
 import fr.revoicechat.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.representation.user.UserRepresentation;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 @Path("server")
 @Tag(name = "Server", description = "Endpoints for managing server and their rooms")
@@ -68,7 +73,9 @@ public interface ServerController extends LoggedApi {
           schema = @Schema(implementation = String.class, examples = "Server not found")
       )
   )
-  @POST
+  @PATCH
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
   @Path("/{id}")
   Server updateServer(@PathParam("id") UUID id, ServerCreationRepresentation representation);
 
