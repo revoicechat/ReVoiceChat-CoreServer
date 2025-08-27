@@ -1,11 +1,15 @@
 package fr.revoicechat.web;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.OPTIONS;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseEventSink;
 
@@ -44,5 +48,13 @@ public class ChatController implements LoggedApi {
     var user = userHolder.get();
     textualChatService.register(user.getId(), sse, sink);
     LOG.debug("sse connection for user {}", user.getId());
+  }
+
+  @OPTIONS
+  @PermitAll
+  public Response corsPreflight() {
+    return Response.ok().header(HttpHeaders.ALLOW, "HEAD, GET, OPTIONS")
+                   .entity("HEAD, GET, OPTIONS")
+                   .build();
   }
 }
