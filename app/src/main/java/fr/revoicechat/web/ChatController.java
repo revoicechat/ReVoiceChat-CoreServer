@@ -3,13 +3,10 @@ package fr.revoicechat.web;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.OPTIONS;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseEventSink;
 
@@ -24,6 +21,7 @@ import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.service.sse.TextualChatService;
 import fr.revoicechat.web.api.LoggedApi;
 
+@PermitAll
 @Path("/sse")
 @Tag(name = "Chat", description = "Endpoints for real-time chat using Server-Sent Events (SSE)")
 public class ChatController implements LoggedApi {
@@ -48,19 +46,5 @@ public class ChatController implements LoggedApi {
     var user = userHolder.get();
     textualChatService.register(user.getId(), sse, sink);
     LOG.debug("sse connection for user {}", user.getId());
-  }
-
-  @OPTIONS
-  @PermitAll
-  public Response corsPreflight() {
-    var allow = "HEAD, GET, OPTIONS";
-    return Response.ok()
-                   .header("access-control-allow-origin", "*")
-                   .header("access-control-allow-headers", "*")
-                   .header("access-control-allow-credentials", "true")
-                   .header(HttpHeaders.ALLOW, allow)
-                   .header(HttpHeaders.CONTENT_TYPE, "text/plain;charset=UTF-8")
-                   .entity(allow)
-                   .build();
   }
 }
