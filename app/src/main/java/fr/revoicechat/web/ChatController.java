@@ -3,6 +3,7 @@ package fr.revoicechat.web;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.OPTIONS;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
@@ -22,7 +23,6 @@ import fr.revoicechat.service.sse.TextualChatService;
 import fr.revoicechat.web.api.LoggedApi;
 
 @Path("/sse")
-@PermitAll // allow http OPTION
 @Tag(name = "Chat", description = "Endpoints for real-time chat using Server-Sent Events (SSE)")
 public class ChatController implements LoggedApi {
   private static final Logger LOG = LoggerFactory.getLogger(ChatController.class);
@@ -46,5 +46,11 @@ public class ChatController implements LoggedApi {
     var user = userHolder.get();
     textualChatService.register(user.getId(), sse, sink);
     LOG.debug("sse connection for user {}", user.getId());
+  }
+
+  @PermitAll
+  @OPTIONS
+  public void corsPreflight() {
+    // Quarkus will handle CORS headers automatically
   }
 }
