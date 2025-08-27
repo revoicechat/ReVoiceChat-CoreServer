@@ -10,9 +10,11 @@ import jakarta.transaction.Transactional;
 import fr.revoicechat.error.ResourceNotFoundException;
 import fr.revoicechat.model.Server;
 import fr.revoicechat.model.ServerUser;
+import fr.revoicechat.model.UserType;
 import fr.revoicechat.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.service.server.ServerProviderService;
+import io.quarkus.security.UnauthorizedException;
 
 /**
  * Service responsible for managing {@link Server} entities.
@@ -48,7 +50,6 @@ public class ServerService {
    * <p>
    * This method does <b>not</b> query the database, but uses the
    * {@link ServerProviderService} to fetch the server list, then logs it.
-   *
    * @return a list of available servers, possibly empty
    */
   public List<Server> getAll() {
@@ -57,7 +58,6 @@ public class ServerService {
 
   /**
    * Retrieves a server from the database by its unique identifier.
-   *
    * @param id the unique server ID
    * @return the server entity
    * @throws java.util.NoSuchElementException if no server with the given ID exists
@@ -69,7 +69,6 @@ public class ServerService {
 
   /**
    * Creates and stores a new server in the database.
-   *
    * @param representation the server entity to persist
    * @return the persisted server entity with its generated ID
    */
@@ -97,16 +96,23 @@ public class ServerService {
    * <p>
    * The ID of the provided entity will be overridden with the given {@code id}
    * before persisting.
-   *
-   * @param id     the ID of the server to update
+   * @param id             the ID of the server to update
    * @param representation the updated server data
    * @return the updated and persisted server entity
    */
   @Transactional
   public Server update(final UUID id, final ServerCreationRepresentation representation) {
     var server = get(id);
+    if (cannotBeUpdate(server)) {
+      throw new UnauthorizedException("user is not allowed to update this server");
+    }
     server.setName(representation.name());
     entityManager.persist(server);
     return server;
+  }
+
+  private boolean cannotBeUpdate(final Server server) {
+    var user = userHolder.get();
+    return user != null && (user.getType().equals(UserType.ADMIN) || server.getOwner().equals(user));
   }
 }
