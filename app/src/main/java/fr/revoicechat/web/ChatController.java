@@ -53,7 +53,9 @@ public class ChatController implements LoggedApi {
   @OPTIONS
   @PermitAll
   public Response corsPreflight() {
-    return Response.ok().header(HttpHeaders.ALLOW, "HEAD, GET, OPTIONS")
+    return Response.ok()
+                   .header(HttpHeaders.ALLOW, "HEAD, GET, OPTIONS")
+                   .header(HttpHeaders.CONTENT_TYPE, "text/plain;charset=UTF-8")
                    .entity("HEAD, GET, OPTIONS")
                    .build();
   }
