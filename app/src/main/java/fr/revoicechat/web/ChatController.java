@@ -57,6 +57,7 @@ public class ChatController implements LoggedApi {
     return Response.ok()
                    .header("access-control-allow-origin", "*")
                    .header("access-control-allow-headers", "*")
+                   .header("Access-Control-Allow-Credentials", "true")
                    .header(HttpHeaders.ALLOW, allow)
                    .header(HttpHeaders.CONTENT_TYPE, "text/plain;charset=UTF-8")
                    .entity(allow)
