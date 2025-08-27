@@ -42,9 +42,9 @@ public class ChatController implements LoggedApi {
   @Produces(MediaType.SERVER_SENT_EVENTS)
   @SseElementType(MediaType.APPLICATION_JSON)
   @RolesAllowed("USER") // only authenticated users
-  public void generateSseEmitter(@Context Sse sse, @Context SseEventSink sink) {
+  public void generateSseEmitter(@Context SseEventSink sink) {
     var user = userHolder.get();
-    textualChatService.register(user.getId(), sse, sink);
+    textualChatService.register(user.getId(), sink);
     LOG.debug("sse connection for user {}", user.getId());
   }
 }

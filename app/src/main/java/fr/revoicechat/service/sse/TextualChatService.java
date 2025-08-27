@@ -8,7 +8,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.sse.SseEventSink;
 
+import org.jboss.resteasy.plugins.providers.sse.SseImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +19,6 @@ import fr.revoicechat.model.User;
 import fr.revoicechat.representation.message.MessageRepresentation;
 import fr.revoicechat.representation.sse.SseData;
 import fr.revoicechat.service.user.RoomUserFinder;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.sse.Sse;
-import jakarta.ws.rs.sse.SseEventSink;
 
 /**
  * Service that manages textual chat messages and real-time updates via Server-Sent Events (SSE).
@@ -47,8 +47,8 @@ public class TextualChatService {
   /**
    * Returns a hot Multi for a user’s SSE stream.
    */
-  public void register(UUID userId, Sse sse, SseEventSink sink) {
-    getProcessor(userId).add(new SseHolder(sse, sink));
+  public void register(UUID userId, SseEventSink sink) {
+    getProcessor(userId).add(new SseHolder(sink));
   }
 
   /**
@@ -92,10 +92,10 @@ public class TextualChatService {
     processors.clear();
   }
 
-  private record SseHolder(Sse sse, SseEventSink sink) {
+  private record SseHolder(SseEventSink sink) {
     boolean send(SseData data) {
       try {
-        sink.send(sse.newEventBuilder().data(data).build());
+        sink.send(new SseImpl().newEventBuilder().data(data).build());
         return true;
       } catch (Exception e) {
         sink.close();
