@@ -2,7 +2,6 @@ package fr.revoicechat.core.service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -14,6 +13,7 @@ import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.repository.MessageRepository;
 import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
+import fr.revoicechat.core.representation.message.MediaDataRepresentation;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageRepresentation.ActionType;
 import fr.revoicechat.core.representation.message.MessageRepresentation.UserMessageRepresentation;
@@ -182,7 +182,14 @@ public class MessageService {
         ),
         message.getCreatedDate().atOffset(ZoneOffset.UTC),
         actionType,
-        List.of()
+        message.getMediaDatas().stream()
+               .map(media -> new MediaDataRepresentation(
+                   media.getId(),
+                   media.getName(),
+                   media.getUrl(),
+                   media.getOrigin(),
+                   media.getType()
+               )).toList()
     );
   }
 }
