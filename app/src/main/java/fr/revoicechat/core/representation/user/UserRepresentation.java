@@ -1,0 +1,14 @@
+package fr.revoicechat.core.representation.user;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+import fr.revoicechat.core.model.ActiveStatus;
+
+public record UserRepresentation(
+    UUID id,
+    String displayName,
+    String login,
+    OffsetDateTime createdDate,
+    ActiveStatus status
+) {}

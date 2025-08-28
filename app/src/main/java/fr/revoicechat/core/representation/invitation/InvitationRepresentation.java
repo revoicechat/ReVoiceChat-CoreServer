@@ -1,0 +1,6 @@
+package fr.revoicechat.core.representation.invitation;
+
+import java.util.UUID;
+
+public record InvitationRepresentation(UUID id) {
+}
