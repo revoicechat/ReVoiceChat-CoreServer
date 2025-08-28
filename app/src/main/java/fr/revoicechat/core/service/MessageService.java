@@ -138,6 +138,7 @@ public class MessageService {
    * @return a representation of the updated message
    * @throws ResourceNotFoundException if the message does not exist
    */
+  @Transactional
   public MessageRepresentation update(UUID id, CreatedMessageRepresentation creation) {
     var message = getMessage(id);
     message.setText(creation.text());
@@ -154,6 +155,7 @@ public class MessageService {
    * @return the UUID of the deleted message
    * @throws ResourceNotFoundException if the message does not exist
    */
+  @Transactional
   public UUID delete(UUID id) {
     var message = getMessage(id);
     var room = message.getRoom().getId();
