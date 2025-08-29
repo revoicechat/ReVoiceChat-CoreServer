@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>403 Forbidden</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+
+        h1 {
+            color: #ff5555;
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+        }
+
+        p {
+            font-size: 1.1em;
+            margin: 0.5em 0;
+        }
+
+        a {
+            color: #4dabf7;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            color: #82cfff;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #1e1e1e;
+            padding: 2em;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+        }
+
+        pre {
+            background: #2b2b2b;
+            color: #e0e0e0;
+            text-align: left;
+            padding: 1em;
+            border-radius: 8px;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #4dabf7;
+            color: #fff;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .copy-btn:hover {
+            background: #82cfff;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>%s</h1>
+    <p>%s</p>
+    <div style="position: relative; margin-top: 20px;">
+        <pre id="errorCode">%s</pre>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+    </div>
+    <p><a href="/api/swagger-ui/index.html">%s</a>.</p>
+</div>
+
+<script>
+    function copyCode() {
+        const code = document.getElementById("errorCode").innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            alert("Copied to clipboard!");
+        });
+    }
+</script>
+</body>
+</html>

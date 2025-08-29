@@ -2,6 +2,7 @@ package fr.revoicechat.core.web.error;
 
 import static fr.revoicechat.core.nls.HttpStatusErrorCode.*;
 import static fr.revoicechat.core.web.error.ErrorMapperUtils.*;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
@@ -51,7 +52,8 @@ public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {
       case NotAllowedException ignore -> toResponse(Status.METHOD_NOT_ALLOWED, NOT_FOUND_TITLE, NOT_FOUND_MESSAGE);
       default -> {
         String fileName = errorFileGenerator.generate(exception);
-        yield toResponse(Status.INTERNAL_SERVER_ERROR, "Server error: " + fileName);
+        var type = determineResponseType(headers);
+        yield Response.status(INTERNAL_SERVER_ERROR).type(type.type()).entity(type.unknownErrorFile(fileName)).build();
       }
     };
   }
@@ -62,14 +64,6 @@ public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {
 
   private Response toResponse(Status status, LocalizedMessage title, LocalizedMessage message) {
     var type = determineResponseType(headers);
-    var entity = file(type).formatted(title.translate(), message.translate(), DOCUMENTATION_API_LINK.translate());
-    return Response.status(status)
-                   .type(type)
-                   .entity(entity)
-                   .build();
-  }
-
-  private String file(final MediaType type) {
-    return type.equals(MediaType.TEXT_HTML_TYPE) ? HTML_MESSAGE : JSON_MESSAGE;
+    return Response.status(status).type(type.type()).entity(type.genericErrorFile(title, message)).build();
   }
 }
