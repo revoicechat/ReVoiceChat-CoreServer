@@ -1,6 +1,7 @@
-# RevoiceChat-Server
+![logo_black_screen.png#gh-dark-mode-only](logo-dark-mode.png)
+![logo_white_screen.png#gh-light-mode-only](logo-light-mode.png)
 
-![RevoiceChat](https://img.shields.io/badge/Revoice-Chat-1E90E7.svg)
+![RevoiceChat](https://img.shields.io/badge/RevoiceChat-Core%20Server-1E90E7?style=for-the-badge)
 
 This repository provide the source code of server-side of `RevoiceChat`
 
