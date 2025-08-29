@@ -80,7 +80,7 @@ public class Message {
   }
 
   public List<MediaData> getMediaDatas() {
-    return mediaDatas;
+    return Objects.requireNonNullElseGet(mediaDatas, ArrayList::new);
   }
 
   public void setMediaDatas(final List<MediaData> mediaData) {
