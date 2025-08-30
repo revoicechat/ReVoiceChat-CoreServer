@@ -3,7 +3,6 @@ package fr.revoicechat.notification.model;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import fr.revoicechat.notification.serializer.NotificationDataSerializer;
 
 @JsonSerialize(using = NotificationDataSerializer.class)
 public record NotificationData(NotificationPayload data) implements Serializable {

@@ -1,16 +1,13 @@
-package fr.revoicechat.notification.serializer;
+package fr.revoicechat.notification.model;
 
 import java.io.IOException;
 import java.util.Objects;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import fr.revoicechat.notification.model.NotificationData;
-import fr.revoicechat.notification.model.NotificationPayload;
-import fr.revoicechat.notification.model.NotificationType;
-import com.fasterxml.jackson.core.JsonGenerator;
 
-public class NotificationDataSerializer extends JsonSerializer<NotificationData> {
+class NotificationDataSerializer extends JsonSerializer<NotificationData> {
 
   @Override
   public void serialize(NotificationData value, JsonGenerator gen, SerializerProvider serializers) throws IOException {

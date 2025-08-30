@@ -19,8 +19,6 @@ import fr.revoicechat.core.service.media.MediaDataService;
 import fr.revoicechat.core.service.message.MessageValidation;
 import fr.revoicechat.core.service.user.RoomUserFinder;
 import fr.revoicechat.notification.Notification;
-import fr.revoicechat.notification.service.NotificationSender;
-import fr.revoicechat.notification.service.NotificationService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -34,7 +32,7 @@ import jakarta.transaction.Transactional;
  * </p>
  * <p>
  * In addition to persisting messages, this service interacts with the
- * {@link NotificationService} to broadcast message-related events (additions, updates,
+ * {@link Notification} to broadcast message-related events (additions, updates,
  * removals) to connected clients in real-time.
  * </p>
  *
@@ -46,7 +44,7 @@ import jakarta.transaction.Transactional;
  * </ul>
  *
  * @see MessageRepository
- * @see NotificationService
+ * @see Notification
  * @see RoomService
  */
 @ApplicationScoped
@@ -54,7 +52,6 @@ public class MessageService {
 
   private final EntityManager entityManager;
   private final MessageRepository messageRepository;
-  private final NotificationSender notificationSender;
   private final RoomService roomService;
   private final UserHolder userHolder;
   private final MessageValidation messageValidation;
@@ -63,7 +60,6 @@ public class MessageService {
 
   public MessageService(EntityManager entityManager,
                         MessageRepository messageRepository,
-                        NotificationSender notificationSender,
                         RoomService roomService,
                         UserHolder userHolder,
                         MessageValidation messageValidation,
@@ -71,7 +67,6 @@ public class MessageService {
                         RoomUserFinder roomUserFinder) {
     this.entityManager = entityManager;
     this.messageRepository = messageRepository;
-    this.notificationSender = notificationSender;
     this.roomService = roomService;
     this.userHolder = userHolder;
     this.messageValidation = messageValidation;
