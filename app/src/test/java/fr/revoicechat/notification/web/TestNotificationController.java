@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import fr.revoicechat.core.junit.DBCleaner;
 import fr.revoicechat.core.junit.UserCreator;
 import fr.revoicechat.core.quarkus.profile.H2Profile;
-import fr.revoicechat.core.web.AuthController;
 import fr.revoicechat.notification.NotificationRegistrableHolder;
 import fr.revoicechat.notification.service.NotificationService;
 import fr.revoicechat.notification.stub.SseEventSinkMock;
@@ -17,7 +16,6 @@ import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.sse.SseEventSink;
 
-/** @see AuthController */
 @QuarkusTest
 @TestProfile(H2Profile.class)
 class TestNotificationController {
@@ -26,8 +24,8 @@ class TestNotificationController {
   @Inject UserCreator creator;
 
   @Inject NotificationService service;
-  @Inject NotificationController controller;
   @Inject NotificationRegistrableHolder holder;
+  @Inject NotificationController controller;
 
   @BeforeEach
   void setUp() {
