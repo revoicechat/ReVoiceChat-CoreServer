@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,32 +19,29 @@ import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.user.SignupRepresentation;
 import fr.revoicechat.core.security.UserHolder;
-import fr.revoicechat.core.service.RoomService;
-import fr.revoicechat.core.service.ServerService;
-import fr.revoicechat.core.service.UserService;
 import fr.revoicechat.core.web.TestMultiServerController.MultiServerProfile;
 import fr.revoicechat.core.web.api.ServerController;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.security.TestSecurity;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @QuarkusTest
 @TestProfile(MultiServerProfile.class)
+@TestSecurity(authorizationEnabled = false)
 class TestMultiServerController {
 
   @Inject DBCleaner cleaner;
   @Inject UserCreator creator;
   @Inject UserHolder holder;
   @Inject AuthController authController;
-  ServerController controller;
-  @Inject ServerService serverService;
-  @Inject RoomService roomService;
-  @Inject UserService userService;
+  @Inject ServerController controller;
 
   @BeforeEach
   void setUp() {
     cleaner.clean();
     creator.create();
-    controller = new ServerControllerImpl(serverService, roomService, userService);
   }
 
   @Test

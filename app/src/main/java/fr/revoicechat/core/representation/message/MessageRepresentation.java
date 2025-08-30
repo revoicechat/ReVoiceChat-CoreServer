@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.UUID;
 
 import fr.revoicechat.notification.model.NotificationPayload;
+import fr.revoicechat.notification.model.NotificationType;
 
+@NotificationType("ROOM_MESSAGE")
 public record MessageRepresentation(
     UUID id,
     String text,

@@ -1,16 +1,12 @@
 package fr.revoicechat.notification.model;
 
-public enum NotificationType {
-  // User
-  PING,
-  USER_UPDATE,
-  // Server
-  SERVER_UPDATE,
-  ROOM_UPDATE,
-  // Message
-  ROOM_MESSAGE,
-  DIRECT_MESSAGE,
-  // Voice
-  VOICE_ROOM_JOIN,
-  VOICE_ROOM_LEAVE,
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface NotificationType {
+    String value();
 }

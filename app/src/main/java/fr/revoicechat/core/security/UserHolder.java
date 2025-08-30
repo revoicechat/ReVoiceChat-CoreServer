@@ -1,8 +1,10 @@
 package fr.revoicechat.core.security;
 
 import fr.revoicechat.core.model.User;
+import fr.revoicechat.notification.NotificationRegistrableHolder;
 
-public interface UserHolder {
+public interface UserHolder extends NotificationRegistrableHolder {
+  @Override
   User get();
   User get(String jwtToken);
 }

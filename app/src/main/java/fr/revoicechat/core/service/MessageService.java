@@ -4,9 +4,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
 import fr.revoicechat.core.error.ResourceNotFoundException;
 import fr.revoicechat.core.model.Message;
@@ -21,10 +18,12 @@ import fr.revoicechat.core.security.UserHolder;
 import fr.revoicechat.core.service.media.MediaDataService;
 import fr.revoicechat.core.service.message.MessageValidation;
 import fr.revoicechat.core.service.user.RoomUserFinder;
-import fr.revoicechat.notification.model.Notification;
-import fr.revoicechat.notification.model.NotificationType;
+import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.service.NotificationSender;
 import fr.revoicechat.notification.service.NotificationService;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 /**
  * Service layer for managing chat messages within rooms.
@@ -45,6 +44,7 @@ import fr.revoicechat.notification.service.NotificationService;
  *   <li>Transform domain entities into {@link MessageRepresentation} objects</li>
  *   <li>Notify clients about message events via the textual chat service</li>
  * </ul>
+ *
  * @see MessageRepository
  * @see NotificationService
  * @see RoomService
@@ -81,6 +81,7 @@ public class MessageService {
 
   /**
    * Retrieves all messages for a given chat room.
+   *
    * @param roomId the unique identifier of the chat room
    * @return list of messages in the room, possibly empty if no messages exist
    */
@@ -91,12 +92,13 @@ public class MessageService {
                                       .stream()
                                       .map(message -> toRepresantation(message, null))
                                       .toList(),
-                            pageResult.pageNumber(), pageResult.pageSize(), pageResult.totalElements());
+        pageResult.pageNumber(), pageResult.pageSize(), pageResult.totalElements());
   }
 
   /**
    * Creates and persists a new message in the specified chat room.
    * Also notifies connected clients about the new message.
+   *
    * @param roomId   the unique identifier of the chat room where the message will be added
    * @param creation the message data to create
    * @return a representation of the created message
@@ -114,13 +116,13 @@ public class MessageService {
     creation.medias().stream().map(mediaDataService::create).forEach(message::addMediaData);
     entityManager.persist(message);
     var representation = toRepresantation(message, ActionType.ADD);
-    notificationSender.send(Notification.forUsers(roomUserFinder.find(room.getId()))
-                                        .withData(NotificationType.ROOM_MESSAGE, representation));
+    Notification.of(representation).sendTo(roomUserFinder.find(room.getId()));
     return representation;
   }
 
   /**
    * Retrieves the details of a specific message.
+   *
    * @param id the unique identifier of the message
    * @return a representation of the message
    * @throws ResourceNotFoundException if the message does not exist
@@ -133,6 +135,7 @@ public class MessageService {
 
   /**
    * Updates the content of an existing message and notifies connected clients.
+   *
    * @param id       the unique identifier of the message to update
    * @param creation the new message content
    * @return a representation of the updated message
@@ -144,13 +147,13 @@ public class MessageService {
     message.setText(creation.text());
     entityManager.persist(message);
     var representation = toRepresantation(message, ActionType.MODIFY);
-    notificationSender.send(Notification.forUsers(roomUserFinder.find(message.getRoom().getId()))
-                                        .withData(NotificationType.ROOM_MESSAGE, representation));
+    Notification.of(representation).sendTo(roomUserFinder.find(message.getRoom().getId()));
     return representation;
   }
 
   /**
    * Deletes a message from the repository and notifies connected clients.
+   *
    * @param id the unique identifier of the message to delete
    * @return the UUID of the deleted message
    * @throws ResourceNotFoundException if the message does not exist
@@ -160,9 +163,8 @@ public class MessageService {
     var message = getMessage(id);
     var room = message.getRoom().getId();
     entityManager.remove(message);
-    notificationSender.send(Notification.forUsers(roomUserFinder.find(room))
-                                        .withData(NotificationType.ROOM_MESSAGE,
-                                                  new MessageRepresentation(id, null, room, null, null, ActionType.REMOVE, null)));
+    var deletedMessage = new MessageRepresentation(id, null, room, null, null, ActionType.REMOVE, null);
+    Notification.of(deletedMessage).sendTo(roomUserFinder.find(room));
     return id;
   }
 

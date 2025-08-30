@@ -1,26 +1,22 @@
 package fr.revoicechat.notification.service;
 
-import static fr.revoicechat.notification.model.NotificationType.PING;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
-import jakarta.ws.rs.sse.SseEventSink;
+import java.util.stream.Stream;
 
 import org.jboss.resteasy.plugins.providers.sse.SseImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.revoicechat.notification.model.Notification;
 import fr.revoicechat.notification.model.NotificationData;
 import fr.revoicechat.notification.model.NotificationRegistrable;
-import io.quarkus.runtime.Shutdown;
-import io.quarkus.runtime.ShutdownEvent;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.sse.SseEventSink;
 
 /**
  * Service that manages user notification via Server-Sent Events (SSE).
@@ -35,7 +31,7 @@ import io.quarkus.runtime.ShutdownEvent;
  * SSE emitters are stored in-memory per room and removed automatically when a connection
  * completes, times out, or encounters an error.
  */
-@ApplicationScoped
+@Singleton
 public class NotificationService implements NotificationRegistry, NotificationSender {
   private static final Logger LOG = LoggerFactory.getLogger(NotificationService.class);
 
@@ -47,15 +43,15 @@ public class NotificationService implements NotificationRegistry, NotificationSe
   }
 
   @Override
-  public void send(Notification notification) {
-    notification.forEach(userId -> sendAndCloseIfNecessary(notification.data(), userId));
+  public void send(Stream<? extends NotificationRegistrable> targetedUsers, NotificationData data) {
+    targetedUsers.forEach(user -> sendAndCloseIfNecessary(data, user.getId()));
   }
 
   @Override
   public boolean ping(NotificationRegistrable registrable) {
     var id = registrable.getId();
     LOG.debug("ping user {}", id);
-    return getProcessor(id).stream().anyMatch(holder -> holder.send(new NotificationData(PING)));
+    return getProcessor(id).stream().anyMatch(holder -> holder.send(NotificationData.ping()));
   }
 
   private void sendAndCloseIfNecessary(final NotificationData notificationData, final UUID userId) {
@@ -71,18 +67,18 @@ public class NotificationService implements NotificationRegistry, NotificationSe
     }
   }
 
-  private Collection<SseHolder> getProcessor(UUID userId) {
+  public Collection<SseHolder> getProcessor(UUID userId) {
     return processors.computeIfAbsent(userId, id -> Collections.synchronizedSet(new HashSet<>()));
   }
 
-  @Shutdown
-  void shutdownSseEmitters(@Observes ShutdownEvent event) {
+  @PreDestroy
+  public void shutdownSseEmitters() {
     LOG.info("Closing all SSE connections..");
-    processors.values().stream().flatMap(Collection::stream).forEach(holder -> holder.sink.close());
+    processors.values().stream().flatMap(Collection::stream).forEach(SseHolder::close);
     processors.clear();
   }
 
-  private record SseHolder(SseEventSink sink) {
+  public record SseHolder(SseEventSink sink) {
     boolean send(NotificationData data) {
       try {
         sink.send(new SseImpl().newEventBuilder().data(data).build());
@@ -92,5 +88,7 @@ public class NotificationService implements NotificationRegistry, NotificationSe
         return false;
       }
     }
+
+    void close() {sink.close();}
   }
 }

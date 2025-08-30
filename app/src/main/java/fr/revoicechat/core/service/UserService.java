@@ -11,10 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
 
 import fr.revoicechat.core.config.RevoiceChatGlobalConfig;
 import fr.revoicechat.core.error.BadRequestException;
@@ -32,7 +28,11 @@ import fr.revoicechat.core.representation.user.UserRepresentation;
 import fr.revoicechat.core.security.UserHolder;
 import fr.revoicechat.core.security.utils.PasswordUtils;
 import fr.revoicechat.core.service.server.ServerProviderService;
-import fr.revoicechat.notification.service.NotificationSender;
+import fr.revoicechat.notification.Notification;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
 public class UserService {
@@ -40,20 +40,17 @@ public class UserService {
   private final EntityManager entityManager;
   private final UserRepository userRepository;
   private final UserHolder userHolder;
-  private final NotificationSender notificationSender;
   private final ServerProviderService serverProviderService;
   private final RevoiceChatGlobalConfig globalConfig;
 
   public UserService(EntityManager entityManager,
                      UserRepository userRepository,
                      UserHolder userHolder,
-                     NotificationSender notificationSender,
                      ServerProviderService serverProviderService,
                      RevoiceChatGlobalConfig globalConfig) {
     this.entityManager = entityManager;
     this.userRepository = userRepository;
     this.userHolder = userHolder;
-    this.notificationSender = notificationSender;
     this.serverProviderService = serverProviderService;
     this.globalConfig = globalConfig;
   }
@@ -158,6 +155,6 @@ public class UserService {
   }
 
   private ActiveStatus getActiveStatus(final User user) {
-    return notificationSender.ping(user) ? user.getStatus() : ActiveStatus.OFFLINE;
+    return Notification.ping(user) ? user.getStatus() : ActiveStatus.OFFLINE;
   }
 }

@@ -1,8 +1,8 @@
 package fr.revoicechat.core.service.server;
 
+import static fr.revoicechat.core.service.server.MonoServerProviderService.ERROR_MESSAGE;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static jakarta.servlet.RequestDispatcher.ERROR_MESSAGE;
 
 import java.util.List;
 

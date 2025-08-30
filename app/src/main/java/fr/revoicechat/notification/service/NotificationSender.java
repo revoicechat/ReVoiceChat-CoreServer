@@ -1,11 +1,13 @@
 package fr.revoicechat.notification.service;
 
-import fr.revoicechat.notification.model.Notification;
+import java.util.stream.Stream;
+
+import fr.revoicechat.notification.model.NotificationData;
 import fr.revoicechat.notification.model.NotificationRegistrable;
 
 public interface NotificationSender {
   /** Broadcast a message to all targeted users. */
-  void send(Notification notification);
+  void send(Stream<? extends NotificationRegistrable> targetedUsers, NotificationData data);
 
   /** Ping a single user. */
   boolean ping(NotificationRegistrable registrable);
