@@ -1,5 +1,5 @@
 {
   "error": "%s",
   "message": "%s",
-  "swaggerDoc": "/api/swagger-ui/index.html"
+  "swaggerDoc": "/api/q/swagger-ui"
 }

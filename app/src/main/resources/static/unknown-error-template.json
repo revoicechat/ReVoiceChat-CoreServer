@@ -2,5 +2,5 @@
   "error": "%s",
   "message": "%s",
   "errorFile": "%s",
-  "swaggerDoc": "/api/swagger-ui/index.html"
+  "swaggerDoc": "/api/q/swagger-ui"
 }
