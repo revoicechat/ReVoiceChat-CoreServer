@@ -28,7 +28,7 @@ import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 import jakarta.ws.rs.WebApplicationException;
 
-@ServerEndpoint("/vocal")
+@ServerEndpoint("/voice")
 @ApplicationScoped
 public class ChatWebSocket {
   private static final Logger LOG = LoggerFactory.getLogger(ChatWebSocket.class);

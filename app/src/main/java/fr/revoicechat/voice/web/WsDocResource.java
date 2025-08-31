@@ -16,7 +16,7 @@ import jakarta.ws.rs.core.Response;
  *
  * @see fr.revoicechat.voice.socket.ChatWebSocket
  */
-@Path("/ws-docs")
+@Path("/voice")
 @Tag(name = "WebSocket")
 @Produces(MediaType.APPLICATION_JSON)
 public class WsDocResource {
@@ -24,11 +24,11 @@ public class WsDocResource {
   @GET
   @Operation(summary = "WebSocket endpoint",
       description = """
-          Connect via `ws://localhost:8080/api/vocal?token={jwtToken}`.
+          Connect via `ws://localhost:8080/api/voice?token={jwtToken}`.
             - Text messages: JSON control
             - Binary messages: audio chunks
           the param "token" is needed to know which user is connected""")
   public Response wsInfo() {
-    return Response.ok(Map.of("url", "ws://localhost:8080/api/vocal?token={jwtToken}")).build();
+    return Response.ok(Map.of("url", "ws://localhost:8080/api/voice?token={jwtToken}")).build();
   }
 }
