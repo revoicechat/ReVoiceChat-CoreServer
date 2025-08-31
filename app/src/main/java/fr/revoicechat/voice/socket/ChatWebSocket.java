@@ -1,6 +1,5 @@
 package fr.revoicechat.voice.socket;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
@@ -9,9 +8,11 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
+import org.eclipse.microprofile.context.ManagedExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.security.UserHolder;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.voice.notification.VoiceJoiningNotification;
@@ -19,7 +20,6 @@ import fr.revoicechat.voice.notification.VoiceLeavingNotification;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.CloseReason.CloseCodes;
-import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -36,28 +36,40 @@ public class ChatWebSocket {
   // Thread-safe set of connected sessions
   private static final Set<UserSession> sessions = ConcurrentHashMap.newKeySet();
 
+  private final ManagedExecutor executor;
   private final UserHolder userHolder;
 
-  public ChatWebSocket(final UserHolder userHolder) {
+  public ChatWebSocket(final ManagedExecutor executor, final UserHolder userHolder) {
+    this.executor = executor;
     this.userHolder = userHolder;
   }
 
   @OnOpen
-  public void onOpen(Session session, EndpointConfig config) {
+  public void onOpen(Session session) {
     Map<String, List<String>> params = session.getRequestParameterMap();
-    List<String> tokens = params.get("token");
-    if (tokens == null || tokens.isEmpty()) {
+    List<String> tokens = params.getOrDefault("token", List.of());
+    if (tokens.isEmpty()) {
       closeSession(session, CloseCodes.VIOLATED_POLICY, "Missing token");
       return;
     }
     String token = tokens.getFirst();
     try {
-      var user = userHolder.get(token);
-      LOG.info("WebSocket connected as user {}", user.getId());
-      sessions.add(new UserSession(user.getId(), session));
-      Notification.of(new VoiceJoiningNotification(user.getId())).sendTo(Stream.of(user));
+      executor.submit(() -> {
+        var user = userHolder.get(token);
+        closeOldSession(user);
+        LOG.info("WebSocket connected as user {}", user.getId());
+        sessions.add(new UserSession(user.getId(), session));
+        Notification.of(new VoiceJoiningNotification(user.getId())).sendTo(Stream.of(user));
+      });
     } catch (WebApplicationException e) {
       closeSession(session, CloseCodes.VIOLATED_POLICY, "Invalid token: " + e.getMessage());
+    }
+  }
+
+  private void closeOldSession(final User user) {
+    var existingSession = getExistingSession(user.getId());
+    if (existingSession != null) {
+      onClose(existingSession.session);
     }
   }
 
@@ -68,11 +80,7 @@ public class ChatWebSocket {
     for (UserSession userSession : sessions) {
       var session = userSession.session;
       if (!session.equals(sender) && session.isOpen()) {
-        try {
-          session.getBasicRemote().sendText(message);
-        } catch (IOException e) {
-          LOG.error("Client error", e);
-        }
+        session.getAsyncRemote().sendText(message);
       }
     }
   }
@@ -84,11 +92,7 @@ public class ChatWebSocket {
     for (UserSession userSession : sessions) {
       var session = userSession.session;
       if (!session.getId().equals(sender.getId()) && session.isOpen()) {
-        try {
-          session.getBasicRemote().sendBinary(ByteBuffer.wrap(message));
-        } catch (IOException e) {
-          LOG.error("Client error", e);
-        }
+        session.getAsyncRemote().sendBinary(ByteBuffer.wrap(message));
       }
     }
   }
@@ -105,6 +109,12 @@ public class ChatWebSocket {
             });
   }
 
+  private UserSession getExistingSession(UUID user) {
+    return sessions.stream().filter(userSession -> userSession.user.equals(user))
+            .findFirst()
+            .orElse(null);
+  }
+
   @OnError
   public void onError(Session session, Throwable throwable) {
     LOG.error("Error on session {}: {}", session.getId(), throwable.getMessage());
@@ -116,6 +126,7 @@ public class ChatWebSocket {
     try {
       session.close(new CloseReason(code, reason));
     } catch (Exception ignored) {
+      // ignored the following error
     }
   }
 }
