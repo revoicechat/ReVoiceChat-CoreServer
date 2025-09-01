@@ -5,10 +5,10 @@ import static fr.revoicechat.core.nls.HttpStatusErrorCode.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
-import fr.revoicechat.core.nls.LocalizedMessage;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
+
+import fr.revoicechat.core.nls.LocalizedMessage;
 
 final class ErrorMapperUtils {
   private ErrorMapperUtils() {}
@@ -20,7 +20,7 @@ final class ErrorMapperUtils {
   static final String UNKNOWN_HTML_MESSAGE = fetchForbiddenAccessFile("/static/unknown-error-template.html");
 
   private static String fetchForbiddenAccessFile(String name) {
-    try (var ressource = GlobalExceptionMapper.class.getResourceAsStream(name)) {
+    try (var ressource = ErrorMapperUtils.class.getResourceAsStream(name)) {
       assert ressource != null;
       return new String(ressource.readAllBytes(), StandardCharsets.UTF_8);
     } catch (IOException e) {

@@ -1,6 +1,5 @@
 package fr.revoicechat.core.web.filterchain;
 
-import java.io.IOException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.container.ContainerResponseContext;
@@ -20,7 +19,7 @@ public class LocaleLangRequestFilter implements ContainerRequestFilter, Containe
   }
 
   @Override
-  public void filter(final ContainerRequestContext requestContext, final ContainerResponseContext responseContext) throws IOException {
+  public void filter(final ContainerRequestContext requestContext, final ContainerResponseContext responseContext) {
     CurrentRequestHolder.removeLocale();
   }
 }

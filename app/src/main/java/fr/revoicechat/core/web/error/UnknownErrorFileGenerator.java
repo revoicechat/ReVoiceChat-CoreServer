@@ -27,9 +27,9 @@ public class UnknownErrorFileGenerator {
     String fileName = timestamp + "-ERR-" + uuid + ".log";
     Path logDir = Paths.get(errorLogDirectoryPath);
     Path logFile = logDir.resolve(fileName);
-    try {
+    try (var printer = new PrintStream(logFile.toFile())) {
       Files.createDirectories(logDir);
-      exception.printStackTrace(new PrintStream(logFile.toFile()));
+      exception.printStackTrace(printer);
     } catch (IOException ioe) {
       fileName = "unable to generate an internal error file";
     }
