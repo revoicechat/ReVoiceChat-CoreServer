@@ -9,6 +9,7 @@ import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
+import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.representation.user.UserRepresentation;
 import fr.revoicechat.core.service.RoomService;
 import fr.revoicechat.core.service.ServerService;
@@ -29,22 +30,22 @@ public class ServerControllerImpl implements ServerController {
   }
 
   @Override
-  public List<Server> getServers() {
+  public List<ServerRepresentation> getServers() {
     return serverService.getAll();
   }
 
   @Override
-  public Server getServer(UUID id) {
+  public ServerRepresentation getServer(UUID id) {
     return serverService.get(id);
   }
 
   @Override
-  public Server createServer(ServerCreationRepresentation representation) {
+  public ServerRepresentation createServer(ServerCreationRepresentation representation) {
     return serverService.create(representation);
   }
 
   @Override
-  public Server updateServer(UUID id, ServerCreationRepresentation representation) {
+  public ServerRepresentation updateServer(UUID id, ServerCreationRepresentation representation) {
     return serverService.update(id, representation);
   }
 
