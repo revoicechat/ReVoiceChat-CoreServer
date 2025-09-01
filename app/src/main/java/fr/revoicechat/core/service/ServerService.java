@@ -10,8 +10,10 @@ import jakarta.transaction.Transactional;
 import fr.revoicechat.core.error.ResourceNotFoundException;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.ServerUser;
+import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
+import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.security.UserHolder;
 import fr.revoicechat.core.service.server.ServerProviderService;
 import io.quarkus.security.UnauthorizedException;
@@ -52,8 +54,10 @@ public class ServerService {
    * {@link ServerProviderService} to fetch the server list, then logs it.
    * @return a list of available servers, possibly empty
    */
-  public List<Server> getAll() {
-    return serverProviderService.getServers();
+  public List<ServerRepresentation> getAll() {
+    return serverProviderService.getServers().stream()
+                                .map(this::map)
+                                .toList();
   }
 
   /**
@@ -62,7 +66,11 @@ public class ServerService {
    * @return the server entity
    * @throws java.util.NoSuchElementException if no server with the given ID exists
    */
-  public Server get(final UUID id) {
+  public ServerRepresentation get(final UUID id) {
+    return map(getEntity(id));
+  }
+
+  public Server getEntity(final UUID id) {
     return Optional.ofNullable(entityManager.find(Server.class, id))
                    .orElseThrow(() -> new ResourceNotFoundException(Server.class, id));
   }
@@ -73,7 +81,7 @@ public class ServerService {
    * @return the persisted server entity with its generated ID
    */
   @Transactional
-  public Server create(final ServerCreationRepresentation representation) {
+  public ServerRepresentation create(final ServerCreationRepresentation representation) {
     Server server = new Server();
     server.setId(UUID.randomUUID());
     server.setName(representation.name());
@@ -84,7 +92,7 @@ public class ServerService {
     serverUser.setServer(server);
     serverUser.setUser(owner);
     entityManager.persist(serverUser);
-    return server;
+    return map(server);
   }
 
   public void delete(final UUID id) {
@@ -101,18 +109,26 @@ public class ServerService {
    * @return the updated and persisted server entity
    */
   @Transactional
-  public Server update(final UUID id, final ServerCreationRepresentation representation) {
-    var server = get(id);
+  public ServerRepresentation update(final UUID id, final ServerCreationRepresentation representation) {
+    var server = getEntity(id);
     if (cannotBeUpdate(server)) {
       throw new UnauthorizedException("user is not allowed to update this server");
     }
     server.setName(representation.name());
     entityManager.persist(server);
-    return server;
+    return map(server);
   }
 
   private boolean cannotBeUpdate(final Server server) {
     var user = userHolder.get();
     return !(user != null && (user.getType().equals(UserType.ADMIN) || server.getOwner().equals(user)));
+  }
+
+  private ServerRepresentation map(final Server server) {
+    return new ServerRepresentation(
+        server.getId(),
+        server.getName(),
+        Optional.ofNullable(server.getOwner()).map(User::getId).orElse(null)
+    );
   }
 }

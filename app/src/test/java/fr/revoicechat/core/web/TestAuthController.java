@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,9 +18,12 @@ import fr.revoicechat.core.model.ActiveStatus;
 import fr.revoicechat.core.quarkus.profile.H2Profile;
 import fr.revoicechat.core.representation.login.UserPassword;
 import fr.revoicechat.core.representation.user.SignupRepresentation;
+import fr.revoicechat.core.representation.user.UserRepresentation;
 import fr.revoicechat.core.web.TestAuthController.NoInvitationProfile;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import io.smallrye.jwt.auth.principal.JWTParser;
 import io.smallrye.jwt.auth.principal.ParseException;
 
@@ -30,7 +33,6 @@ import io.smallrye.jwt.auth.principal.ParseException;
 class TestAuthController {
 
   @Inject DBCleaner dbCleaner;
-  @Inject AuthController authController;
   @Inject JWTParser jwtParser;
 
   @BeforeEach
@@ -40,28 +42,60 @@ class TestAuthController {
   }
 
   @Test
-  void test() throws ParseException {
-    var signup = new SignupRepresentation("testUser", "psw", "email@email.fr", UUID.randomUUID());
-    var user = authController.signup(signup);
+  void testSignup() {
+    var response = signup();
+    assertThat(response).isNotNull();
+    assertThat(response.getStatusCode()).isEqualTo(Status.OK.getStatusCode());
+    var user = response.as(UserRepresentation.class);
     assertThat(user).isNotNull();
     assertThat(user.id()).isNotNull();
     assertThat(user.displayName()).isEqualTo("testUser");
     assertThat(user.login()).isEqualTo("testUser");
     assertThat(user.createdDate()).isNotNull();
     assertThat(user.status()).isEqualTo(ActiveStatus.OFFLINE);
-    var wrongUserPassword = new UserPassword("testUser", "pswwwww");
-    try (var response = authController.login(wrongUserPassword)) {
-      assertThat(response.getStatus()).isEqualTo(Response.Status.UNAUTHORIZED.getStatusCode());
-      assertThat(response.getEntity()).isEqualTo("Invalid credentials");
-    }
-    var goodUserPassword = new UserPassword("testUser", "psw");
-    try (var result = authController.login(goodUserPassword)) {
-      assertThat(result.getStatus()).isEqualTo(Status.OK.getStatusCode());
-      String entity = (String) result.getEntity();
-      assertThat(entity).isNotNull();
-      var jwt = jwtParser.parse(entity);
-      assertThat(jwt.getSubject()).isEqualTo("testUser");
-    }
+  }
+
+  @Test
+  void testLogin() throws ParseException {
+    signup();
+    var response = login("testUser", "psw");
+    assertThat(response.getStatusCode()).isEqualTo(Status.OK.getStatusCode());
+    var token = response.asString();
+    assertThat(token).isNotNull();
+    var jwt = jwtParser.parse(token);
+    assertThat(jwt.getSubject()).isEqualTo("testUser");
+  }
+
+  @Test
+  void testLoginWrongPassword() {
+    signup();
+    var response = login("testUser", "pswwwww");
+    assertThat(response.getStatusCode()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
+    assertThat(response.asString()).isEqualTo("Invalid credentials");
+  }
+
+  @Test
+  void testLoginWrongUsername() {
+    signup();
+    var response = login("not an existing username", "psw");
+    assertThat(response.getStatusCode()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
+    assertThat(response.asString()).isEqualTo("Invalid credentials");
+  }
+
+  private static Response signup() {
+    var signup = new SignupRepresentation("testUser", "psw", "email@email.fr", UUID.randomUUID());
+    return RestAssured.given()
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .body(signup)
+                      .when().put("/auth/signup");
+  }
+
+  private static Response login(String userName, String password) {
+    var wrongUserPassword = new UserPassword(userName, password);
+    return RestAssured.given()
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .body(wrongUserPassword)
+                      .when().post("/auth/login");
   }
 
   public static class NoInvitationProfile extends H2Profile {

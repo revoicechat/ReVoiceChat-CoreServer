@@ -2,7 +2,6 @@ package fr.revoicechat.core.web.api;
 
 import java.util.List;
 import java.util.UUID;
-
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -10,6 +9,8 @@ import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -19,12 +20,10 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 
 import fr.revoicechat.core.model.Room;
-import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
+import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.representation.user.UserRepresentation;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
 
 @Path("server")
 @Tag(name = "Server", description = "Endpoints for managing server and their rooms")
@@ -33,7 +32,7 @@ public interface ServerController extends LoggedApi {
   @Operation(summary = "Get all servers", description = "Retrieve the list of all available servers.")
   @APIResponse(responseCode = "200", description = "List of servers successfully retrieved")
   @GET
-  List<Server> getServers();
+  List<ServerRepresentation> getServers();
 
   @Operation(summary = "Get a server by ID", description = "Retrieve details of a specific server by its unique identifier.")
   @APIResponse(responseCode = "200", description = "Server successfully retrieved")
@@ -47,7 +46,7 @@ public interface ServerController extends LoggedApi {
   )
   @GET
   @Path("/{id}")
-  Server getServer(@PathParam("id") UUID id);
+  ServerRepresentation getServer(@PathParam("id") UUID id);
 
   @Operation(summary = "Create a new server", description = "Create a new server with the provided information.")
   @APIResponse(responseCode = "200", description = "Server successfully created")
@@ -60,7 +59,7 @@ public interface ServerController extends LoggedApi {
       )
   )
   @PUT
-  Server createServer(ServerCreationRepresentation representation);
+  ServerRepresentation createServer(ServerCreationRepresentation representation);
 
   @Operation(summary = "Update an existing server", description = "Update the information of an existing server by its ID.")
   @APIResponse(responseCode = "200", description = "Server successfully updated")
@@ -76,7 +75,7 @@ public interface ServerController extends LoggedApi {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/{id}")
-  Server updateServer(@PathParam("id") UUID id, ServerCreationRepresentation representation);
+  ServerRepresentation updateServer(@PathParam("id") UUID id, ServerCreationRepresentation representation);
 
   @Operation(summary = "Update an existing server", description = "Update the information of an existing server by its ID.")
   @APIResponse(responseCode = "200", description = "Server successfully updated")

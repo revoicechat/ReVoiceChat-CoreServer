@@ -17,8 +17,8 @@ import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
+import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.WebApplicationException;
 
 import org.eclipse.microprofile.context.ManagedExecutor;
@@ -53,7 +53,8 @@ public class ChatWebSocket {
 
   @OnOpen
   @SuppressWarnings("unused") // call by websocket listener
-  public void onOpen(Session session, @PathParam("roomId") UUID roomId) {
+  public void onOpen(Session session, @PathParam("roomId") String roomIdAsString) {
+    UUID roomId = UUID.fromString(roomIdAsString);
     String token = token(session);
     if (token == null) {
       closeSession(session, CloseCodes.VIOLATED_POLICY, "Missing token");

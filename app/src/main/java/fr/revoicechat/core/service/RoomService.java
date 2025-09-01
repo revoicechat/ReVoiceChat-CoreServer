@@ -62,7 +62,7 @@ public class RoomService {
     room.setId(UUID.randomUUID());
     room.setType(representation.type());
     room.setName(representation.name());
-    var server = serverService.get(id);
+    var server = serverService.getEntity(id);
     room.setServer(server);
     entityManager.persist(room);
     return room;
