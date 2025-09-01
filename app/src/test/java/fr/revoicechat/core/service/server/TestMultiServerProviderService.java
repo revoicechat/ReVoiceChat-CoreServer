@@ -1,33 +1,29 @@
 package fr.revoicechat.core.service.server;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.Mockito.verify;
 
+import java.util.List;
+
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
+import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.repository.ServerRepository;
 
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class TestMultiServerProviderService {
-
-  @Mock private ServerRepository serverRepository;
-  @InjectMocks private MultiServerProviderService serverProviderService;
 
   @Test
   void testGetServers() {
-    serverProviderService.getServers();
-    verify(serverRepository).findAll();
+    var repository = new ServerRepositoryMock(2, List.of(new Server(), new Server()));
+    var result = new MultiServerProviderService(repository, null, null, null).getServers();
+    Assertions.assertThat(result).hasSize(2);
   }
 
   @Test
   void testCanBeUsed() {
-    assertThatCode(serverProviderService::canBeUsed).doesNotThrowAnyException();
+    var service = new MultiServerProviderService(null, null, null, null);
+    assertThatCode(service::canBeUsed).doesNotThrowAnyException();
   }
+
+  private record ServerRepositoryMock(long count, List<Server> findAll) implements ServerRepository {}
 }
