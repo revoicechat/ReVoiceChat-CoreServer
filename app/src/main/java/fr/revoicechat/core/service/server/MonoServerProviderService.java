@@ -3,7 +3,7 @@ package fr.revoicechat.core.service.server;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
-import jakarta.enterprise.inject.Vetoed;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -15,6 +15,7 @@ import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.nls.ServerErrorCode;
 import fr.revoicechat.core.repository.ServerRepository;
 import fr.revoicechat.core.repository.UserRepository;
+import io.quarkus.arc.properties.IfBuildProperty;
 
 /**
  * {@link ServerProviderService} implementation for single-server mode.
@@ -22,7 +23,8 @@ import fr.revoicechat.core.repository.UserRepository;
  * In this mode, only one {@link Server} may exist in the system.
  * If no server is found, a new one is automatically created.
  */
-@Vetoed
+@ApplicationScoped
+@IfBuildProperty(name = "revoicechat.global.sever-mode", stringValue = "MONO_SERVER")
 public class MonoServerProviderService implements ServerProviderService {
   private static final Logger LOG = LoggerFactory.getLogger(MonoServerProviderService.class);
 
