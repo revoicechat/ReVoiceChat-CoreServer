@@ -1,43 +1,75 @@
 package fr.revoicechat.notification.web;
 
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
-import fr.revoicechat.core.junit.DBCleaner;
-import fr.revoicechat.core.junit.UserCreator;
-import fr.revoicechat.core.quarkus.profile.H2Profile;
-import fr.revoicechat.notification.NotificationRegistrableHolder;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.sse.InboundSseEvent;
+import jakarta.ws.rs.sse.SseEventSource;
+
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import fr.revoicechat.core.junit.CleanDatabase;
+import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
+import fr.revoicechat.core.web.tests.RestTestUtils;
+import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.service.NotificationService;
-import fr.revoicechat.notification.stub.SseEventSinkMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.security.TestSecurity;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.sse.SseEventSink;
 
 @QuarkusTest
-@TestProfile(H2Profile.class)
+@TestProfile(BasicIntegrationTestProfile.class)
+@CleanDatabase
 class TestNotificationController {
-
-  @Inject DBCleaner cleaner;
-  @Inject UserCreator creator;
+  private static final Logger LOG = LoggerFactory.getLogger(TestNotificationController.class);
 
   @Inject NotificationService service;
-  @Inject NotificationRegistrableHolder holder;
-  @Inject NotificationController controller;
-
-  @BeforeEach
-  void setUp() {
-    cleaner.clean();
-    creator.create();
-  }
 
   @Test
-  @TestSecurity(user = "test-user", roles = {"USER"})
-  void test() {
-    SseEventSink sink = new SseEventSinkMock();
-    controller.generateSseEmitter(sink);
-    Assertions.assertThat(service.getProcessor(holder.get().getId())).hasSize(1);
+  void test() throws Exception {
+    var user = RestTestUtils.signup("user", "psw");
+    String token = RestTestUtils.login("user", "psw");
+    List<String> events = new ArrayList<>();
+    try (Client client = ClientBuilder.newBuilder()
+                                      .register((ClientRequestFilter) requestContext -> requestContext.getHeaders().add("Authorization", "Bearer " + token))
+                                      .build();
+         SseEventSource ignore = source(client, events)) {
+      assertThat(events).isEmpty();
+      assertThat(service.getProcessor(user.id())).hasSize(1);
+      Notification.ping(user::id);
+      await().during(1, SECONDS);
+      assertThat(events).containsExactly("{\"type\":\"PING\",\"data\":{}}");
+    }
+  }
+
+  private SseEventSource source(final Client client, List<String> events) throws Exception {
+    URI uri = new URI("http://localhost:8081/api/sse");
+    CountDownLatch latch = new CountDownLatch(1);
+    var target = client.target(uri);
+    SseEventSource source = SseEventSource.target(target).build();
+    source.register(
+        (InboundSseEvent event) -> {
+          events.add(event.readData());
+          latch.countDown();
+        },
+        ex -> LOG.error("error", ex),
+        () -> LOG.info("Stream closed")
+    );
+    source.open();
+    // wait for the first event
+    if (latch.await(2, SECONDS)) {
+      return source;
+    }
+    return null;
   }
 }

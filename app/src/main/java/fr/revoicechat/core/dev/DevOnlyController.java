@@ -7,7 +7,7 @@ import jakarta.ws.rs.Path;
 
 @Path("/error/throw")
 @IfBuildProfile("dev")
-public class AuthController {
+public class DevOnlyController {
 
   @GET
   @PermitAll

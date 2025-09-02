@@ -20,6 +20,11 @@ public class InvitationLinkControllerImpl implements InvitationLinkController {
   }
 
   @Override
+  public InvitationRepresentation get(final UUID id) {
+    return invitationLinkService.get(id);
+  }
+
+  @Override
   public void revoke(final UUID id) {
     invitationLinkService.revoke(id);
   }

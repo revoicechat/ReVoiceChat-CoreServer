@@ -1,56 +1,45 @@
 package fr.revoicechat.core.web;
 
-import static fr.revoicechat.core.web.tests.RestTestUtils.signup;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import fr.revoicechat.core.junit.DBCleaner;
-import fr.revoicechat.core.junit.UserCreator;
+import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.nls.CommonErrorCode;
 import fr.revoicechat.core.nls.ServerErrorCode;
-import fr.revoicechat.core.quarkus.profile.H2Profile;
+import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.representation.user.UserRepresentation;
 import fr.revoicechat.core.web.TestMonoServerController.MonoServerProfile;
+import fr.revoicechat.core.web.tests.RestTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.security.TestSecurity;
 import io.restassured.RestAssured;
 
 @QuarkusTest
 @TestProfile(MonoServerProfile.class)
-@TestSecurity(authorizationEnabled = false)
+@CleanDatabase
 class TestMonoServerController {
-
-  @Inject DBCleaner cleaner;
-  @Inject UserCreator creator;
-
-  @BeforeEach
-  void setUp() {
-    cleaner.clean();
-    creator.create();
-  }
 
   @Test
   void creationIsImpossible() {
+    String token = RestTestUtils.logNewUser();
     var representation = new ServerCreationRepresentation("test");
     var response = RestAssured.given()
                               .contentType(MediaType.APPLICATION_JSON)
+                              .header("Authorization", "Bearer " + token)
                               .body(representation)
                               .when().put("/server");
     assertThat(response.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
@@ -59,7 +48,8 @@ class TestMonoServerController {
 
   @Test
   void testGetServers() {
-    var servers = getServers();
+    String token = RestTestUtils.logNewUser();
+    var servers = getServers(token);
     assertThat(servers).hasSize(1);
     var server = servers.getFirst();
     assertThat(server).isNotNull();
@@ -70,23 +60,27 @@ class TestMonoServerController {
 
   @Test
   void testGetServerExists() {
-    var servers = getServers();
+    String token = RestTestUtils.logNewUser();
+    var servers = getServers(token);
     assertThat(servers).hasSize(1);
     var server = servers.getFirst();
     ServerRepresentation serv = RestAssured.given()
-                             .contentType(MediaType.APPLICATION_JSON)
-                             .when().pathParam("id", server.id()).get("/server/{id}")
-                             .then().statusCode(200)
-                             .extract()
-                             .body().as(ServerRepresentation.class);
+                                           .contentType(MediaType.APPLICATION_JSON)
+                                           .header("Authorization", "Bearer " + token)
+                                           .when().pathParam("id", server.id()).get("/server/{id}")
+                                           .then().statusCode(200)
+                                           .extract()
+                                           .body().as(ServerRepresentation.class);
     assertThat(serv).isEqualTo(server);
   }
 
   @Test
   void testGetServerNotExists() {
+    String token = RestTestUtils.logNewUser();
     var randomId = UUID.randomUUID();
     var error = RestAssured.given()
                            .contentType(MediaType.APPLICATION_JSON)
+                           .header("Authorization", "Bearer " + token)
                            .when().pathParam("id", randomId).get("/server/{id}")
                            .then().statusCode(404)
                            .extract()
@@ -96,35 +90,40 @@ class TestMonoServerController {
 
   @Test
   void testGetRooms() {
-    var servers = getServers();
+    String token = RestTestUtils.logNewUser();
+    var servers = getServers(token);
     assertThat(servers).hasSize(1);
     var server = servers.getFirst();
-    var room = getRooms(server.id());
+    var room = getRooms(server.id(), token);
     assertThat(room).hasSize(3);
   }
 
   @Test
   void testCreateRooms() {
-    var servers = getServers();
+    String token = RestTestUtils.logNewUser();
+    var servers = getServers(token);
     assertThat(servers).hasSize(1);
     var server = servers.getFirst();
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + token)
                .body(new RoomRepresentation("room", RoomType.TEXT))
                .when().pathParam("id", server.id()).put("/server/{id}/room")
                .then().statusCode(200);
-    var room = getRooms(server.id());
+    var room = getRooms(server.id(), token);
     assertThat(room).hasSize(4);
   }
 
   @Test
   void fetchUser() {
-    signup("Nyphew", "a");
-    var servers = getServers();
+    RestTestUtils.signup("Nyphew", "a");
+    String token = RestTestUtils.logNewUser();
+    var servers = getServers(token);
     assertThat(servers).hasSize(1);
     var server = servers.getFirst();
     var users = RestAssured.given()
                            .contentType(MediaType.APPLICATION_JSON)
+                           .header("Authorization", "Bearer " + token)
                            .when().pathParam("id", server.id()).get("/server/{id}/user")
                            .then().statusCode(200)
                            .extract()
@@ -132,9 +131,10 @@ class TestMonoServerController {
     assertThat(users).hasSize(2);
   }
 
-  private static List<ServerRepresentation> getServers() {
+  private static List<ServerRepresentation> getServers(String token) {
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
+                      .header("Authorization", "Bearer " + token)
                       .when().get("/server")
                       .then().statusCode(200)
                       .extract()
@@ -142,9 +142,10 @@ class TestMonoServerController {
                       .jsonPath().getList(".", ServerRepresentation.class);
   }
 
-  private static List<Room> getRooms(UUID id) {
+  private static List<Room> getRooms(UUID id, String token) {
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
+                      .header("Authorization", "Bearer " + token)
                       .when().pathParam("id", id).get("/server/{id}/room")
                       .then().statusCode(200)
                       .extract()
@@ -152,11 +153,10 @@ class TestMonoServerController {
                       .jsonPath().getList(".", Room.class);
   }
 
-  public static class MonoServerProfile extends H2Profile {
+  public static class MonoServerProfile extends BasicIntegrationTestProfile {
     @Override
     public Map<String, String> getConfigOverrides() {
       var config = new HashMap<>(super.getConfigOverrides());
-      config.put("revoicechat.global.app-only-accessible-by-invitation", "false");
       config.put("revoicechat.global.sever-mode", "MONO_SERVER");
       return config;
     }

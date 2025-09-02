@@ -12,5 +12,5 @@ public record NotificationData(NotificationPayload data) implements Serializable
   }
 
   @NotificationType("PING")
-  private record Ping() implements NotificationPayload {}
+  record Ping() implements NotificationPayload {}
 }

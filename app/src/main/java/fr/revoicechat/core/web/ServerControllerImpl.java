@@ -2,11 +2,9 @@ package fr.revoicechat.core.web;
 
 import java.util.List;
 import java.util.UUID;
-
 import jakarta.annotation.security.RolesAllowed;
 
 import fr.revoicechat.core.model.Room;
-import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;

@@ -1,5 +1,14 @@
 package fr.revoicechat.notification.web;
 
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.sse.SseEventSink;
+
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -10,14 +19,6 @@ import org.slf4j.LoggerFactory;
 import fr.revoicechat.core.web.api.LoggedApi;
 import fr.revoicechat.notification.NotificationRegistrableHolder;
 import fr.revoicechat.notification.service.NotificationRegistry;
-import jakarta.annotation.security.PermitAll;
-import jakarta.annotation.security.RolesAllowed;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.sse.SseEventSink;
 
 @PermitAll
 @Path("/sse")
@@ -43,6 +44,6 @@ public class NotificationController implements LoggedApi {
   public void generateSseEmitter(@Context SseEventSink sink) {
     var user = holder.get();
     notificationRegistry.register(user, sink);
-    LOG.debug("sse connection for user {}", user.getId());
+    LOG.info("sse connection for user {}", user.getId());
   }
 }

@@ -2,6 +2,7 @@ package fr.revoicechat.core.web.api;
 
 import java.util.UUID;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -27,6 +28,14 @@ public interface InvitationLinkController extends LoggedApi {
   @POST
   @Path("/application")
   InvitationRepresentation generateApplicationInvitation();
+
+  @Operation(summary = "Get an invitation status", description = "Get an invitation status.")
+  @APIResponse(responseCode = "200", description = "invitation successfully retrived",
+      content = @Content(schema = @Schema(implementation = User.class))
+  )
+  @GET
+  @Path("/{id}")
+  InvitationRepresentation get(@PathParam("id") UUID id);
 
   @Operation(summary = "Revoke an unused invitation", description = "Revoke an unused invitation.")
   @APIResponse(responseCode = "200", description = "invitation successfully revoked",

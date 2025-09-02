@@ -2,24 +2,19 @@ package fr.revoicechat.core.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import fr.revoicechat.core.junit.DBCleaner;
+import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.ActiveStatus;
-import fr.revoicechat.core.quarkus.profile.H2Profile;
+import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.representation.login.UserPassword;
 import fr.revoicechat.core.representation.user.SignupRepresentation;
 import fr.revoicechat.core.representation.user.UserRepresentation;
-import fr.revoicechat.core.web.TestAuthController.NoInvitationProfile;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
@@ -29,17 +24,11 @@ import io.smallrye.jwt.auth.principal.ParseException;
 
 /** @see AuthController */
 @QuarkusTest
-@TestProfile(NoInvitationProfile.class)
+@TestProfile(BasicIntegrationTestProfile.class)
+@CleanDatabase
 class TestAuthController {
 
-  @Inject DBCleaner dbCleaner;
   @Inject JWTParser jwtParser;
-
-  @BeforeEach
-  @Transactional
-  void setUp() {
-    dbCleaner.clean();
-  }
 
   @Test
   void testSignup() {
@@ -96,14 +85,5 @@ class TestAuthController {
                       .contentType(MediaType.APPLICATION_JSON)
                       .body(wrongUserPassword)
                       .when().post("/auth/login");
-  }
-
-  public static class NoInvitationProfile extends H2Profile {
-    @Override
-    public Map<String, String> getConfigOverrides() {
-      var config = new HashMap<>(super.getConfigOverrides());
-      config.put("revoicechat.global.app-only-accessible-by-invitation", "false");
-      return config;
-    }
   }
 }

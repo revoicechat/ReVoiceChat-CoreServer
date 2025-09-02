@@ -5,6 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
+import fr.revoicechat.core.error.ResourceNotFoundException;
 import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.InvitationLinkStatus;
 import fr.revoicechat.core.model.InvitationType;
@@ -31,7 +32,15 @@ public class InvitationLinkService {
     invitation.setType(InvitationType.APPLICATION_JOIN);
     invitation.setSender(user);
     entityManager.persist(invitation);
-    return new InvitationRepresentation(invitation.getId());
+    return new InvitationRepresentation(invitation.getId(), invitation.getStatus(), invitation.getType());
+  }
+
+  public InvitationRepresentation get(final UUID id) {
+    var link = entityManager.find(InvitationLink.class, id);
+    if (link == null) {
+      throw new ResourceNotFoundException(InvitationLink.class, id);
+    }
+    return new InvitationRepresentation(link.getId(), link.getStatus(), link.getType());
   }
 
   @Transactional

@@ -7,11 +7,11 @@ import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 @Transactional
-public class DBCleaner {
+class DBCleaner {
   @PersistenceContext
   EntityManager entityManager;
 
-  public void clean() {
+  void clean() {
     entityManager.flush();
     entityManager.clear();
     entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
