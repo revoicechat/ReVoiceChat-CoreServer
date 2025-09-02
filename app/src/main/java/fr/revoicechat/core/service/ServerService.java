@@ -95,6 +95,7 @@ public class ServerService {
     return map(server);
   }
 
+  @Transactional
   public void delete(final UUID id) {
     serverProviderService.delete(id);
   }

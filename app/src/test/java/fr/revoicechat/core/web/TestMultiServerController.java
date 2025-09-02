@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Test;
@@ -76,7 +75,6 @@ class TestMultiServerController {
   }
 
   @Test
-  @Transactional
   void testGetServer() {
     String token = RestTestUtils.logNewUser();
     assertThat(getServers(token)).isEmpty();
@@ -84,6 +82,21 @@ class TestMultiServerController {
     createServer(token, "test2");
     var servers = getServers(token);
     assertThat(servers).hasSize(2);
+  }
+
+  @Test
+  void testDeleteServer() {
+    String token = RestTestUtils.logNewUser();
+    var server1 = createServer(token, "test1");
+    var servers = getServers(token);
+    assertThat(servers).hasSize(1);
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + token)
+               .when().pathParam("id", server1.id()).delete("/server/{id}")
+               .then().statusCode(204);
+    servers = getServers(token);
+    assertThat(servers).isEmpty();
   }
 
   @Test

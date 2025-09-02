@@ -3,9 +3,7 @@ package fr.revoicechat.core.service.server;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
-import jakarta.enterprise.inject.Vetoed;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,26 +12,31 @@ import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.repository.ServerRepository;
 import fr.revoicechat.core.repository.UserRepository;
+import io.quarkus.arc.properties.IfBuildProperty;
 
 /**
  * {@link ServerProviderService} implementation for multiple-server mode.
  * <p>
  * In this mode, any number of {@link Server} instances may exist in the system.
  */
-@Vetoed
+@ApplicationScoped
+@IfBuildProperty(name = "revoicechat.global.sever-mode", stringValue = "MULTI_SERVER")
 public class MultiServerProviderService implements ServerProviderService {
   private static final Logger LOG = LoggerFactory.getLogger(MultiServerProviderService.class);
 
   private final ServerRepository serverRepository;
   private final UserRepository userRepository;
   private final NewServerCreator newServerCreator;
-  private final EntityManager entityManager;
+  private final ServerDeleterService serverDeleterService;
 
-  public MultiServerProviderService(ServerRepository serverRepository, UserRepository userRepository, NewServerCreator newServerCreator, EntityManager entityManager) {
+  public MultiServerProviderService(ServerRepository serverRepository,
+                                    UserRepository userRepository,
+                                    NewServerCreator newServerCreator,
+                                    ServerDeleterService serverDeleterService) {
     this.serverRepository = serverRepository;
     this.userRepository = userRepository;
     this.newServerCreator = newServerCreator;
-    this.entityManager = entityManager;
+    this.serverDeleterService = serverDeleterService;
   }
 
   /** This implementation always allows usage. */
@@ -60,9 +63,7 @@ public class MultiServerProviderService implements ServerProviderService {
   }
 
   @Override
-  @Transactional
   public void delete(final UUID id) {
-    var server = entityManager.find(Server.class, id);
-    entityManager.remove(server);
+    serverDeleterService.delete(id);
   }
 }

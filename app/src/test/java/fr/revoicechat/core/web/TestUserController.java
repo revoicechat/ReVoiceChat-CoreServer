@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
+import fr.revoicechat.core.representation.user.AdminUpdatableUserData;
+import fr.revoicechat.core.representation.user.UpdatableUserData;
 import fr.revoicechat.core.representation.user.UserRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
@@ -52,6 +54,50 @@ class TestUserController {
     assertThat(retrievedUser).usingRecursiveComparison()
                              .withComparatorForType(Comparator.comparing(a -> a.truncatedTo(ChronoUnit.MILLIS)), OffsetDateTime.class)
                              .isEqualTo(signedUser);
+  }
+
+  @Test
+  void testUpdateMe() {
+    var signedUser = RestTestUtils.signup("nyphew", "psw2");
+    var token = RestTestUtils.login("nyphew", "psw2");
+    UpdatableUserData userData = new UpdatableUserData("new_nyphew", null, null);
+    var updatedUser = RestAssured.given()
+                                 .contentType(MediaType.APPLICATION_JSON)
+                                 .header("Authorization", "Bearer " + token)
+                                 .when().body(userData).patch("/user/me")
+                                 .then().statusCode(200)
+                                 .extract().body().as(UserRepresentation.class);
+    assertThat(updatedUser.id()).isEqualTo(signedUser.id());
+    assertThat(updatedUser.displayName()).isEqualTo("new_nyphew");
+  }
+
+  @Test
+  void testUpdateUserCalledByAdminUser() {
+    RestTestUtils.signup("admin", "psw");
+    var tokenAdmin = RestTestUtils.login("admin", "psw");
+    var user = RestTestUtils.signup("user", "psw2");
+    AdminUpdatableUserData userData = new AdminUpdatableUserData("userName", null);
+    var updatedUser = RestAssured.given()
+                                 .contentType(MediaType.APPLICATION_JSON)
+                                 .header("Authorization", "Bearer " + tokenAdmin)
+                                 .when().body(userData).pathParam("id", user.id()).patch("/user/{id}")
+                                 .then().statusCode(200)
+                                 .extract().body().as(UserRepresentation.class);
+    assertThat(updatedUser.id()).isEqualTo(user.id());
+    assertThat(updatedUser.displayName()).isEqualTo("userName");
+  }
+
+  @Test
+  void testUpdateUserCalledBySimpleUser() {
+    RestTestUtils.signup("admin", "psw");
+    var user = RestTestUtils.signup("user", "psw2");
+    var tokenUser = RestTestUtils.login("user", "psw2");
+    AdminUpdatableUserData userData = new AdminUpdatableUserData("userName", null);
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + tokenUser)
+               .when().body(userData).pathParam("id", user.id()).patch("/user/{id}")
+               .then().statusCode(403);
   }
 
   @Test
