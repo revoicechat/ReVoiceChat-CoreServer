@@ -9,6 +9,7 @@ import fr.revoicechat.core.web.tests.RestTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
+import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 @CleanDatabase
@@ -16,30 +17,34 @@ import io.restassured.RestAssured;
 class TestQueryParamJwtAuthMechanism {
 
   @Test
-  void shouldFailWithoutJwt() {
+  void testWrongJwt() {
     RestAssured.given()
+               .accept(MediaType.TEXT_PLAIN)
+               .contentType(MediaType.TEXT_PLAIN)
+               .when().get("/tests/secured-endpoint?jwt=1234")
+               .then()
+               .statusCode(401);
+  }
+
+  @Test
+  void testWrongNo() {
+    RestAssured.given()
+               .accept(MediaType.TEXT_PLAIN)
+               .contentType(MediaType.TEXT_PLAIN)
                .when().get("/tests/secured-endpoint")
                .then()
                .statusCode(401);
   }
 
   @Test
-  void shouldFailWithInvalidJwt() {
-    RestAssured.given()
-               .queryParam("jwt", "not-a-real-token")
-               .when().get("/tests/secured-endpoint")
-               .then()
-               .statusCode(401);
-  }
-
-  @Test
-  void shouldSucceedWithValidJwt() {
+  void test() {
     String validJwt = RestTestUtils.logNewUser();
     RestAssured.given()
-               .queryParam("jwt", validJwt)
-               .when().get("/tests/secured-endpoint")
+               .accept(MediaType.TEXT_PLAIN)
+               .contentType(MediaType.TEXT_PLAIN)
+               .when().get("/tests/secured-endpoint?jwt="+validJwt)
                .then()
-               .statusCode(200); // adapt depending on what your endpoint returns
+               .statusCode(200);
   }
 
   public static class DevTestProfile extends MultiServerProfile {
