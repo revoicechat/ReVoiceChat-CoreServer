@@ -14,8 +14,8 @@ public class DevOnlyController {
   @GET
   @RolesAllowed("USER")
   @Path(("/secured-endpoint"))
-  public String securedEndpoint() {
-    return "secured-endpoint";
+  public DevOnlyData securedEndpoint() {
+    return new DevOnlyData("secured-endpoint");
   }
 
   @GET
@@ -24,4 +24,6 @@ public class DevOnlyController {
   public String error() {
     throw new UnsupportedOperationException("this method is here to test error log generation");
   }
+
+  public record DevOnlyData(String data) {}
 }

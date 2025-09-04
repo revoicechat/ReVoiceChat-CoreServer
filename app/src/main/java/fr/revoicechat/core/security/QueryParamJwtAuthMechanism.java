@@ -1,6 +1,7 @@
 package fr.revoicechat.core.security;
 
 import java.util.Optional;
+import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import io.quarkus.security.identity.IdentityProviderManager;
@@ -12,6 +13,7 @@ import io.quarkus.vertx.http.runtime.security.HttpAuthenticationMechanism;
 import io.smallrye.mutiny.Uni;
 import io.vertx.ext.web.RoutingContext;
 
+@Priority(1)
 @ApplicationScoped
 public class QueryParamJwtAuthMechanism implements HttpAuthenticationMechanism {
 
@@ -26,7 +28,7 @@ public class QueryParamJwtAuthMechanism implements HttpAuthenticationMechanism {
 
   @Override
   public Uni<ChallengeData> getChallenge(final RoutingContext context) {
-    ChallengeData challenge = new ChallengeData(401, "application/json", "{\"error\": \"Invalid or missing JWT token\"}");
+    ChallengeData challenge = new ChallengeData(401, "Content-Type", "application/json");
     return Uni.createFrom().item(challenge);
   }
 }

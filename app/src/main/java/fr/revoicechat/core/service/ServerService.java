@@ -122,7 +122,7 @@ public class ServerService {
 
   private boolean cannotBeUpdate(final Server server) {
     var user = userHolder.get();
-    return !(user != null && (user.getType().equals(UserType.ADMIN) || server.getOwner().equals(user)));
+    return !user.getType().equals(UserType.ADMIN) && !server.getOwner().equals(user);
   }
 
   private ServerRepresentation map(final Server server) {
