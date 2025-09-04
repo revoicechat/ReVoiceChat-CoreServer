@@ -59,6 +59,36 @@ class TestMultiServerController {
   }
 
   @Test
+  void testUpdateServerByAnotherUser() {
+    String tokenAdmin = RestTestUtils.logNewUser("admin");
+    String tokenUser1 = RestTestUtils.logNewUser("user_1");
+    String tokenUser2 = RestTestUtils.logNewUser("user_2");
+    createServer(tokenUser1);
+    var servers = getServers(tokenUser1);
+    ServerRepresentation server = servers.getFirst();
+    assertThat(server.name()).isEqualTo("test");
+    var newName = new ServerCreationRepresentation("new name");
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + tokenAdmin)
+               .body(newName)
+               .when().pathParam("id", server.id()).patch("/server/{id}")
+               .then().statusCode(200);
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + tokenUser1)
+               .body(newName)
+               .when().pathParam("id", server.id()).patch("/server/{id}")
+               .then().statusCode(200);
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + tokenUser2)
+               .body(newName)
+               .when().pathParam("id", server.id()).patch("/server/{id}")
+               .then().statusCode(401);
+  }
+
+  @Test
   void testUpdateServerButResourceNotFound() {
     String token = RestTestUtils.logNewUser();
     var newName = new ServerCreationRepresentation("new name");

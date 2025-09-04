@@ -9,7 +9,7 @@ import fr.revoicechat.notification.stub.NotificationPayloadMock;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-class TestNotificationData {
+class TestNotificationDevOnlyData {
 
   @Test
   void test() throws JsonProcessingException {
