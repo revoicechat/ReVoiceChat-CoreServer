@@ -31,7 +31,7 @@ import io.restassured.RestAssured;
 class TestRoomController {
 
   @Test
-  void test() {
+  void testUpdate() {
     String token = RestTestUtils.logNewUser();
     var server = createServer(token);
     List<Room> rooms = getRooms(token, server);
@@ -53,6 +53,34 @@ class TestRoomController {
                .then().statusCode(200);
     rooms = getRooms(token, server);
     assertThat(rooms).hasSize(2);
+  }
+
+  @Test
+  void testUpdateSameType() {
+    String token = RestTestUtils.logNewUser();
+    var server = createServer(token);
+    var room = createRoom(token, server);
+    RoomRepresentation representation = new RoomRepresentation("test", RoomType.TEXT);
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + token)
+               .body(representation)
+               .when().pathParam("id", room.getId()).patch("/room/{id}")
+               .then().statusCode(200);
+  }
+
+  @Test
+  void testUpdateTypeTextToVocal() {
+    String token = RestTestUtils.logNewUser();
+    var server = createServer(token);
+    var room = createRoom(token, server);
+    RoomRepresentation representation = new RoomRepresentation("test", RoomType.VOICE);
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + token)
+               .body(representation)
+               .when().pathParam("id", room.getId()).patch("/room/{id}")
+               .then().statusCode(400);
   }
 
   @Test

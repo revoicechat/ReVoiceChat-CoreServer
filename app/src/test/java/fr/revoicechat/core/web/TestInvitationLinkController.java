@@ -3,11 +3,15 @@ package fr.revoicechat.core.web;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.UUID;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.core.junit.CleanDatabase;
+import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.InvitationLinkStatus;
 import fr.revoicechat.core.model.InvitationType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
@@ -22,14 +26,24 @@ import io.restassured.RestAssured;
 @CleanDatabase
 class TestInvitationLinkController {
 
+  @Inject EntityManager entityManager;
+
   @Test
+  @Transactional
   void testGenerateApplicationInvitation() {
-    String token = RestTestUtils.logNewUser();
+    var user = RestTestUtils.signup("user", "psw");
+    String token = RestTestUtils.login("user", "psw");
     var invitationCreated = generateApplicationInvitation(token);
     assertThat(invitationCreated).isNotNull();
     assertThat(invitationCreated.id()).isNotNull();
     assertThat(invitationCreated.type()).isEqualTo(InvitationType.APPLICATION_JOIN);
     assertThat(invitationCreated.status()).isEqualTo(InvitationLinkStatus.CREATED);
+    var result = entityManager.find(InvitationLink.class, invitationCreated.id());
+    assertThat(result).isNotNull();
+    assertThat(result.getSender()).isNotNull();
+    assertThat(result.getSender().getId()).isEqualTo(user.id());
+    assertThat(result.getTargetedServer()).isNull();
+
   }
 
   private static InvitationRepresentation generateApplicationInvitation(final String token) {

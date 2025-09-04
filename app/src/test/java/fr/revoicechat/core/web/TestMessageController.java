@@ -3,12 +3,17 @@ package fr.revoicechat.core.web;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.FileType;
+import fr.revoicechat.core.model.MediaData;
+import fr.revoicechat.core.model.MediaDataStatus;
 import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.quarkus.profile.MultiServerProfile;
@@ -29,7 +34,10 @@ import io.restassured.RestAssured;
 @TestProfile(MultiServerProfile.class)
 class TestMessageController {
 
+  @Inject EntityManager entityManager;
+
   @Test
+  @Transactional
   void testGetMessage() {
     String token = RestTestUtils.logNewUser();
     var server = createServer(token);
@@ -43,10 +51,14 @@ class TestMessageController {
                              .extract().body().as(MessageRepresentation.class);
     assertThat(message.text()).isEqualTo("message 1");
     assertThat(message.user()).isNotNull();
-    assertThat(message.medias()).hasSize(1);
-    var media = message.medias().getFirst();
-    assertThat(media.name()).isEqualTo("test.png");
-    assertThat(media.type()).isEqualTo(FileType.PICTURE);
+    assertThat(message.medias()).hasSize(2)
+                                .anyMatch(media -> media.name().equals("test1.png") && media.type().equals(FileType.PICTURE))
+                                .anyMatch(media -> media.name().equals("test2.mp4") && media.type().equals(FileType.VIDEO));
+    for (var media : message.medias()) {
+      var entity = entityManager.find(MediaData.class, media.id());
+      assertThat(entity).isNotNull();
+      assertThat(entity.getStatus()).isEqualTo(MediaDataStatus.DOWNLOADING);
+    }
   }
 
   @Test
@@ -101,7 +113,8 @@ class TestMessageController {
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
-                      .body(new CreatedMessageRepresentation("message 1", List.of(new CreatedMediaDataRepresentation("test.png"))))
+                      .body(new CreatedMessageRepresentation("message 1", List.of(new CreatedMediaDataRepresentation("test1.png"),
+                                                                                  new CreatedMediaDataRepresentation("test2.mp4"))))
                       .when().pathParam("id", room.getId()).put("/room/{id}/message")
                       .then().statusCode(200)
                       .extract().body().as(MessageRepresentation.class);

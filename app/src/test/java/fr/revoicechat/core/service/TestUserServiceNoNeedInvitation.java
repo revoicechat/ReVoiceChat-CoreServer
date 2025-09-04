@@ -83,6 +83,7 @@ class TestUserServiceNoNeedInvitation {
     invitation.setStatus(InvitationLinkStatus.CREATED);
     invitation.setType(InvitationType.APPLICATION_JOIN);
     invitation.setSender(admin);
+    invitation.setTargetedServer(null);
     entityManager.persist(invitation);
     return invitation;
   }
