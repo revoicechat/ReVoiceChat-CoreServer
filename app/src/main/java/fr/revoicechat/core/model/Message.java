@@ -85,10 +85,6 @@ public class Message {
     return this.mediaDatas;
   }
 
-  public void setMediaDatas(final List<MediaData> mediaData) {
-    this.mediaDatas = mediaData;
-  }
-
   public void addMediaData(final MediaData mediaData) {
     if (this.mediaDatas == null) {
       this.mediaDatas = new ArrayList<>();

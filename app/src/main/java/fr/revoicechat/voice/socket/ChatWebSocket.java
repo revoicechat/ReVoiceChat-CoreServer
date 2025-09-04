@@ -28,6 +28,7 @@ import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.security.UserHolder;
+import fr.revoicechat.core.utils.IgnoreExceptions;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.representation.UserNotificationRepresentation;
 import fr.revoicechat.voice.notification.VoiceJoiningNotification;
@@ -151,10 +152,6 @@ public class ChatWebSocket {
   private record UserSession(UUID user, UUID room, Session session) {}
 
   private void closeSession(Session session, CloseCodes code, String reason) {
-    try {
-      session.close(new CloseReason(code, reason));
-    } catch (Exception ignored) {
-      // ignored the following error
-    }
+    IgnoreExceptions.run(() -> session.close(new CloseReason(code, reason)));
   }
 }
