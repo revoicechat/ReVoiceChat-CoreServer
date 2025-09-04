@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import jakarta.ws.rs.core.MediaType;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.core.junit.CleanDatabase;
@@ -17,6 +18,7 @@ import fr.revoicechat.core.quarkus.profile.MultiServerProfile;
 import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
+import fr.revoicechat.core.representation.room.RoomPresence;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
@@ -53,6 +55,24 @@ class TestRoomController {
                .then().statusCode(200);
     rooms = getRooms(token, server);
     assertThat(rooms).hasSize(2);
+  }
+
+  @Test
+  void testRoomPresence() {
+    String token = RestTestUtils.logNewUser();
+    var server = createServer(token);
+    var room = createRoom(token, server);
+    var presence = RestAssured.given()
+                              .contentType(MediaType.APPLICATION_JSON)
+                              .header("Authorization", "Bearer " + token)
+                              .when().pathParam("id", room.getId()).get("/room/{id}/user")
+                              .then().statusCode(200)
+                              .extract().body()
+                              .as(RoomPresence.class);
+    Assertions.assertThat(presence.id()).isEqualTo(room.getId());
+    Assertions.assertThat(presence.name()).isEqualTo(room.getName());
+    Assertions.assertThat(presence.allUser()).hasSize(1);
+    Assertions.assertThat(presence.connectedUser()).isEmpty();
   }
 
   @Test

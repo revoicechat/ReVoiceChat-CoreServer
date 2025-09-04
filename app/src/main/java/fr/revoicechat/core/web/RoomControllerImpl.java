@@ -8,19 +8,23 @@ import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
+import fr.revoicechat.core.representation.room.RoomPresence;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.service.MessageService;
 import fr.revoicechat.core.service.RoomService;
+import fr.revoicechat.core.service.room.RoomPresenceService;
 import fr.revoicechat.core.web.api.RoomController;
 
 @RolesAllowed("USER") // only authenticated users
 public class RoomControllerImpl implements RoomController {
 
   private final RoomService roomService;
+  private final RoomPresenceService roomPresenceService;
   private final MessageService messageService;
 
-  public RoomControllerImpl(final RoomService roomService, final MessageService messageService) {
+  public RoomControllerImpl(RoomService roomService, RoomPresenceService roomPresenceService, MessageService messageService) {
     this.roomService = roomService;
+    this.roomPresenceService = roomPresenceService;
     this.messageService = messageService;
   }
 
@@ -49,5 +53,10 @@ public class RoomControllerImpl implements RoomController {
   @Override
   public MessageRepresentation sendMessage(UUID roomId, CreatedMessageRepresentation representation) {
     return messageService.create(roomId, representation);
+  }
+
+  @Override
+  public RoomPresence fetchUsers(final UUID id) {
+    return roomPresenceService.get(id);
   }
 }

@@ -16,6 +16,7 @@ import fr.revoicechat.core.error.BadRequestException;
 import fr.revoicechat.core.model.ActiveStatus;
 import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.InvitationLinkStatus;
+import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.repository.UserRepository;
@@ -84,7 +85,7 @@ public class UserService {
       invitationLink.setApplier(user);
       entityManager.persist(invitationLink);
     }
-    return map(user);
+    return toRepresentation(user);
   }
 
   public User findByLogin(final String username) {
@@ -98,16 +99,22 @@ public class UserService {
   }
 
   public UserRepresentation findCurrentUser() {
-    return map(userHolder.get());
+    return toRepresentation(userHolder.get());
   }
 
   public UserRepresentation get(final UUID id) {
-    return map(getUser(id));
+    return toRepresentation(getUser(id));
   }
 
   @Transactional
   public List<UserRepresentation> fetchUserForServer(final UUID id) {
-    return serverProviderService.getUsers(id).map(this::map).toList();
+    return serverProviderService.getUsers(id).map(this::toRepresentation).toList();
+  }
+
+  @Transactional
+  public List<UserRepresentation> fetchUserForRoom(final UUID id) {
+    var server = entityManager.find(Room.class, id).getServer();
+    return fetchUserForServer(server.getId());
   }
 
   @Transactional
@@ -116,7 +123,7 @@ public class UserService {
     Optional.ofNullable(userData.displayName()).filter(not(String::isBlank)).ifPresent(user::setDisplayName);
     Optional.ofNullable(userData.type()).ifPresent(user::setType);
     entityManager.persist(user);
-    return map(user);
+    return toRepresentation(user);
   }
 
   private User getUser(final UUID id) {
@@ -130,7 +137,7 @@ public class UserService {
     Optional.ofNullable(userData.displayName()).filter(not(String::isBlank)).ifPresent(user::setDisplayName);
     Optional.ofNullable(userData.status()).ifPresent(user::setStatus);
     entityManager.persist(user);
-    return map(user);
+    return toRepresentation(user);
   }
 
   private void setPassword(final User user, final PasswordUpdated password) {
@@ -144,7 +151,7 @@ public class UserService {
     }
   }
 
-  private UserRepresentation map(final User user) {
+  public UserRepresentation toRepresentation(final User user) {
     return new UserRepresentation(
         user.getId(),
         user.getDisplayName(),

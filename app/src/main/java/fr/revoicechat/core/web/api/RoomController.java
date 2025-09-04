@@ -20,6 +20,7 @@ import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
+import fr.revoicechat.core.representation.room.RoomPresence;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 
 @Path("room/{id}")
@@ -96,4 +97,19 @@ public interface RoomController extends LoggedApi {
   @PUT
   @Path("/message")
   MessageRepresentation sendMessage(@PathParam("id") UUID roomId, CreatedMessageRepresentation representation);
+
+  @Tags(refs = { "Room", "User" })
+  @Operation(summary = "Get all user for a room", description = "Retrieve the list of user using a specific room.")
+  @APIResponse(responseCode = "200", description = "List of user successfully retrieved")
+  @APIResponse(
+      responseCode = "404",
+      description = "Server not found",
+      content = @Content(
+          mediaType = "text/plain",
+          schema = @Schema(implementation = String.class, examples = "Room not found")
+      )
+  )
+  @GET
+  @Path("/user")
+  RoomPresence fetchUsers(@PathParam("id") UUID id);
 }

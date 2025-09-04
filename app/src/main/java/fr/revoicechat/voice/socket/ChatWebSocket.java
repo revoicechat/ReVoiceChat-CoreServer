@@ -28,6 +28,7 @@ import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.security.UserHolder;
+import fr.revoicechat.core.service.room.ConnectedUserRetriever;
 import fr.revoicechat.core.utils.IgnoreExceptions;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.representation.UserNotificationRepresentation;
@@ -36,7 +37,7 @@ import fr.revoicechat.voice.notification.VoiceLeavingNotification;
 
 @ServerEndpoint("/voice/{roomId}")
 @ApplicationScoped
-public class ChatWebSocket {
+public class ChatWebSocket implements ConnectedUserRetriever {
   private static final Logger LOG = LoggerFactory.getLogger(ChatWebSocket.class);
 
   // Thread-safe set of connected sessions
@@ -61,22 +62,22 @@ public class ChatWebSocket {
       closeSession(session, CloseCodes.VIOLATED_POLICY, "Missing token");
       return;
     }
-      executor.submit(() -> {
-        try {
-          var user = userHolder.get(token);
-          closeOldSession(user);
-          var room = entityManager.find(Room.class, roomId);
-          if (room == null || !room.getType().equals(RoomType.VOICE)) {
-            closeSession(session, CloseCodes.CANNOT_ACCEPT, "selected room cannot accept websocket chat type");
-            return;
-          }
-          LOG.info("WebSocket connected as user {}", user.getId());
-          sessions.add(new UserSession(user.getId(), roomId, session));
-          Notification.of(new VoiceJoiningNotification(new UserNotificationRepresentation(user.getId(), user.getDisplayName()), roomId)).sendTo(Stream.of(user));
-        } catch (Exception e) {
-          closeSession(session, CloseCodes.VIOLATED_POLICY, "Invalid token: " + e.getMessage());
+    executor.submit(() -> {
+      try {
+        var user = userHolder.get(token);
+        closeOldSession(user);
+        var room = entityManager.find(Room.class, roomId);
+        if (room == null || !room.getType().equals(RoomType.VOICE)) {
+          closeSession(session, CloseCodes.CANNOT_ACCEPT, "selected room cannot accept websocket chat type");
+          return;
         }
-      });
+        LOG.info("WebSocket connected as user {}", user.getId());
+        sessions.add(new UserSession(user.getId(), roomId, session));
+        Notification.of(new VoiceJoiningNotification(new UserNotificationRepresentation(user.getId(), user.getDisplayName()), roomId)).sendTo(Stream.of(user));
+      } catch (Exception e) {
+        closeSession(session, CloseCodes.VIOLATED_POLICY, "Invalid token: " + e.getMessage());
+      }
+    });
   }
 
   private String token(Session session) {
@@ -147,6 +148,13 @@ public class ChatWebSocket {
   @SuppressWarnings("unused") // call by websocket listener
   public void onError(Session session, Throwable throwable) {
     LOG.error("Error on session {}: {}", session.getId(), throwable.getMessage());
+  }
+
+  @Override
+  public Stream<UUID> getConnectedUsers(UUID room) {
+    return sessions.stream()
+                   .filter(userSession -> userSession.room.equals(room))
+                   .map(UserSession::user);
   }
 
   private record UserSession(UUID user, UUID room, Session session) {}

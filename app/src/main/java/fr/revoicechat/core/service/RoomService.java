@@ -111,7 +111,7 @@ public class RoomService {
     return id;
   }
 
-  private Room getRoom(final UUID roomId) {
+  public Room getRoom(final UUID roomId) {
     return Optional.ofNullable(entityManager.find(Room.class, roomId))
                    .orElseThrow(() -> new ResourceNotFoundException(Room.class, roomId));
   }
