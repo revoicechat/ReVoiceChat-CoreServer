@@ -14,13 +14,13 @@ import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.FileType;
 import fr.revoicechat.core.model.MediaData;
 import fr.revoicechat.core.model.MediaDataStatus;
-import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.quarkus.profile.MultiServerProfile;
 import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation.CreatedMediaDataRepresentation;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
+import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
@@ -96,12 +96,12 @@ class TestMessageController {
     assertThat(page3.content()).isEmpty();
   }
 
-  private static PageResult<MessageRepresentation> getPage(final String token, final Room room) {
+  private static PageResult<MessageRepresentation> getPage(final String token, final RoomRepresentation room) {
     var body = RestAssured.given()
                           .contentType(MediaType.APPLICATION_JSON)
                           .header("Authorization", "Bearer " + token)
                           .when()
-                          .pathParam("id", room.getId()).get("/room/{id}/message")
+                          .pathParam("id", room.id()).get("/room/{id}/message")
                           .then().statusCode(200)
                           .extract().body();
     var pageResult = body.as(PageResult.class);
@@ -109,26 +109,26 @@ class TestMessageController {
     return new PageResult<>(messages, pageResult.pageNumber(), pageResult.pageSize(), pageResult.totalElements());
   }
 
-  private static MessageRepresentation createMessage(final String token, final Room room) {
+  private static MessageRepresentation createMessage(final String token, final RoomRepresentation room) {
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
                       .body(new CreatedMessageRepresentation("message 1", List.of(new CreatedMediaDataRepresentation("test1.png"),
                                                                                   new CreatedMediaDataRepresentation("test2.mp4"))))
-                      .when().pathParam("id", room.getId()).put("/room/{id}/message")
+                      .when().pathParam("id", room.id()).put("/room/{id}/message")
                       .then().statusCode(200)
                       .extract().body().as(MessageRepresentation.class);
   }
 
-  private static Room createRoom(final String token, final ServerRepresentation server) {
-    RoomRepresentation representation = new RoomRepresentation("test", RoomType.TEXT);
+  private static RoomRepresentation createRoom(final String token, final ServerRepresentation server) {
+    CreationRoomRepresentation representation = new CreationRoomRepresentation("test", RoomType.TEXT);
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
                       .body(representation)
                       .when().pathParam("id", server.id()).put("/server/{id}/room")
                       .then().statusCode(200)
-                      .extract().body().as(Room.class);
+                      .extract().body().as(RoomRepresentation.class);
   }
 
   private static ServerRepresentation createServer(String token) {

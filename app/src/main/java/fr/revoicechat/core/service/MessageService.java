@@ -17,7 +17,8 @@ import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MediaDataRepresentation;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
-import fr.revoicechat.core.representation.message.MessageRepresentation.ActionType;
+import fr.revoicechat.core.representation.notification.NotificationActionType;
+import fr.revoicechat.core.representation.message.MessageNotification;
 import fr.revoicechat.core.security.UserHolder;
 import fr.revoicechat.core.service.media.MediaDataService;
 import fr.revoicechat.core.service.message.MessageValidation;
@@ -44,7 +45,6 @@ import fr.revoicechat.notification.representation.UserNotificationRepresentation
  *   <li>Transform domain entities into {@link MessageRepresentation} objects</li>
  *   <li>Notify clients about message events via the textual chat service</li>
  * </ul>
- *
  * @see MessageRepository
  * @see Notification
  * @see RoomService
@@ -80,7 +80,6 @@ public class MessageService {
 
   /**
    * Retrieves all messages for a given chat room.
-   *
    * @param roomId the unique identifier of the chat room
    * @return list of messages in the room, possibly empty if no messages exist
    */
@@ -89,15 +88,14 @@ public class MessageService {
     var pageResult = messageRepository.findByRoomId(roomId, page, size);
     return new PageResult<>(pageResult.content()
                                       .stream()
-                                      .map(message -> toRepresantation(message, null))
+                                      .map(this::toRepresantation)
                                       .toList(),
-        pageResult.pageNumber(), pageResult.pageSize(), pageResult.totalElements());
+                            pageResult.pageNumber(), pageResult.pageSize(), pageResult.totalElements());
   }
 
   /**
    * Creates and persists a new message in the specified chat room.
    * Also notifies connected clients about the new message.
-   *
    * @param roomId   the unique identifier of the chat room where the message will be added
    * @param creation the message data to create
    * @return a representation of the created message
@@ -105,7 +103,7 @@ public class MessageService {
   @Transactional
   public MessageRepresentation create(UUID roomId, CreatedMessageRepresentation creation) {
     messageValidation.isValid(creation);
-    var room = roomService.read(roomId);
+    var room = roomService.getRoom(roomId);
     var message = new Message();
     message.setId(UUID.randomUUID());
     message.setText(creation.text());
@@ -114,14 +112,13 @@ public class MessageService {
     message.setUser(userHolder.get());
     creation.medias().stream().map(mediaDataService::create).forEach(message::addMediaData);
     entityManager.persist(message);
-    var representation = toRepresantation(message, ActionType.ADD);
-    Notification.of(representation).sendTo(roomUserFinder.find(room.getId()));
+    var representation = toRepresantation(message);
+    Notification.of(new MessageNotification(representation, NotificationActionType.ADD)).sendTo(roomUserFinder.find(room.getId()));
     return representation;
   }
 
   /**
    * Retrieves the details of a specific message.
-   *
    * @param id the unique identifier of the message
    * @return a representation of the message
    * @throws ResourceNotFoundException if the message does not exist
@@ -129,13 +126,12 @@ public class MessageService {
   @Transactional
   public MessageRepresentation read(UUID id) {
     var message = getMessage(id);
-    return toRepresantation(message, null);
+    return toRepresantation(message);
   }
 
 
   /**
    * Updates the content of an existing message and notifies connected clients.
-   *
    * @param id       the unique identifier of the message to update
    * @param creation the new message content
    * @return a representation of the updated message
@@ -146,14 +142,13 @@ public class MessageService {
     var message = getMessage(id);
     message.setText(creation.text());
     entityManager.persist(message);
-    var representation = toRepresantation(message, ActionType.MODIFY);
-    Notification.of(representation).sendTo(roomUserFinder.find(message.getRoom().getId()));
+    var representation = toRepresantation(message);
+    Notification.of(new MessageNotification(representation, NotificationActionType.MODIFY)).sendTo(roomUserFinder.find(message.getRoom().getId()));
     return representation;
   }
 
   /**
    * Deletes a message from the repository and notifies connected clients.
-   *
    * @param id the unique identifier of the message to delete
    * @return the UUID of the deleted message
    * @throws ResourceNotFoundException if the message does not exist
@@ -163,7 +158,7 @@ public class MessageService {
     var message = getMessage(id);
     var room = message.getRoom().getId();
     entityManager.remove(message);
-    var deletedMessage = new MessageRepresentation(id, null, room, null, null, ActionType.REMOVE, null);
+    var deletedMessage = new MessageNotification(new MessageRepresentation(id, null, room, null, null, null), NotificationActionType.REMOVE);
     Notification.of(deletedMessage).sendTo(roomUserFinder.find(room));
     return id;
   }
@@ -173,14 +168,13 @@ public class MessageService {
                    .orElseThrow(() -> new ResourceNotFoundException(Message.class, id));
   }
 
-  private MessageRepresentation toRepresantation(final Message message, final ActionType actionType) {
+  private MessageRepresentation toRepresantation(final Message message) {
     return new MessageRepresentation(
         message.getId(),
         message.getText(),
         message.getRoom().getId(),
         new UserNotificationRepresentation(message.getUser().getId(), message.getUser().getDisplayName()),
         message.getCreatedDate().atOffset(ZoneOffset.UTC),
-        actionType,
         message.getMediaDatas().stream()
                .map(media -> new MediaDataRepresentation(
                    media.getId(),

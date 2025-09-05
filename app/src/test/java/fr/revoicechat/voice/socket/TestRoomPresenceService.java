@@ -11,9 +11,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.core.junit.CleanDatabase;
-import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.quarkus.profile.MonoServerProfile;
+import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
 import fr.revoicechat.core.representation.room.RoomPresence;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
@@ -82,11 +82,11 @@ class TestRoomPresenceService {
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
-                      .body(new RoomRepresentation("voice 1", RoomType.VOICE))
+                      .body(new CreationRoomRepresentation("voice 1", RoomType.VOICE))
                       .when().pathParam("id", server.id()).put("/server/{id}/room")
                       .then().statusCode(200)
                       .extract().body()
-                      .as(Room.class).getId();
+                      .as(RoomRepresentation.class).id();
   }
 
   private static List<ServerRepresentation> getServers(String token) {

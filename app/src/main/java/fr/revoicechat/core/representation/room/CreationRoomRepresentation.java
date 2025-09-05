@@ -1,12 +1,8 @@
 package fr.revoicechat.core.representation.room;
 
-import java.util.UUID;
-
 import fr.revoicechat.core.model.RoomType;
 
-public record RoomRepresentation(
-    UUID id,
+public record CreationRoomRepresentation(
     String name,
-    RoomType type,
-    UUID serverId
+    RoomType type
 ) {}
