@@ -16,10 +16,10 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 
-import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
+import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
 import fr.revoicechat.core.representation.room.RoomPresence;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 
@@ -38,7 +38,7 @@ public interface RoomController extends LoggedApi {
       )
   )
   @GET
-  Room read(@PathParam("id") UUID roomId);
+  RoomRepresentation read(@PathParam("id") UUID roomId);
 
   @Operation(summary = "Update a room", description = "Update the properties of an existing room using its ID.")
   @APIResponse(responseCode = "200", description = "Room successfully updated")
@@ -51,7 +51,7 @@ public interface RoomController extends LoggedApi {
       )
   )
   @PATCH
-  Room update(@PathParam("id") UUID roomId, RoomRepresentation representation);
+  RoomRepresentation update(@PathParam("id") UUID roomId, CreationRoomRepresentation representation);
 
   @Operation(summary = "Delete a room", description = "Delete an existing room by its ID. Returns the deleted room's ID.")
   @APIResponse(responseCode = "200", description = "Room successfully deleted")

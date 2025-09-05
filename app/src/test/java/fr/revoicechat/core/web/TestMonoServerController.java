@@ -11,12 +11,12 @@ import jakarta.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.core.junit.CleanDatabase;
-import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.nls.CommonErrorCode;
 import fr.revoicechat.core.nls.ServerErrorCode;
 import fr.revoicechat.core.quarkus.profile.MonoServerProfile;
+import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
@@ -105,7 +105,7 @@ class TestMonoServerController {
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)
                .header("Authorization", "Bearer " + token)
-               .body(new RoomRepresentation("room", RoomType.TEXT))
+               .body(new CreationRoomRepresentation("room", RoomType.TEXT))
                .when().pathParam("id", server.id()).put("/server/{id}/room")
                .then().statusCode(200);
     var room = getRooms(server.id(), token);
@@ -151,7 +151,7 @@ class TestMonoServerController {
                       .jsonPath().getList(".", ServerRepresentation.class);
   }
 
-  private static List<Room> getRooms(UUID id, String token) {
+  private static List<RoomRepresentation> getRooms(UUID id, String token) {
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
@@ -159,6 +159,6 @@ class TestMonoServerController {
                       .then().statusCode(200)
                       .extract()
                       .body()
-                      .jsonPath().getList(".", Room.class);
+                      .jsonPath().getList(".", RoomRepresentation.class);
   }
 }

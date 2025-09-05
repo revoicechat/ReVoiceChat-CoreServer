@@ -12,12 +12,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.core.junit.CleanDatabase;
-import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.quarkus.profile.MultiServerProfile;
 import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
+import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
 import fr.revoicechat.core.representation.room.RoomPresence;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
@@ -36,22 +36,22 @@ class TestRoomController {
   void testUpdate() {
     String token = RestTestUtils.logNewUser();
     var server = createServer(token);
-    List<Room> rooms = getRooms(token, server);
+    List<RoomRepresentation> rooms = getRooms(token, server);
     assertThat(rooms).hasSize(3);
-    RoomRepresentation representation = new RoomRepresentation("test", null);
+    CreationRoomRepresentation representation = new CreationRoomRepresentation("test", null);
     var room = rooms.getFirst();
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)
                .header("Authorization", "Bearer " + token)
                .body(representation)
-               .when().pathParam("id", room.getId()).patch("/room/{id}")
+               .when().pathParam("id", room.id()).patch("/room/{id}")
                .then().statusCode(200);
     var updatedRoom = getRoom(token, room);
-    assertThat(updatedRoom.getName()).isEqualTo("test");
+    assertThat(updatedRoom.name()).isEqualTo("test");
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)
                .header("Authorization", "Bearer " + token)
-               .when().pathParam("id", room.getId()).delete("/room/{id}")
+               .when().pathParam("id", room.id()).delete("/room/{id}")
                .then().statusCode(200);
     rooms = getRooms(token, server);
     assertThat(rooms).hasSize(2);
@@ -65,12 +65,12 @@ class TestRoomController {
     var presence = RestAssured.given()
                               .contentType(MediaType.APPLICATION_JSON)
                               .header("Authorization", "Bearer " + token)
-                              .when().pathParam("id", room.getId()).get("/room/{id}/user")
+                              .when().pathParam("id", room.id()).get("/room/{id}/user")
                               .then().statusCode(200)
                               .extract().body()
                               .as(RoomPresence.class);
-    Assertions.assertThat(presence.id()).isEqualTo(room.getId());
-    Assertions.assertThat(presence.name()).isEqualTo(room.getName());
+    Assertions.assertThat(presence.id()).isEqualTo(room.id());
+    Assertions.assertThat(presence.name()).isEqualTo(room.name());
     Assertions.assertThat(presence.allUser()).hasSize(1);
     Assertions.assertThat(presence.connectedUser()).isEmpty();
   }
@@ -80,12 +80,12 @@ class TestRoomController {
     String token = RestTestUtils.logNewUser();
     var server = createServer(token);
     var room = createRoom(token, server);
-    RoomRepresentation representation = new RoomRepresentation("test", RoomType.TEXT);
+    CreationRoomRepresentation representation = new CreationRoomRepresentation("test", RoomType.TEXT);
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)
                .header("Authorization", "Bearer " + token)
                .body(representation)
-               .when().pathParam("id", room.getId()).patch("/room/{id}")
+               .when().pathParam("id", room.id()).patch("/room/{id}")
                .then().statusCode(200);
   }
 
@@ -94,12 +94,12 @@ class TestRoomController {
     String token = RestTestUtils.logNewUser();
     var server = createServer(token);
     var room = createRoom(token, server);
-    RoomRepresentation representation = new RoomRepresentation("test", RoomType.VOICE);
+    CreationRoomRepresentation representation = new CreationRoomRepresentation("test", RoomType.VOICE);
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)
                .header("Authorization", "Bearer " + token)
                .body(representation)
-               .when().pathParam("id", room.getId()).patch("/room/{id}")
+               .when().pathParam("id", room.id()).patch("/room/{id}")
                .then().statusCode(400);
   }
 
@@ -116,7 +116,7 @@ class TestRoomController {
                  .contentType(MediaType.APPLICATION_JSON)
                  .header("Authorization", "Bearer " + token)
                  .body(created)
-                 .when().pathParam("id", room.getId()).put("/room/{id}/message")
+                 .when().pathParam("id", room.id()).put("/room/{id}/message")
                  .then().statusCode(200);
       await().during(250, TimeUnit.MILLISECONDS);
     });
@@ -155,7 +155,7 @@ class TestRoomController {
                  .contentType(MediaType.APPLICATION_JSON)
                  .header("Authorization", "Bearer " + token)
                  .body(created)
-                 .when().pathParam("id", room.getId()).put("/room/{id}/message")
+                 .when().pathParam("id", room.id()).put("/room/{id}/message")
                  .then().statusCode(200);
       await().during(250, TimeUnit.MILLISECONDS);
     });
@@ -173,13 +173,13 @@ class TestRoomController {
         );
   }
 
-  private static PageResult<MessageRepresentation> getPage(final String token, final Room room, int page) {
+  private static PageResult<MessageRepresentation> getPage(final String token, final RoomRepresentation room, int page) {
     var body = RestAssured.given()
                           .contentType(MediaType.APPLICATION_JSON)
                           .header("Authorization", "Bearer " + token)
                           .when()
                           .queryParam("page", page).queryParam("size", 10)
-                          .pathParam("id", room.getId()).get("/room/{id}/message")
+                          .pathParam("id", room.id()).get("/room/{id}/message")
                           .then().statusCode(200)
                           .extract().body();
     var pageResult = body.as(PageResult.class);
@@ -187,12 +187,12 @@ class TestRoomController {
     return new PageResult<>(messages, pageResult.pageNumber(), pageResult.pageSize(), pageResult.totalElements());
   }
 
-  private static PageResult<MessageRepresentation> getPage(final String token, final Room room) {
+  private static PageResult<MessageRepresentation> getPage(final String token, final RoomRepresentation room) {
     var body = RestAssured.given()
                           .contentType(MediaType.APPLICATION_JSON)
                           .header("Authorization", "Bearer " + token)
                           .when()
-                          .pathParam("id", room.getId()).get("/room/{id}/message")
+                          .pathParam("id", room.id()).get("/room/{id}/message")
                           .then().statusCode(200)
                           .extract().body();
     var pageResult = body.as(PageResult.class);
@@ -200,33 +200,33 @@ class TestRoomController {
     return new PageResult<>(messages, pageResult.pageNumber(), pageResult.pageSize(), pageResult.totalElements());
   }
 
-  private static Room createRoom(final String token, final ServerRepresentation server) {
-    RoomRepresentation representation = new RoomRepresentation("test", RoomType.TEXT);
+  private static RoomRepresentation createRoom(final String token, final ServerRepresentation server) {
+    CreationRoomRepresentation representation = new CreationRoomRepresentation("test", RoomType.TEXT);
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
                       .body(representation)
                       .when().pathParam("id", server.id()).put("/server/{id}/room")
                       .then().statusCode(200)
-                      .extract().body().as(Room.class);
+                      .extract().body().as(RoomRepresentation.class);
   }
 
-  private static Room getRoom(final String token, final Room room) {
+  private static RoomRepresentation getRoom(final String token, final RoomRepresentation room) {
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
-                      .when().pathParam("id", room.getId()).get("/room/{id}")
+                      .when().pathParam("id", room.id()).get("/room/{id}")
                       .then().statusCode(200)
-                      .extract().as(Room.class);
+                      .extract().as(RoomRepresentation.class);
   }
 
-  private static List<Room> getRooms(final String token, final ServerRepresentation server) {
+  private static List<RoomRepresentation> getRooms(final String token, final ServerRepresentation server) {
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
                       .when().pathParam("id", server.id()).get("/server/{id}/room")
                       .then().statusCode(200)
-                      .extract().jsonPath().getList(".", Room.class);
+                      .extract().jsonPath().getList(".", RoomRepresentation.class);
   }
 
   private static ServerRepresentation createServer(String token) {

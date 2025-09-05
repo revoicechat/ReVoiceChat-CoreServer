@@ -19,7 +19,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 
-import fr.revoicechat.core.model.Room;
+import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
@@ -112,7 +112,7 @@ public interface ServerController extends LoggedApi {
   )
   @GET
   @Path("/{id}/room")
-  List<Room> getRooms(@PathParam("id") final UUID id);
+  List<RoomRepresentation> getRooms(@PathParam("id") final UUID id);
 
   @Tags(refs = { "Server", "Room" })
   @Operation(summary = "Create a new room in a server", description = "Add a new room to a specific server identified by its ID.")
@@ -127,7 +127,7 @@ public interface ServerController extends LoggedApi {
   )
   @PUT
   @Path("/{id}/room")
-  Room createRoom(@PathParam("id") final UUID id, RoomRepresentation representation);
+  RoomRepresentation createRoom(@PathParam("id") final UUID id, CreationRoomRepresentation representation);
 
   @Tags(refs = { "Server", "User" })
   @Operation(summary = "Get all user for a server", description = "Retrieve the list of user using a specific server.")

@@ -1,13 +1,12 @@
 package fr.revoicechat.core.web;
 
 import java.util.UUID;
-
 import jakarta.annotation.security.RolesAllowed;
 
-import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
+import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
 import fr.revoicechat.core.representation.room.RoomPresence;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.service.MessageService;
@@ -29,12 +28,12 @@ public class RoomControllerImpl implements RoomController {
   }
 
   @Override
-  public Room read(UUID roomId) {
+  public RoomRepresentation read(UUID roomId) {
     return roomService.read(roomId);
   }
 
   @Override
-  public Room update(UUID roomId, RoomRepresentation representation) {
+  public RoomRepresentation update(UUID roomId, CreationRoomRepresentation representation) {
     return roomService.update(roomId, representation);
   }
 
