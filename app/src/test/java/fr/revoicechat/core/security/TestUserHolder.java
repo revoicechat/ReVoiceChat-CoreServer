@@ -24,22 +24,24 @@ import io.quarkus.test.security.TestSecurity;
 @TestProfile(BasicIntegrationTestProfile.class)
 class TestUserHolder {
 
+  private static final String ID_USER = "35117c82-3b6f-403f-be5a-f3ee842d97d6";
+
   @Inject UserHolder userHolder;
   @Inject EntityManager entityManager;
   @Inject JwtService jwtService;
 
   @Test
-  @TestSecurity(user = "test-user")
+  @TestSecurity(user = ID_USER)
   void testWithNoUserInDb() {
     Assertions.assertThatThrownBy(userHolder::get).isInstanceOf(NotFoundException.class);
   }
 
   @Test
   @Transactional
-  @TestSecurity(user = "test-user")
+  @TestSecurity(user = ID_USER)
   void testWithUserInDb() {
     User user = new User();
-    user.setId(UUID.randomUUID());
+    user.setId(UUID.fromString(ID_USER));
     user.setLogin("test-user");
     user.setDisplayName("test-user");
     user.setType(UserType.USER);
@@ -70,5 +72,11 @@ class TestUserHolder {
     user.setType(UserType.USER);
     var token = jwtService.get(user);
     Assertions.assertThatThrownBy(() -> userHolder.get(token)).isInstanceOf(WebApplicationException.class);
+  }
+
+  @Test
+  @Transactional
+  void testWithInvalidToken() {
+    Assertions.assertThatThrownBy(() -> userHolder.get("not a token")).isInstanceOf(WebApplicationException.class);
   }
 }

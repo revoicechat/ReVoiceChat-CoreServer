@@ -46,12 +46,14 @@ class TestAuthController {
 
   @Test
   void testLogin() throws ParseException {
-    signup();
+    var sign = signup();
+    var user = sign.as(UserRepresentation.class);
     var response = login("testUser", "psw");
     assertThat(response.getStatusCode()).isEqualTo(Status.OK.getStatusCode());
     var token = response.asString();
     assertThat(token).isNotNull();
     var jwt = jwtParser.parse(token);
+    assertThat(jwt.getName()).isEqualTo(user.id().toString());
     assertThat(jwt.getSubject()).isEqualTo("testUser");
   }
 

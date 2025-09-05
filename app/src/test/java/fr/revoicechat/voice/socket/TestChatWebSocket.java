@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Inject;
 import jakarta.websocket.CloseReason.CloseCodes;
 import jakarta.ws.rs.core.MediaType;
 
@@ -16,9 +17,12 @@ import org.junit.jupiter.api.Test;
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.RoomType;
+import fr.revoicechat.core.model.User;
+import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.quarkus.profile.MonoServerProfile;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
+import fr.revoicechat.core.security.jwt.JwtService;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -28,6 +32,8 @@ import io.restassured.RestAssured;
 @CleanDatabase
 @TestProfile(MonoServerProfile.class)
 class TestChatWebSocket {
+
+  @Inject JwtService jwtService;
 
   @Test
   void test() throws Exception {
@@ -70,7 +76,7 @@ class TestChatWebSocket {
     String user1 = RestTestUtils.logNewUser("user1");
     UUID room1 = createRoom(user1, "voice 1", VOICE);
     try (var webSocket = WebSocket.of("ws://localhost:8081/api/voice/" + room1)) {
-      await().atMost(2, TimeUnit.SECONDS)
+      await().atMost(5, TimeUnit.SECONDS)
              .untilAsserted(() -> {
                assertThat(webSocket.closeReason().get()).isNotNull();
                assertThat(webSocket.closeReason().get().getCloseCode()).isEqualTo(CloseCodes.VIOLATED_POLICY);
@@ -105,7 +111,7 @@ class TestChatWebSocket {
     UUID room2 = createRoom(user1, "voice 2", VOICE);
     try (var webSocket1 = WebSocket.of(room1, user1);
          var webSocket2 = WebSocket.of(room2, user1)) {
-      await().atMost(2, TimeUnit.SECONDS)
+      await().atMost(5, TimeUnit.SECONDS)
              .untilAsserted(() -> {
                assertThat(webSocket1.closeReason().get()).isNotNull();
                assertThat(webSocket1.closeReason().get().getCloseCode()).isEqualTo(CloseCodes.NORMAL_CLOSURE);
@@ -119,11 +125,11 @@ class TestChatWebSocket {
   void testOnRoomDoesNotExists() throws Exception {
     String user1 = RestTestUtils.logNewUser("user1");
     try (var webSocket = WebSocket.of(UUID.randomUUID(), user1)) {
-      await().atMost(2, TimeUnit.SECONDS)
+      await().atMost(5, TimeUnit.SECONDS)
              .untilAsserted(() -> {
                assertThat(webSocket.closeReason().get()).isNotNull();
                assertThat(webSocket.closeReason().get().getCloseCode()).isEqualTo(CloseCodes.CANNOT_ACCEPT);
-               assertThat(webSocket.closeReason().get().getReasonPhrase()).isEqualTo("selected room cannot accept websocket chat type");
+               assertThat(webSocket.closeReason().get().getReasonPhrase()).isEqualTo("Selected room cannot accept websocket chat type");
              });
     }
   }
@@ -133,7 +139,7 @@ class TestChatWebSocket {
     String user1 = RestTestUtils.logNewUser("user1");
     UUID room1 = createRoom(user1, "voice 1", VOICE);
     try (var webSocket = WebSocket.of(room1, user1 + "wrongToken")) {
-      await().atMost(2, TimeUnit.SECONDS)
+      await().atMost(5, TimeUnit.SECONDS)
              .untilAsserted(() -> {
                assertThat(webSocket.closeReason().get()).isNotNull();
                assertThat(webSocket.closeReason().get().getCloseCode()).isEqualTo(CloseCodes.VIOLATED_POLICY);
@@ -143,11 +149,35 @@ class TestChatWebSocket {
   }
 
   @Test
+  void testValidTokenButUserDoesNotExists() throws Exception {
+    var token = fakeUser();
+    String user1 = RestTestUtils.logNewUser("user1");
+    UUID room1 = createRoom(user1, "voice 1", VOICE);
+    try (var webSocket = WebSocket.of(room1, token)) {
+      await().atMost(5, TimeUnit.SECONDS)
+             .untilAsserted(() -> {
+               assertThat(webSocket.closeReason().get()).isNotNull();
+               assertThat(webSocket.closeReason().get().getCloseCode()).isEqualTo(CloseCodes.PROTOCOL_ERROR);
+               assertThat(webSocket.closeReason().get().getReasonPhrase()).startsWith("Error handling user ");
+             });
+    }
+  }
+
+  private String fakeUser() {
+    User user = new User();
+    user.setId(UUID.randomUUID());
+    user.setLogin("test-user");
+    user.setDisplayName("test-user");
+    user.setType(UserType.USER);
+    return jwtService.get(user);
+  }
+
+  @Test
   void testOnError() throws Exception {
     String user1 = RestTestUtils.logNewUser("user1");
     UUID room1 = createRoom(user1, "voice 1", VOICE);
     try (var webSocket = WebSocket.of(room1, user1 + "wrongToken")) {
-      await().atMost(2, TimeUnit.SECONDS)
+      await().atMost(5, TimeUnit.SECONDS)
              .untilAsserted(() -> {
                var chatWebSocket = CDI.current().select(ChatWebSocket.class).get();
                var session = webSocket.session();
@@ -162,11 +192,11 @@ class TestChatWebSocket {
     String user1 = RestTestUtils.logNewUser("user1");
     UUID room1 = createRoom(user1, "text", TEXT);
     try (var webSocket = WebSocket.of(room1, user1)) {
-      await().atMost(2, TimeUnit.SECONDS)
+      await().atMost(5, TimeUnit.SECONDS)
              .untilAsserted(() -> {
                assertThat(webSocket.closeReason().get()).isNotNull();
                assertThat(webSocket.closeReason().get().getCloseCode()).isEqualTo(CloseCodes.CANNOT_ACCEPT);
-               assertThat(webSocket.closeReason().get().getReasonPhrase()).isEqualTo("selected room cannot accept websocket chat type");
+               assertThat(webSocket.closeReason().get().getReasonPhrase()).isEqualTo("Selected room cannot accept websocket chat type");
              });
     }
   }

@@ -39,6 +39,7 @@ latest.log
 latest.log.*.gz
 
 /**/server.properties
+/**/application-server.properties
 /**/server.docker.properties
 /**/application-dynamic-*.yml
 

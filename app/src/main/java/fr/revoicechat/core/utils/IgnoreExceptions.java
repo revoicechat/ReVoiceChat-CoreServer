@@ -1,14 +1,18 @@
 package fr.revoicechat.core.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class IgnoreExceptions {
+  private static final Logger LOG = LoggerFactory.getLogger(IgnoreExceptions.class);
 
   private IgnoreExceptions() {/*not instantiable*/}
 
   public static void run(ExceptionRunner runner) {
     try {
       runner.run();
-    } catch (Exception ignore) {
-      // ignored the following error
+    } catch (Exception e) {
+      LOG.error("Error ", e);
     }
   }
 

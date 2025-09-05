@@ -5,11 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.CloseReason.CloseCodes;
 import jakarta.websocket.OnClose;
@@ -29,6 +33,7 @@ import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.security.UserHolder;
 import fr.revoicechat.core.service.room.ConnectedUserRetriever;
+import fr.revoicechat.core.service.user.RoomUserFinder;
 import fr.revoicechat.core.utils.IgnoreExceptions;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.representation.UserNotificationRepresentation;
@@ -42,15 +47,19 @@ public class ChatWebSocket implements ConnectedUserRetriever {
 
   // Thread-safe set of connected sessions
   private static final Set<UserSession> sessions = ConcurrentHashMap.newKeySet();
+  // One queue per user (serialized execution)
+  private final ConcurrentHashMap<UUID, CompletableFuture<Void>> userQueues = new ConcurrentHashMap<>();
 
   private final ManagedExecutor executor;
   private final EntityManager entityManager;
   private final UserHolder userHolder;
+  private final RoomUserFinder roomUserFinder;
 
-  public ChatWebSocket(ManagedExecutor executor, EntityManager entityManager, UserHolder userHolder) {
+  public ChatWebSocket(ManagedExecutor executor, EntityManager entityManager, UserHolder userHolder, final RoomUserFinder roomUserFinder) {
     this.executor = executor;
     this.entityManager = entityManager;
     this.userHolder = userHolder;
+    this.roomUserFinder = roomUserFinder;
   }
 
   @OnOpen
@@ -62,22 +71,34 @@ public class ChatWebSocket implements ConnectedUserRetriever {
       closeSession(session, CloseCodes.VIOLATED_POLICY, "Missing token");
       return;
     }
-    executor.submit(() -> {
-      try {
-        var user = userHolder.get(token);
-        closeOldSession(user);
-        var room = entityManager.find(Room.class, roomId);
-        if (room == null || !room.getType().equals(RoomType.VOICE)) {
-          closeSession(session, CloseCodes.CANNOT_ACCEPT, "selected room cannot accept websocket chat type");
-          return;
-        }
-        LOG.info("WebSocket connected as user {}", user.getId());
-        sessions.add(new UserSession(user.getId(), roomId, session));
-        Notification.of(new VoiceJoiningNotification(new UserNotificationRepresentation(user.getId(), user.getDisplayName()), roomId)).sendTo(Stream.of(user));
-      } catch (Exception e) {
-        closeSession(session, CloseCodes.VIOLATED_POLICY, "Invalid token: " + e.getMessage());
-      }
-    });
+    UUID userId;
+    try {
+      userId = userHolder.peekId(token); // lightweight parse, no DB hit
+    } catch (Exception e) {
+      closeSession(session, CloseCodes.VIOLATED_POLICY, "Invalid token: " + e.getMessage());
+      return;
+    }
+    // enqueue the actual heavy work
+    enqueue(userId, session, () -> CompletableFuture.runAsync(() -> handleOpen(session, token, roomId), executor));
+  }
+
+  /**
+   * The actual heavy open logic (DB, session, notification).
+   * Runs inside the ManagedExecutor with @Transactional context.
+   */
+  @Transactional
+  void handleOpen(Session session, String token, UUID roomId) {
+    var user = userHolder.get(token);
+    closeOldSession(user);
+    var room = entityManager.find(Room.class, roomId);
+    if (room == null || !room.getType().equals(RoomType.VOICE)) {
+      closeSession(session, CloseCodes.CANNOT_ACCEPT, "Selected room cannot accept websocket chat type");
+      return;
+    }
+    LOG.info("WebSocket connected as user {}", user.getId());
+    sessions.add(new UserSession(user.getId(), roomId, session));
+    var data = new VoiceJoiningNotification(new UserNotificationRepresentation(user.getId(), user.getDisplayName()), roomId);
+    Notification.of(data).sendTo(roomUserFinder.find(roomId));
   }
 
   private String token(Session session) {
@@ -92,7 +113,7 @@ public class ChatWebSocket implements ConnectedUserRetriever {
   private void closeOldSession(final User user) {
     var existingSession = getExistingSession(user.getId());
     if (existingSession != null) {
-      onClose(existingSession.session);
+      handleCloseSession(existingSession);
     }
   }
 
@@ -122,14 +143,17 @@ public class ChatWebSocket implements ConnectedUserRetriever {
 
   @OnClose
   public void onClose(Session session) {
-    LOG.info("Client disconnected: {}", session.getId());
     sessions.stream().filter(userSession -> userSession.session.equals(session))
             .findFirst()
-            .ifPresent(userSession -> {
-              Notification.of(new VoiceLeavingNotification(userSession.user, userSession.room)).sendTo(Stream.of(() -> userSession.user));
-              closeSession(userSession.session, CloseCodes.NORMAL_CLOSURE, "Client disconnected");
-              sessions.remove(userSession);
-            });
+            .ifPresent(userSession -> enqueue(userSession.user, session, () -> CompletableFuture.runAsync(() -> handleCloseSession(userSession), executor)));
+  }
+
+  @Transactional
+  public void handleCloseSession(final UserSession userSession) {
+    LOG.info("Client disconnected: {}", userSession.session.getId());
+    Notification.of(new VoiceLeavingNotification(userSession.user, userSession.room)).sendTo(Stream.of(() -> userSession.user));
+    closeSession(userSession.session, CloseCodes.NORMAL_CLOSURE, "Client disconnected");
+    sessions.remove(userSession);
   }
 
   private UserSession getExistingSession(UUID user) {
@@ -157,9 +181,25 @@ public class ChatWebSocket implements ConnectedUserRetriever {
                    .map(UserSession::user);
   }
 
-  private record UserSession(UUID user, UUID room, Session session) {}
+  public record UserSession(UUID user, UUID room, Session session) {}
 
   private void closeSession(Session session, CloseCodes code, String reason) {
     IgnoreExceptions.run(() -> session.close(new CloseReason(code, reason)));
+  }
+
+  /**
+   * Utility: enqueue a task for a specific user, so tasks run sequentially.
+   */
+  private CompletableFuture<Void> enqueue(UUID userId, Session session, Supplier<CompletionStage<Void>> task) {
+    return userQueues.compute(userId, (id, prev) -> {
+      CompletableFuture<Void> start = (prev == null ? CompletableFuture.completedFuture(null) : prev);
+      return start
+          .thenComposeAsync(v -> task.get(), executor)
+          .exceptionally(t -> {
+            LOG.error("Error handling user {}", userId, t);
+            closeSession(session, CloseCodes.PROTOCOL_ERROR, "Error handling user " + userId);
+            return null;
+          });
+    });
   }
 }

@@ -1,12 +1,13 @@
 package fr.revoicechat.core.security.jwt;
 
+import jakarta.inject.Singleton;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.revoicechat.core.model.User;
 import io.smallrye.jwt.build.Jwt;
-import jakarta.inject.Singleton;
 
 @Singleton
 public class JwtService {
@@ -21,6 +22,7 @@ public class JwtService {
     LOG.info("generate jwt token for user {}", user.getId());
     return Jwt.issuer(jwtIssuer)
               .subject(user.getLogin())
+              .preferredUserName(user.getId().toString())
               .groups(user.getType().getRoles())
               .expiresAt(System.currentTimeMillis() + 1000L * 3600 * 24 * jwtValidDay)
               .sign();
