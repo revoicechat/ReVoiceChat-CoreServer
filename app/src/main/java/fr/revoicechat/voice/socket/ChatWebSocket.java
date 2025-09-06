@@ -151,7 +151,7 @@ public class ChatWebSocket implements ConnectedUserRetriever {
   @Transactional
   public void handleCloseSession(final UserSession userSession) {
     LOG.info("Client disconnected: {}", userSession.session.getId());
-    Notification.of(new VoiceLeavingNotification(userSession.user, userSession.room)).sendTo(Stream.of(() -> userSession.user));
+    Notification.of(new VoiceLeavingNotification(userSession.user, userSession.room)).sendTo(roomUserFinder.find(userSession.room));
     closeSession(userSession.session, CloseCodes.NORMAL_CLOSURE, "Client disconnected");
     sessions.remove(userSession);
   }
