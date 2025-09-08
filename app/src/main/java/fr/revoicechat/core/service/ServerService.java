@@ -14,7 +14,7 @@ import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
-import fr.revoicechat.core.security.UserHolder;
+import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.core.service.server.ServerProviderService;
 import io.quarkus.security.UnauthorizedException;
 
@@ -85,7 +85,7 @@ public class ServerService {
     Server server = new Server();
     server.setId(UUID.randomUUID());
     server.setName(representation.name());
-    var owner = userHolder.get();
+    User owner = userHolder.get();
     server.setOwner(owner);
     serverProviderService.create(server);
     ServerUser serverUser = new ServerUser();
@@ -121,7 +121,7 @@ public class ServerService {
   }
 
   private boolean cannotBeUpdate(final Server server) {
-    var user = userHolder.get();
+    User user = userHolder.get();
     return !user.getType().equals(UserType.ADMIN) && !server.getOwner().equals(user);
   }
 

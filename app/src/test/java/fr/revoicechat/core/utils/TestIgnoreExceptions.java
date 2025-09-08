@@ -9,9 +9,6 @@ import org.junit.jupiter.api.Test;
 import fr.revoicechat.core.utils.IgnoreExceptions.ExceptionRunner;
 import io.quarkus.test.junit.QuarkusTest;
 
-/**
- * Tests associés à {@link IgnoreExceptions}.
- */
 @QuarkusTest
 class TestIgnoreExceptions {
 

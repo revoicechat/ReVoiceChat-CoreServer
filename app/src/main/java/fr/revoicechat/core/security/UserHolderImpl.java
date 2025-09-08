@@ -8,26 +8,29 @@ import jakarta.persistence.EntityManager;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
 import fr.revoicechat.core.model.User;
+import fr.revoicechat.notification.NotificationRegistrableHolder;
+import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.security.service.SecurityTokenService;
 import io.quarkus.security.identity.SecurityIdentity;
-import io.smallrye.jwt.auth.principal.JWTParser;
 
 @ApplicationScoped
-public class UserHolderImpl implements UserHolder {
+public class UserHolderImpl implements UserHolder, NotificationRegistrableHolder {
 
-  private final JWTParser jwtParser;
-  private final EntityManager entityManager;
+  private final SecurityTokenService tokenService;
   private final SecurityIdentity securityIdentity;
+  private final EntityManager entityManager;
 
-  public UserHolderImpl(JWTParser jwtParser, EntityManager entityManager, SecurityIdentity securityIdentity) {
-    this.jwtParser = jwtParser;
-    this.entityManager = entityManager;
+  public UserHolderImpl(SecurityTokenService tokenService,
+                        SecurityIdentity securityIdentity,
+                        EntityManager entityManager) {
+    this.tokenService = tokenService;
     this.securityIdentity = securityIdentity;
+    this.entityManager = entityManager;
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public User get() {
     var id = UUID.fromString(securityIdentity.getPrincipal().getName());
     return getUser(id);
@@ -46,12 +49,7 @@ public class UserHolderImpl implements UserHolder {
 
   @Override
   public UUID peekId(final String jwtToken) {
-    try {
-      JsonWebToken jwt = jwtParser.parse(jwtToken);
-      return UUID.fromString(jwt.getName());
-    } catch (Exception e) {
-      throw new WebApplicationException("Invalid token", 401);
-    }
+    return tokenService.retrieveUserAsId(jwtToken);
   }
 
   private User getUser(UUID id) {

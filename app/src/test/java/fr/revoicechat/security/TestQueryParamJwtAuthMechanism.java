@@ -1,4 +1,4 @@
-package fr.revoicechat.core.security;
+package fr.revoicechat.security;
 
 import jakarta.ws.rs.core.MediaType;
 
@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.quarkus.profile.MultiServerProfile;
-import fr.revoicechat.core.security.TestQueryParamJwtAuthMechanism.DevTestProfile;
+import fr.revoicechat.security.TestQueryParamJwtAuthMechanism.DevTestProfile;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;

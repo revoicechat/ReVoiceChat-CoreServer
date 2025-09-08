@@ -25,8 +25,8 @@ import fr.revoicechat.core.representation.user.SignupRepresentation;
 import fr.revoicechat.core.representation.user.UpdatableUserData;
 import fr.revoicechat.core.representation.user.UpdatableUserData.PasswordUpdated;
 import fr.revoicechat.core.representation.user.UserRepresentation;
-import fr.revoicechat.core.security.UserHolder;
-import fr.revoicechat.core.security.utils.PasswordUtils;
+import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.security.utils.PasswordUtils;
 import fr.revoicechat.core.service.server.ServerProviderService;
 import fr.revoicechat.notification.Notification;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -132,7 +132,7 @@ public class UserService {
 
   @Transactional
   public UserRepresentation updateConnectedUser(final UpdatableUserData userData) {
-    var user = userHolder.get();
+    User user = userHolder.get();
     Optional.ofNullable(userData.password()).ifPresent(psw -> setPassword(user, psw));
     Optional.ofNullable(userData.displayName()).filter(not(String::isBlank)).ifPresent(user::setDisplayName);
     Optional.ofNullable(userData.status()).ifPresent(user::setStatus);

@@ -1,4 +1,4 @@
-package fr.revoicechat.core.security;
+package fr.revoicechat.security;
 
 import java.util.Optional;
 import jakarta.annotation.Priority;

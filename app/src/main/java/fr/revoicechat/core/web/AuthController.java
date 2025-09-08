@@ -1,5 +1,14 @@
 package fr.revoicechat.core.web;
 
+import jakarta.annotation.security.PermitAll;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -11,17 +20,9 @@ import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.representation.login.UserPassword;
 import fr.revoicechat.core.representation.user.SignupRepresentation;
 import fr.revoicechat.core.representation.user.UserRepresentation;
-import fr.revoicechat.core.security.jwt.JwtService;
-import fr.revoicechat.core.security.utils.PasswordUtils;
 import fr.revoicechat.core.service.UserService;
-import jakarta.annotation.security.PermitAll;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import fr.revoicechat.security.service.SecurityTokenService;
+import fr.revoicechat.security.utils.PasswordUtils;
 
 @Path("/auth")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -29,11 +30,11 @@ import jakarta.ws.rs.core.Response;
 public class AuthController {
 
   private final UserService userService;
-  private final JwtService jwtService;
+  private final SecurityTokenService tokenService;
 
-  public AuthController(final UserService userService, final JwtService jwtService) {
+  public AuthController(final UserService userService, final SecurityTokenService tokenService) {
     this.userService = userService;
-    this.jwtService = jwtService;
+    this.tokenService = tokenService;
   }
 
   @Operation(summary = "Register a new user", description = "Creates a new user account with the provided signup details.")
@@ -71,7 +72,7 @@ public class AuthController {
   public Response login(UserPassword request) {
     var user = userService.findByLogin(request.username());
     if (user != null && PasswordUtils.matches(request.password(), user.getPassword())) {
-      return Response.ok(jwtService.get(user)).build();
+      return Response.ok(tokenService.generate(user)).build();
     } else {
       return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid credentials").build();
     }

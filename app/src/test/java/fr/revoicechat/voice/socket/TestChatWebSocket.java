@@ -22,8 +22,8 @@ import fr.revoicechat.core.quarkus.profile.MonoServerProfile;
 import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
-import fr.revoicechat.core.security.jwt.JwtService;
 import fr.revoicechat.core.web.tests.RestTestUtils;
+import fr.revoicechat.security.service.SecurityTokenService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
@@ -33,7 +33,7 @@ import io.restassured.RestAssured;
 @TestProfile(MonoServerProfile.class)
 class TestChatWebSocket {
 
-  @Inject JwtService jwtService;
+  @Inject SecurityTokenService jwtService;
 
   @Test
   void test() throws Exception {
@@ -169,7 +169,7 @@ class TestChatWebSocket {
     user.setLogin("test-user");
     user.setDisplayName("test-user");
     user.setType(UserType.USER);
-    return jwtService.get(user);
+    return jwtService.generate(user);
   }
 
   @Test

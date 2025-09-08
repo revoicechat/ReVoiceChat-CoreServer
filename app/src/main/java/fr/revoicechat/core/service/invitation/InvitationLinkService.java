@@ -9,8 +9,9 @@ import fr.revoicechat.core.error.ResourceNotFoundException;
 import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.InvitationLinkStatus;
 import fr.revoicechat.core.model.InvitationType;
+import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
-import fr.revoicechat.core.security.UserHolder;
+import fr.revoicechat.security.UserHolder;
 
 @ApplicationScoped
 public class InvitationLinkService {
@@ -25,7 +26,7 @@ public class InvitationLinkService {
 
   @Transactional
   public InvitationRepresentation generateApplicationInvitation() {
-    var user = userHolder.get();
+    User user = userHolder.get();
     var invitation = new InvitationLink();
     invitation.setId(UUID.randomUUID());
     invitation.setStatus(InvitationLinkStatus.CREATED);

@@ -11,7 +11,7 @@ import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.representation.user.SignupRepresentation;
-import fr.revoicechat.core.security.utils.PasswordUtils;
+import fr.revoicechat.security.utils.PasswordUtils;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest

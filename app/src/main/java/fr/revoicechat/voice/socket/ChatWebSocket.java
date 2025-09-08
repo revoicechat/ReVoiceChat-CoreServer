@@ -30,13 +30,13 @@ import org.slf4j.LoggerFactory;
 
 import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.RoomType;
-import fr.revoicechat.core.model.User;
-import fr.revoicechat.core.security.UserHolder;
 import fr.revoicechat.core.service.room.ConnectedUserRetriever;
 import fr.revoicechat.core.service.user.RoomUserFinder;
 import fr.revoicechat.core.utils.IgnoreExceptions;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.representation.UserNotificationRepresentation;
+import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.security.model.AuthenticatedUser;
 import fr.revoicechat.voice.notification.VoiceJoiningNotification;
 import fr.revoicechat.voice.notification.VoiceLeavingNotification;
 
@@ -110,7 +110,7 @@ public class ChatWebSocket implements ConnectedUserRetriever {
     return tokens.getFirst();
   }
 
-  private void closeOldSession(final User user) {
+  private void closeOldSession(final AuthenticatedUser user) {
     var existingSession = getExistingSession(user.getId());
     if (existingSession != null) {
       handleCloseSession(existingSession);

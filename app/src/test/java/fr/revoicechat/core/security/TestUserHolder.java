@@ -14,7 +14,8 @@ import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
-import fr.revoicechat.core.security.jwt.JwtService;
+import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.security.service.SecurityTokenService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
@@ -28,7 +29,7 @@ class TestUserHolder {
 
   @Inject UserHolder userHolder;
   @Inject EntityManager entityManager;
-  @Inject JwtService jwtService;
+  @Inject SecurityTokenService jwtService;
 
   @Test
   @TestSecurity(user = ID_USER)
@@ -46,7 +47,8 @@ class TestUserHolder {
     user.setDisplayName("test-user");
     user.setType(UserType.USER);
     entityManager.persist(user);
-    Assertions.assertThat(userHolder.get()).isNotNull();
+    User result = userHolder.get();
+    Assertions.assertThat(result).isNotNull();
   }
 
   @Test
@@ -58,7 +60,7 @@ class TestUserHolder {
     user.setDisplayName("test-user");
     user.setType(UserType.USER);
     entityManager.persist(user);
-    var token = jwtService.get(user);
+    var token = jwtService.generate(user);
     Assertions.assertThat(userHolder.get(token)).isNotNull();
   }
 
@@ -70,7 +72,7 @@ class TestUserHolder {
     user.setLogin("test-user");
     user.setDisplayName("test-user");
     user.setType(UserType.USER);
-    var token = jwtService.get(user);
+    var token = jwtService.generate(user);
     Assertions.assertThatThrownBy(() -> userHolder.get(token)).isInstanceOf(WebApplicationException.class);
   }
 

@@ -1,8 +1,8 @@
 package fr.revoicechat.core.model;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,11 +11,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import fr.revoicechat.security.model.AuthenticatedUser;
 import fr.revoicechat.notification.model.NotificationRegistrable;
 
 @Entity
 @Table(name = "RVC_USER")
-public class User implements Serializable, NotificationRegistrable {
+public class User implements NotificationRegistrable, AuthenticatedUser {
   @Id
   private UUID id;
 
@@ -54,6 +55,7 @@ public class User implements Serializable, NotificationRegistrable {
     this.email = email;
   }
 
+  @Override
   public String getLogin() {
     return login;
   }
@@ -62,6 +64,7 @@ public class User implements Serializable, NotificationRegistrable {
     this.login = login;
   }
 
+  @Override
   public String getDisplayName() {
     return displayName;
   }
@@ -100,6 +103,11 @@ public class User implements Serializable, NotificationRegistrable {
 
   public void setType(final UserType type) {
     this.type = type;
+  }
+
+  @Override
+  public Set<String> getRoles() {
+    return getType().getRoles();
   }
 
   @Override

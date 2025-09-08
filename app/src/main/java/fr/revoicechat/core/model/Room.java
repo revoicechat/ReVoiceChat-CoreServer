@@ -1,9 +1,7 @@
 package fr.revoicechat.core.model;
 
-import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,7 +13,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "RVC_ROOM")
-public class Room implements Serializable {
+public class Room {
   @Id
   private UUID id;
   @Column(nullable = false)

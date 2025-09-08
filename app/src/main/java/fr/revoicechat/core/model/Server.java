@@ -1,6 +1,5 @@
 package fr.revoicechat.core.model;
 
-import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 import jakarta.persistence.Entity;
@@ -11,7 +10,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "RVC_SERVER")
-public class Server implements Serializable {
+public class Server {
   @Id
   private UUID id;
   private String name;

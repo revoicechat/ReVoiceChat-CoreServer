@@ -20,7 +20,7 @@ import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.representation.user.SignupRepresentation;
 import fr.revoicechat.core.representation.user.UserRepresentation;
-import fr.revoicechat.core.security.utils.PasswordUtils;
+import fr.revoicechat.security.utils.PasswordUtils;
 import fr.revoicechat.core.service.TestUserServiceNoNeedInvitation.AppOnlyAccessibleByInvitationFalse;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;

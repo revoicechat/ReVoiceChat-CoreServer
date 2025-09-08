@@ -1,4 +1,4 @@
-package fr.revoicechat.core.security.utils;
+package fr.revoicechat.security.utils;
 
 import org.mindrot.jbcrypt.BCrypt;
 

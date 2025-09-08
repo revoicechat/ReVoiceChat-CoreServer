@@ -1,11 +1,9 @@
 package fr.revoicechat.notification.model;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize(using = NotificationDataSerializer.class)
-public record NotificationData(NotificationPayload data) implements Serializable {
+public record NotificationData(NotificationPayload data) {
 
   public static NotificationData ping() {
     return new NotificationData(new Ping());

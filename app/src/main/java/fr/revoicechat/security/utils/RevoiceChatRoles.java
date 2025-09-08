@@ -1,4 +1,4 @@
-package fr.revoicechat.core.security.utils;
+package fr.revoicechat.security.utils;
 
 public final class RevoiceChatRoles {
   private RevoiceChatRoles() {/*not instantiable*/}

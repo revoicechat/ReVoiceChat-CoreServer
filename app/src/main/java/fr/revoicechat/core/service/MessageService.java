@@ -19,7 +19,7 @@ import fr.revoicechat.core.representation.message.MediaDataRepresentation;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
 import fr.revoicechat.core.representation.notification.NotificationActionType;
 import fr.revoicechat.core.representation.message.MessageNotification;
-import fr.revoicechat.core.security.UserHolder;
+import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.core.service.media.MediaDataService;
 import fr.revoicechat.core.service.message.MessageValidation;
 import fr.revoicechat.core.service.user.RoomUserFinder;

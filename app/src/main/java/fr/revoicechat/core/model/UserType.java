@@ -1,6 +1,6 @@
 package fr.revoicechat.core.model;
 
-import static fr.revoicechat.core.security.utils.RevoiceChatRoles.*;
+import static fr.revoicechat.security.utils.RevoiceChatRoles.*;
 
 import java.util.Set;
 
