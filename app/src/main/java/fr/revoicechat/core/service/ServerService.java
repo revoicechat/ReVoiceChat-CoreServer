@@ -1,5 +1,6 @@
 package fr.revoicechat.core.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,7 +13,9 @@ import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.ServerUser;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
+import fr.revoicechat.core.model.server.ServerRoom;
 import fr.revoicechat.core.model.server.ServerStructure;
+import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.service.server.ServerProviderService;
@@ -39,13 +42,15 @@ public class ServerService {
   private final ServerProviderService serverProviderService;
   private final UserHolder userHolder;
   private final EntityManager entityManager;
+  private final RoomService roomService;
 
   public ServerService(ServerProviderService serverProviderService,
                        UserHolder userHolder,
-                       EntityManager entityManager) {
+                       EntityManager entityManager, final RoomService roomService) {
     this.serverProviderService = serverProviderService;
     this.userHolder = userHolder;
     this.entityManager = entityManager;
+    this.roomService = roomService;
   }
 
   /**
@@ -135,7 +140,11 @@ public class ServerService {
   }
 
   public ServerStructure getStructure(final UUID id) {
-    return getEntity(id).getStructure();
+    return Optional.ofNullable(getEntity(id).getStructure())
+                   .orElseGet(() -> new ServerStructure(new ArrayList<>(roomService.findAll(id).stream()
+                                                                                   .map(RoomRepresentation::id)
+                                                                                   .map(ServerRoom::new)
+                                                                                   .toList())));
   }
 
   @Transactional
@@ -143,6 +152,6 @@ public class ServerService {
     var server = getEntity(id);
     server.setStructure(structure);
     entityManager.persist(server);
-    return structure;
+    return getStructure(id);
   }
 }

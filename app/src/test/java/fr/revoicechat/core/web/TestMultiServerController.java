@@ -196,6 +196,25 @@ class TestMultiServerController {
   }
 
   @Test
+  void testRemoveStructure() {
+    String token = RestTestUtils.logNewUser();
+    var server = createServer(token);
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + token)
+               .when().pathParam("id", server.id()).patch("/server/{id}/structure")
+               .then().statusCode(200);
+    var structure = RestAssured.given()
+                               .contentType(MediaType.APPLICATION_JSON)
+                               .header("Authorization", "Bearer " + token)
+                               .when().pathParam("id", server.id()).get("/server/{id}/structure")
+                               .then().statusCode(200)
+                               .extract()
+                               .body().as(ServerStructure.class);
+    assertThat(structure.items()).hasSize(3).allMatch(ServerRoom.class::isInstance);
+  }
+
+  @Test
   void testInvitationServer() {
     String token = RestTestUtils.logNewUser();
     var server = createServer(token);
