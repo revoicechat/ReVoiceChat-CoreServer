@@ -16,7 +16,6 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.representation.login.UserPassword;
 import fr.revoicechat.core.representation.user.SignupRepresentation;
 import fr.revoicechat.core.representation.user.UserRepresentation;
@@ -39,7 +38,7 @@ public class AuthController {
 
   @Operation(summary = "Register a new user", description = "Creates a new user account with the provided signup details.")
   @APIResponse(responseCode = "200", description = "User successfully created",
-      content = @Content(schema = @Schema(implementation = User.class))
+      content = @Content(schema = @Schema(implementation = UserRepresentation.class))
   )
   @APIResponse(responseCode = "400",
       description = "Invalid input data",
