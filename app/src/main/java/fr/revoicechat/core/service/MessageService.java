@@ -8,23 +8,20 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
 import fr.revoicechat.core.error.ResourceNotFoundException;
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.repository.MessageRepository;
 import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
-import fr.revoicechat.core.representation.message.MediaDataRepresentation;
+import fr.revoicechat.core.representation.message.MessageNotification;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
 import fr.revoicechat.core.representation.notification.NotificationActionType;
-import fr.revoicechat.core.representation.message.MessageNotification;
-import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.core.service.media.MediaDataService;
 import fr.revoicechat.core.service.message.MessageValidation;
 import fr.revoicechat.core.service.user.RoomUserFinder;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.representation.UserNotificationRepresentation;
+import fr.revoicechat.security.UserHolder;
 
 /**
  * Service layer for managing chat messages within rooms.
@@ -52,8 +49,6 @@ import fr.revoicechat.notification.representation.UserNotificationRepresentation
 @ApplicationScoped
 public class MessageService {
 
-  @ConfigProperty(name = "revoicechat.global.media-server-url")
-  String mediaServerUrl;
   private final EntityManager entityManager;
   private final MessageRepository messageRepository;
   private final RoomService roomService;
@@ -176,13 +171,7 @@ public class MessageService {
         new UserNotificationRepresentation(message.getUser().getId(), message.getUser().getDisplayName()),
         message.getCreatedDate().atOffset(ZoneOffset.UTC),
         message.getMediaDatas().stream()
-               .map(media -> new MediaDataRepresentation(
-                   media.getId(),
-                   media.getName(),
-                   mediaServerUrl + "/" + media.getName(),
-                   media.getOrigin(),
-                   media.getType()
-               )).toList()
+               .map(mediaDataService::toRepresentation).toList()
     );
   }
 }

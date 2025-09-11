@@ -1,8 +1,9 @@
-package fr.revoicechat.core.representation.message;
+package fr.revoicechat.core.representation.media;
 
 import java.util.UUID;
 
 import fr.revoicechat.core.model.FileType;
+import fr.revoicechat.core.model.MediaDataStatus;
 import fr.revoicechat.core.model.MediaOrigin;
 
 public record MediaDataRepresentation(
@@ -10,4 +11,5 @@ public record MediaDataRepresentation(
     String name,
     String url,
     MediaOrigin origin,
+    MediaDataStatus status,
     FileType type) {}

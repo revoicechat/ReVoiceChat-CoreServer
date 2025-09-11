@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import fr.revoicechat.core.representation.media.MediaDataRepresentation;
 import fr.revoicechat.notification.representation.UserNotificationRepresentation;
 
 public record MessageRepresentation(
