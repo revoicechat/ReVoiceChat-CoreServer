@@ -70,7 +70,7 @@ public class ServerControllerImpl implements ServerController {
   }
 
   @Override
-  public ServerStructure getStructure(final UUID id, final ServerStructure structure) {
+  public ServerStructure patchStructure(final UUID id, final ServerStructure structure) {
     return serverService.updateStructure(id, structure);
   }
 

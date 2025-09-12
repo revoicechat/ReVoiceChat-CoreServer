@@ -145,7 +145,7 @@ public interface ServerController extends LoggedApi {
   )
   @PATCH
   @Path("/{id}/structure")
-  ServerStructure getStructure(@PathParam("id") final UUID id, ServerStructure structure);
+  ServerStructure patchStructure(@PathParam("id") final UUID id, ServerStructure structure);
 
   @Tags(refs = { "Server", "Room" })
   @Operation(summary = "Create a new room in a server", description = "Add a new room to a specific server identified by its ID.")
