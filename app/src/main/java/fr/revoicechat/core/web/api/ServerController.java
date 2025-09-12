@@ -103,11 +103,7 @@ public interface ServerController extends LoggedApi {
   void deleteServer(@PathParam("id") UUID id);
 
   @Tags(refs = { "Server", "Room" })
-  @Operation(summary = "Get rooms for a server. ⚠️ use /structure instead",
-      description = "Retrieve the list of rooms belonging to a specific server.",
-      deprecated = true
-
-  )
+  @Operation(summary = "Get rooms for a server", description = "Retrieve the list of rooms belonging to a specific server.")
   @APIResponse(responseCode = "200", description = "List of rooms successfully retrieved")
   @APIResponse(
       responseCode = "404",
