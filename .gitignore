@@ -17,7 +17,8 @@ rvc-server.service
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/*
+!.idea/icon.svg
 *.iws
 *.iml
 *.ipr
