@@ -176,7 +176,7 @@ class TestMultiServerController {
   }
 
   @Test
-  void testUpdateStructure() {
+  void testUpdateEmptyStructure() {
     String token = RestTestUtils.logNewUser();
     var server = createServer(token);
     RestAssured.given()
@@ -193,6 +193,45 @@ class TestMultiServerController {
                                .extract()
                                .body().as(ServerStructure.class);
     assertThat(structure.items()).isEmpty();
+  }
+
+  @Test
+  void testUpdateStructure() {
+    String token = RestTestUtils.logNewUser();
+    var server = createServer(token);
+    var structureBefore = RestAssured.given()
+                                     .contentType(MediaType.APPLICATION_JSON)
+                                     .header("Authorization", "Bearer " + token)
+                                     .when().pathParam("id", server.id()).get("/server/{id}/structure")
+                                     .then().statusCode(200)
+                                     .extract()
+                                     .body().as(ServerStructure.class);
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + token)
+               .body(new ServerStructure(List.of(structureBefore.items().getFirst())))
+               .when().pathParam("id", server.id()).patch("/server/{id}/structure")
+               .then().statusCode(200);
+    var structure = RestAssured.given()
+                               .contentType(MediaType.APPLICATION_JSON)
+                               .header("Authorization", "Bearer " + token)
+                               .when().pathParam("id", server.id()).get("/server/{id}/structure")
+                               .then().statusCode(200)
+                               .extract()
+                               .body().as(ServerStructure.class);
+    assertThat(structure.items()).hasSize(1);
+  }
+
+  @Test
+  void testUpdateStructureWithInexistantRoomId() {
+    String token = RestTestUtils.logNewUser();
+    var server = createServer(token);
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + token)
+               .body(new ServerStructure(List.of(new ServerRoom(UUID.randomUUID()))))
+               .when().pathParam("id", server.id()).patch("/server/{id}/structure")
+               .then().statusCode(400);
   }
 
   @Test
