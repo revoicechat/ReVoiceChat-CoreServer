@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
 import fr.revoicechat.core.error.BadRequestException;
 import fr.revoicechat.core.error.ResourceNotFoundException;
@@ -21,12 +18,19 @@ import fr.revoicechat.core.model.server.ServerItem;
 import fr.revoicechat.core.model.server.ServerRoom;
 import fr.revoicechat.core.model.server.ServerStructure;
 import fr.revoicechat.core.repository.RoomRepository;
+import fr.revoicechat.core.repository.UserRepository;
+import fr.revoicechat.core.representation.notification.NotificationActionType;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
+import fr.revoicechat.core.representation.server.ServerUpdateNotification;
 import fr.revoicechat.core.service.server.ServerProviderService;
+import fr.revoicechat.notification.Notification;
 import fr.revoicechat.security.UserHolder;
 import io.quarkus.security.UnauthorizedException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 /**
  * Service responsible for managing {@link Server} entities.
@@ -50,17 +54,20 @@ public class ServerService {
   private final EntityManager entityManager;
   private final RoomRepository roomRepository;
   private final RoomService roomService;
+  private final UserRepository userRepository;
 
   public ServerService(final ServerProviderService serverProviderService,
                        final UserHolder userHolder,
                        final EntityManager entityManager,
                        final RoomRepository roomRepository,
-                       final RoomService roomService) {
+                       final RoomService roomService,
+                       final UserRepository userRepository) {
     this.serverProviderService = serverProviderService;
     this.userHolder = userHolder;
     this.entityManager = entityManager;
     this.roomRepository = roomRepository;
     this.roomService = roomService;
+    this.userRepository = userRepository;
   }
 
   /**
@@ -166,7 +173,9 @@ public class ServerService {
     var server = getEntity(id);
     server.setStructure(structure);
     entityManager.persist(server);
-    return getStructure(id);
+    var newStructure = getStructure(id);
+    Notification.of(new ServerUpdateNotification(map(server), NotificationActionType.MODIFY)).sendTo(userRepository.findByServers(id));
+    return newStructure;
   }
 
   private List<UUID> flatStructure(final List<ServerItem> structure, List<UUID> ids) {
