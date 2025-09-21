@@ -1,6 +1,6 @@
 package fr.revoicechat.core.web.api;
 
-import static fr.revoicechat.core.web.openapi.OpenApiConfig.*;
+import static fr.revoicechat.openapi.OpenApiConfig.*;
 
 import jakarta.ws.rs.core.MediaType;
 

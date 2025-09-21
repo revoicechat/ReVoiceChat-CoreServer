@@ -1,6 +1,6 @@
-package fr.revoicechat.core.web.openapi;
+package fr.revoicechat.openapi;
 
-import static fr.revoicechat.core.web.openapi.OpenApiConfig.*;
+import static fr.revoicechat.openapi.OpenApiConfig.*;
 import static org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeIn.QUERY;
 import static org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType.*;
 
