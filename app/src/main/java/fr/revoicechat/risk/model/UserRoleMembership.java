@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import fr.revoicechat.security.model.AuthenticatedUser;
+import jakarta.el.MethodNotFoundException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -28,15 +29,6 @@ public class UserRoleMembership implements AuthenticatedUser {
   public UUID getId() {
     return id;
   }
-
-  @Override
-  public String getDisplayName() {return "";}
-
-  @Override
-  public String getLogin() {return "";}
-
-  @Override
-  public Set<String> getRoles() {return Set.of();}
 
   public void setId(final UUID id) {
     this.id = id;
@@ -65,4 +57,8 @@ public class UserRoleMembership implements AuthenticatedUser {
   public int hashCode() {
     return Objects.hashCode(getId());
   }
+
+  @Override public String getDisplayName() {throw new MethodNotFoundException();}
+  @Override public String getLogin() {throw new MethodNotFoundException();}
+  @Override public Set<String> getRoles() {throw new MethodNotFoundException();}
 }

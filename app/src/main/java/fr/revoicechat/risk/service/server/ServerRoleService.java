@@ -25,7 +25,7 @@ public class ServerRoleService {
                         .toList();
   }
 
-  private ServerRoleRepresentation mapToRepresentation(ServerRoles roles) {
+  public ServerRoleRepresentation mapToRepresentation(ServerRoles roles) {
     return new ServerRoleRepresentation(
         roles.getId(),
         roles.getName(),

@@ -37,6 +37,11 @@ public class UserHolderImpl implements UserHolder, NotificationRegistrableHolder
   }
 
   @Override
+  public UUID getId() {
+    return get().getId();
+  }
+
+  @Override
   public User get(final String jwtToken) {
     try {
       return getUser(peekId(jwtToken));
