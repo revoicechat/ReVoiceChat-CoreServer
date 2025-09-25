@@ -1,10 +1,11 @@
-package fr.revoicechat.risk.repository;
+package fr.revoicechat.risk.repository.impl;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
-import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.model.ServerRoles;
+import fr.revoicechat.risk.repository.ServerRolesRepository;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
 import fr.revoicechat.risk.type.RiskType;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -12,7 +13,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 @ApplicationScoped
-public class RiskRepositoryImpl implements RiskRepository {
+public class ServerRolesRepositoryImpl implements ServerRolesRepository {
 
   @PersistenceContext EntityManager entityManager;
 
@@ -41,6 +42,13 @@ public class RiskRepositoryImpl implements RiskRepository {
                         .setParameter("serverId", entity.serverId())
                         .setParameter("entityId", entity.entityId())
                         .getResultList();
+  }
+
+  @Override
+  public Stream<ServerRoles> getByServer(final UUID serverId) {
+    return entityManager.createQuery("select r from ServerRoles r where r.server = :serverId", ServerRoles.class)
+                        .setParameter("serverId", serverId)
+                        .getResultStream();
   }
 
   @Override

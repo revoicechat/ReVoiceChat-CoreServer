@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.model.ServerRoles;
-import fr.revoicechat.risk.repository.RiskRepository;
-import fr.revoicechat.risk.repository.RiskRepository.AffectedRisk;
+import fr.revoicechat.risk.repository.ServerRolesRepository;
+import fr.revoicechat.risk.repository.ServerRolesRepository.AffectedRisk;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
 import fr.revoicechat.risk.type.RiskType;
 import fr.revoicechat.security.UserHolder;
@@ -17,11 +17,11 @@ import jakarta.inject.Singleton;
 @Unremovable
 class RiskServiceImpl implements RiskService {
 
-  private final RiskRepository riskRepository;
+  private final ServerRolesRepository serverRolesRepository;
   private final UserHolder userHolder;
 
-  public RiskServiceImpl(final RiskRepository riskRepository, final UserHolder userHolder) {
-    this.riskRepository = riskRepository;
+  public RiskServiceImpl(final ServerRolesRepository serverRolesRepository, final UserHolder userHolder) {
+    this.serverRolesRepository = serverRolesRepository;
     this.userHolder = userHolder;
   }
 
@@ -32,14 +32,14 @@ class RiskServiceImpl implements RiskService {
 
   @Override
   public boolean hasRisk(final UUID userId, final RiskEntity entity, final RiskType riskType) {
-    if (riskRepository.isOwner(entity.serverId(), userId)) {
+    if (serverRolesRepository.isOwner(entity.serverId(), userId)) {
       return true;
     }
-    List<ServerRoles> membership = riskRepository.getServerRoles(userId);
+    List<ServerRoles> membership = serverRolesRepository.getServerRoles(userId);
     if (membership.isEmpty()) {
       return false;
     }
-    var serverAffectedRisk = riskRepository.getAffectedRisks(entity, riskType);
+    var serverAffectedRisk = serverRolesRepository.getAffectedRisks(entity, riskType);
     return serverAffectedRisk.stream()
                              .filter(affectedRisk -> isUserMembership(affectedRisk, membership))
                              .filter(affectedRisk -> !affectedRisk.mode().equals(RiskMode.DEFAULT))

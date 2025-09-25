@@ -1,19 +1,21 @@
 package fr.revoicechat.risk.type;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import fr.revoicechat.i18n.LocalizedMessage;
+import fr.revoicechat.risk.service.risk.RiskTypeDeserializer;
+import fr.revoicechat.risk.service.risk.RiskTypeSerializer;
 
 /**
  * Define the risk type.
  * All hardcoded implementation are here to provide the list of risks and its translation.
  */
+@JsonDeserialize(using = RiskTypeDeserializer.class)
+@JsonSerialize(using = RiskTypeSerializer.class)
 public interface RiskType extends LocalizedMessage {
 
   @Override
   default String fileName() {
     return RiskType.class.getCanonicalName();
-  }
-
-  default boolean isSameAs(final RiskType other) {
-    return this.name().equals(other.name());
   }
 }
