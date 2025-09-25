@@ -10,7 +10,6 @@ import fr.revoicechat.risk.RisksMembershipData;
 import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
 import fr.revoicechat.risk.representation.ServerRoleRepresentation;
 import fr.revoicechat.risk.retriever.ServerIdRetriever;
-import fr.revoicechat.risk.retriever.ServerRoleIdRetriever;
 import fr.revoicechat.risk.service.server.ServerRoleService;
 import fr.revoicechat.risk.web.api.ServerRoleController;
 import jakarta.annotation.security.RolesAllowed;

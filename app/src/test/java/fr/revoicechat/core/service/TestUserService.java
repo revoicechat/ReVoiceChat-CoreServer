@@ -2,6 +2,8 @@ package fr.revoicechat.core.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
+import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 
@@ -16,6 +18,7 @@ import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 @CleanDatabase
+@TestProfile(BasicIntegrationTestProfile.class)
 class TestUserService {
 
   @Inject EntityManager entityManager;
