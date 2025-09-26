@@ -157,7 +157,8 @@ public class UserService {
         user.getDisplayName(),
         user.getLogin(),
         user.getCreatedDate().atOffset(ZoneOffset.UTC),
-        getActiveStatus(user)
+        getActiveStatus(user),
+        user.getType()
     );
   }
 
