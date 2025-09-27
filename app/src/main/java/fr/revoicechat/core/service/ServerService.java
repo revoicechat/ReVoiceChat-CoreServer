@@ -108,12 +108,10 @@ public class ServerService {
     Server server = new Server();
     server.setId(UUID.randomUUID());
     server.setName(representation.name());
-    User owner = userHolder.get();
-    server.setOwner(owner);
     serverProviderService.create(server);
     ServerUser serverUser = new ServerUser();
     serverUser.setServer(server);
-    serverUser.setUser(owner);
+    serverUser.setUser(userHolder.get());
     entityManager.persist(serverUser);
     return map(server);
   }

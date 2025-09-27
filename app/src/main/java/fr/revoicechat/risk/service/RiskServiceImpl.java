@@ -1,13 +1,18 @@
 package fr.revoicechat.risk.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
+import fr.revoicechat.i18n.http.CurrentRequestHolder;
+import fr.revoicechat.i18n.utils.TranslationUtils;
 import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.model.ServerRoles;
 import fr.revoicechat.risk.repository.ServerRolesRepository;
 import fr.revoicechat.risk.repository.ServerRolesRepository.AffectedRisk;
+import fr.revoicechat.risk.representation.RiskCategoryRepresentation;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
+import fr.revoicechat.risk.type.RiskCategory;
 import fr.revoicechat.risk.type.RiskType;
 import fr.revoicechat.security.UserHolder;
 import io.quarkus.arc.Unremovable;
@@ -51,6 +56,31 @@ class RiskServiceImpl implements RiskService {
 
   private boolean isUserMembership(final AffectedRisk affectedRisk, final List<ServerRoles> membership) {
     return membership.stream().anyMatch(role -> role.getId().equals(affectedRisk.role()));
+  }
+
+  @Override
+  public List<RiskCategoryRepresentation> getAllRisks() {
+    return RiskTypeClassesHolder.INSTANCE.getRiskType()
+                                         .stream()
+                                         .filter(Class::isEnum)
+                                         .filter(clazz -> clazz.isAnnotationPresent(RiskCategory.class))
+                                         .map(this::mapToRiskCategory)
+                                         .filter(Objects::nonNull)
+                                         .toList();
+  }
+
+  private RiskCategoryRepresentation mapToRiskCategory(final Class<? extends RiskType> clazz) {
+    var enums = clazz.getEnumConstants();
+    if (enums.length == 0) {
+      return null;
+    }
+    var risk = enums[0];
+    var category = clazz.getAnnotation(RiskCategory.class);
+    return new RiskCategoryRepresentation(
+        category.value(),
+        TranslationUtils.translate(risk.fileName(), category.value(), CurrentRequestHolder.getLocale()),
+        List.of(clazz.getEnumConstants())
+    );
   }
 
 }

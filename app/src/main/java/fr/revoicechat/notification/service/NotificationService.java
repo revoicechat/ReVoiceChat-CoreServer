@@ -47,11 +47,15 @@ public class NotificationService implements NotificationRegistry, NotificationSe
     targetedUsers.forEach(user -> sendAndCloseIfNecessary(data, user.getId()));
   }
 
+  /**
+   * the SSE holder in wrap in another concurrent hashmap
+   */
   @Override
   public boolean ping(NotificationRegistrable registrable) {
     var id = registrable.getId();
     LOG.debug("ping user {}", id);
-    return getProcessor(id).stream().anyMatch(holder -> holder.send(NotificationData.ping()));
+    var holder = getProcessor(registrable.getId());
+    return new HashSet<>(holder).stream().anyMatch(sse -> sse.send(NotificationData.ping()));
   }
 
   private void sendAndCloseIfNecessary(final NotificationData notificationData, final UUID userId) {

@@ -2,6 +2,8 @@ package fr.revoicechat.core.service.server;
 
 import java.util.List;
 import java.util.UUID;
+
+import fr.revoicechat.security.UserHolder;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -17,14 +19,17 @@ import fr.revoicechat.core.model.server.ServerStructure;
 public class NewServerCreator {
 
   private final EntityManager entityManager;
+  private final UserHolder holder;
 
-  public NewServerCreator(EntityManager entityManager) {
+  public NewServerCreator(EntityManager entityManager, final UserHolder holder) {
     this.entityManager = entityManager;
+    this.holder = holder;
   }
 
   @Transactional
   public Server create(Server server) {
     server.setId(UUID.randomUUID());
+    server.setOwner(holder.get());
     entityManager.persist(server);
     var general = createRoom(server, "General",  RoomType.TEXT);
     var random = createRoom(server, "Random",   RoomType.TEXT);

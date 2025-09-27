@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import org.eclipse.microprofile.openapi.models.OpenAPI;
 import org.eclipse.microprofile.openapi.models.media.Schema;
 import org.eclipse.microprofile.openapi.models.media.Schema.SchemaType;
-import org.reflections.Reflections;
 
 import fr.revoicechat.notification.model.NotificationPayload;
 import fr.revoicechat.notification.model.NotificationType;
@@ -25,7 +24,7 @@ public class NotificationOpenAPIFilterer implements OpenAPIFilterer {
     if (pathItem == null) {
       return;
     }
-    Set<Class<? extends NotificationPayload>> payloads = getPayloadClasses();
+    Set<Class<? extends NotificationPayload>> payloads = PayloadClassesHolder.INSTANCE.getPayloads();
     pathItem.getGET()
             .getResponses()
             .getAPIResponse("200")
@@ -34,11 +33,6 @@ public class NotificationOpenAPIFilterer implements OpenAPIFilterer {
             .setSchema(createSchema().type(List.of(SchemaType.OBJECT))
                                      .addProperty("type", notificationTypes(payloads))
                                      .addProperty("data", notificationData(payloads)));
-  }
-
-  private static Set<Class<? extends NotificationPayload>> getPayloadClasses() {
-    Reflections reflections = new Reflections("fr.revoicechat");
-    return reflections.getSubTypesOf(NotificationPayload.class);
   }
 
   private Schema notificationTypes(final Set<Class<? extends NotificationPayload>> payloads) {
