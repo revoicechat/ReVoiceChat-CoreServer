@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import fr.revoicechat.core.model.Server;
+import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.repository.ServerRepository;
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -86,7 +87,7 @@ class TestMonoServerProviderService {
   private static class NewServerCreatorMock extends NewServerCreator {
     private boolean called = false;
 
-    public NewServerCreatorMock() {super(null);}
+    public NewServerCreatorMock() {super(null, new UserHolderMock<>(new User()));}
 
     @Override
     public Server create(final Server server) {
