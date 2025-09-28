@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import fr.revoicechat.risk.representation.RiskCategoryRepresentation.TranslatedRisk;
-import fr.revoicechat.risk.type.RiskType;
 
 public class TranslatedRiskTypeSerializer extends JsonSerializer<TranslatedRisk> {
 

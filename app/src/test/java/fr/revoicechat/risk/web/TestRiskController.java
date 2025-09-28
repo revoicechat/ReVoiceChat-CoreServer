@@ -24,7 +24,9 @@ class TestRiskController {
                               .when().get("/risk")
                               .then().statusCode(200)
                               .extract().body().asPrettyString();
-    assertThat(response).contains("\"type\": \"SERVER_RISK_TYPE\"", "\"title\": \"risk associated to server\",");
-    assertThat(response).contains("\"type\": \"SERVER_ROOM_READ_MESSAGE\"", "\"title\": \"read messages on a specific room\"");
+    assertThat(response).contains("\"type\": \"SERVER_RISK_TYPE\"",
+        "\"title\": \"risk associated to server\",",
+        "\"type\": \"SERVER_ROOM_READ_MESSAGE\"",
+        "\"title\": \"read messages on a specific room\"");
   }
 }
