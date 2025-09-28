@@ -19,7 +19,7 @@ import org.junit.jupiter.api.io.TempDir;
 import fr.revoicechat.core.error.BadRequestException;
 import fr.revoicechat.core.error.ResourceNotFoundException;
 import fr.revoicechat.core.nls.CommonErrorCode;
-import fr.revoicechat.i18n.LocalizedMessageTestEnum;
+import fr.revoicechat.i18n.CommonMessageTestEnum;
 import fr.revoicechat.core.stub.HttpHeadersMock;
 import io.quarkus.security.ForbiddenException;
 import io.quarkus.security.UnauthorizedException;
@@ -40,11 +40,11 @@ class TestGlobalExceptionMapper {
   void testBadRequestException() {
     mapper.logError = true;
     mapper.headers = new HttpHeadersMock() {};
-    var ex = new BadRequestException(LocalizedMessageTestEnum.TEST_IN_ENGLISH_ONLY);
+    var ex = new BadRequestException(CommonMessageTestEnum.TEST_ENUM);
     var response = mapper.toResponse(ex);
     assertThat(response).isNotNull();
     assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-    assertThat(response.getEntity()).isEqualTo(LocalizedMessageTestEnum.TEST_IN_ENGLISH_ONLY.translate());
+    assertThat(response.getEntity()).isEqualTo(CommonMessageTestEnum.TEST_ENUM.translate());
   }
 
   @Test

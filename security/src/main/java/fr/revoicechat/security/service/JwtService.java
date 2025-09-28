@@ -1,6 +1,8 @@
 package fr.revoicechat.security.service;
 
 import java.util.UUID;
+
+import jakarta.enterprise.inject.Default;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.WebApplicationException;
 
@@ -13,6 +15,7 @@ import fr.revoicechat.security.model.AuthenticatedUser;
 import io.smallrye.jwt.auth.principal.JWTParser;
 import io.smallrye.jwt.build.Jwt;
 
+@Default
 @Singleton
 class JwtService implements SecurityTokenService {
   private static final Logger LOG = LoggerFactory.getLogger(JwtService.class);

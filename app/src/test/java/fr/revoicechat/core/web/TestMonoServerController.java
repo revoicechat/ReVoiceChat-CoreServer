@@ -53,7 +53,7 @@ class TestMonoServerController {
     assertThat(server).isNotNull();
     assertThat(server.id()).isNotNull();
     assertThat(server.name()).isEqualTo("Server");
-    assertThat(server.owner()).isNull();
+    assertThat(server.owner()).isNotNull();
   }
 
   @Test
