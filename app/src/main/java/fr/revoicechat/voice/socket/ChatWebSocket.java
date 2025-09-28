@@ -33,7 +33,7 @@ import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.service.room.ConnectedUserRetriever;
 import fr.revoicechat.core.service.user.RoomUserFinder;
-import fr.revoicechat.core.utils.IgnoreExceptions;
+import fr.revoicechat.voice.utils.IgnoreExceptions;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.representation.UserNotificationRepresentation;
 import fr.revoicechat.security.UserHolder;

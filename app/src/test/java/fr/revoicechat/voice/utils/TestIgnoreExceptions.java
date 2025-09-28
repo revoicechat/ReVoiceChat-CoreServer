@@ -1,4 +1,4 @@
-package fr.revoicechat.core.utils;
+package fr.revoicechat.voice.utils;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import fr.revoicechat.core.utils.IgnoreExceptions.ExceptionRunner;
+import fr.revoicechat.voice.utils.IgnoreExceptions.ExceptionRunner;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest

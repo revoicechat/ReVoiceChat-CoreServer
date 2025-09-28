@@ -1,4 +1,4 @@
-package fr.revoicechat.core.utils;
+package fr.revoicechat.voice.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
