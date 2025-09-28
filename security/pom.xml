@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>fr.revoicechat</groupId>
+    <artifactId>revoicechat</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>revoicechat-security</artifactId>
+
+  <dependencies>
+    <!-- Security -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mindrot</groupId>
+      <artifactId>jbcrypt</artifactId>
+      <version>0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-jwt</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-jwt-build</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jboss.jandex</groupId>
+        <artifactId>jandex-maven-plugin</artifactId>
+        <version>1.2.3</version>
+        <executions>
+          <execution>
+            <id>make-index</id>
+            <goals>
+              <goal>jandex</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

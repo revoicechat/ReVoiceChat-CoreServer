@@ -12,6 +12,51 @@
   <name>ReVoiceChat-app</name>
   <description>quarkus app</description>
 
+  <dependencies>
+    <!-- Database -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-flyway</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jdbc-postgresql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jdbc-h2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-hibernate-orm</artifactId>
+    </dependency>
+
+    <!-- Web -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-jackson</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-websockets</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>fr.revoicechat</groupId>
+      <artifactId>revoicechat-i18n</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>fr.revoicechat</groupId>
+      <artifactId>revoicechat-security</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>
