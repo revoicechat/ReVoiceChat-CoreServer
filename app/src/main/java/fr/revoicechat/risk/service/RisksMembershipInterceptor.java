@@ -29,18 +29,16 @@ public class RisksMembershipInterceptor {
   public Object intercept(InvocationContext context) throws Exception {
     Method method = context.getMethod();
     RisksMembershipData membership = risksMembership(method);
-    if (membership != null) {
-      RiskEntity entity = membership.retriever().getConstructor().newInstance().get(context);
-      if (membership.risks().length > 0 && Stream.of(membership.risks())
-                                                 .map(this::toRiskType)
-                                                 .noneMatch(risk -> getRiskService().hasRisk(entity, risk))) {
-        throw new UnauthorizedException(RISK_MEMBERSHIP_ERROR.translate(
-            Stream.of(membership.risks())
-                  .map(this::toRiskType)
-                  .map(LocalizedMessage::translate)
-                  .collect(Collectors.joining("\n"))
-        ));
-      }
+    RiskEntity entity = membership.retriever().getConstructor().newInstance().get(context);
+    if (Stream.of(membership.risks())
+              .map(this::toRiskType)
+              .noneMatch(risk -> getRiskService().hasRisk(entity, risk))) {
+      throw new UnauthorizedException(RISK_MEMBERSHIP_ERROR.translate(
+          Stream.of(membership.risks())
+                .map(this::toRiskType)
+                .map(LocalizedMessage::translate)
+                .collect(Collectors.joining("\n"))
+      ));
     }
     return context.proceed();
   }

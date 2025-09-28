@@ -178,10 +178,9 @@ public class ServerService {
 
   private List<UUID> flatStructure(final List<ServerItem> structure, List<UUID> ids) {
     structure.forEach(item -> {
-      if (item instanceof ServerRoom(UUID id)) {
-        ids.add(id);
-      } else if (item instanceof ServerCategory category) {
-        flatStructure(category.items(), ids);
+      switch (item) {
+        case ServerRoom(UUID id) -> ids.add(id);
+        case ServerCategory category -> flatStructure(category.items(), ids);
       }
     });
     return ids;

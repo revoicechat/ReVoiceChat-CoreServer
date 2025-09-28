@@ -1,5 +1,8 @@
 package fr.revoicechat.core.web.openapi;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.openapi.models.media.Schema;
@@ -23,6 +26,8 @@ public class EnumFormatFilter implements SchemaFilterer {
   }
 
   private static boolean isEnum(final Schema schema) {
-    return schema.getEnumeration() != null && !schema.getEnumeration().isEmpty();
+    return Optional.ofNullable(schema.getEnumeration())
+                   .filter(Predicate.not(List::isEmpty))
+                   .isPresent();
   }
 }

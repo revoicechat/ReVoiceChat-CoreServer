@@ -20,9 +20,9 @@ public class ServerRolesRepositoryImpl implements ServerRolesRepository {
   @Override
   public List<ServerRoles> getServerRoles(final UUID userId) {
     return entityManager.createQuery("""
-                            select u
-                            from ServerRoles u
-                            where u.server = :id""", ServerRoles.class)
+                            select u.serverRoles
+                            from UserRoleMembership u
+                            where u.id = :id""", ServerRoles.class)
                         .setParameter("id", userId)
                         .getResultList();
   }

@@ -1,12 +1,14 @@
 package fr.revoicechat.risk.service.server;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import fr.revoicechat.core.error.ResourceNotFoundException;
 import fr.revoicechat.core.service.ServerService;
 import fr.revoicechat.risk.model.Risk;
 import fr.revoicechat.risk.model.ServerRoles;
+import fr.revoicechat.risk.model.UserRoleMembership;
 import fr.revoicechat.risk.repository.RiskRepository;
 import fr.revoicechat.risk.repository.ServerRolesRepository;
 import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
@@ -34,6 +36,10 @@ public class ServerRoleService {
     return serverRolesRepository.getByServer(serverId).map(this::mapToRepresentation).toList();
   }
 
+  public ServerRoleRepresentation get(final UUID roleId) {
+    return mapToRepresentation(getEntity(roleId));
+  }
+
   @Transactional
   public ServerRoleRepresentation create(final UUID serverId, final CreatedServerRoleRepresentation representation) {
     serverService.getEntity(serverId);
@@ -48,10 +54,7 @@ public class ServerRoleService {
 
   @Transactional
   public ServerRoleRepresentation update(final UUID serverRoleId, final CreatedServerRoleRepresentation representation) {
-    ServerRoles roles = entityManager.getReference(ServerRoles.class, serverRoleId);
-    if (roles == null) {
-      throw new ResourceNotFoundException(ServerRoles.class, serverRoleId);
-    }
+    ServerRoles roles = getEntity(serverRoleId);
     mapBasicAttributes(representation, roles);
     entityManager.persist(roles);
     riskRepository.getRisks(serverRoleId).forEach(entityManager::remove);
@@ -84,5 +87,25 @@ public class ServerRoleService {
         roles.getColor(),
         roles.getServer()
     );
+  }
+
+  @Transactional
+  public void addRoleToUser(final UUID serverRoleId, final List<UUID> users) {
+    ServerRoles roles = getEntity(serverRoleId);
+    users.stream()
+         .map(user -> entityManager.find(UserRoleMembership.class, user))
+         .filter(Objects::nonNull)
+         .forEach(user -> {
+           user.getServerRoles().add(roles);
+           entityManager.persist(user);
+         });
+  }
+
+  private ServerRoles getEntity(final UUID serverRoleId) {
+    ServerRoles roles = entityManager.find(ServerRoles.class, serverRoleId);
+    if (roles == null) {
+      throw new ResourceNotFoundException(ServerRoles.class, serverRoleId);
+    }
+    return roles;
   }
 }

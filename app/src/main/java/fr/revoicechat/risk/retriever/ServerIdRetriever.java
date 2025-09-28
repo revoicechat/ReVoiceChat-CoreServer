@@ -11,9 +11,6 @@ public class ServerIdRetriever implements RisksEntityRetriever {
 
   @Override
   public RiskEntity get(final Method method, final List<DataParameter> parameters) {
-    if (parameters.isEmpty()) {
-      return RiskEntity.EMPTY;
-    }
     return parameters.stream()
                      .map(DataParameter::arg)
                      .filter(UUID.class::isInstance)

@@ -9,4 +9,4 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @Type(value = ServerRoom.class, name = "ROOM"),
     @Type(value = ServerCategory.class, name = "CATEGORY")
 })
-public interface ServerItem {}
+public sealed interface ServerItem permits ServerRoom, ServerCategory {}

@@ -21,9 +21,6 @@ public class NotificationOpenAPIFilterer implements OpenAPIFilterer {
   @Override
   public void filterOpenAPI(OpenAPI openAPI) {
     var pathItem = openAPI.getPaths().getPathItem("/api/sse");
-    if (pathItem == null) {
-      return;
-    }
     Set<Class<? extends NotificationPayload>> payloads = PayloadClassesHolder.INSTANCE.getPayloads();
     pathItem.getGET()
             .getResponses()
