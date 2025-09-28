@@ -1,6 +1,6 @@
 package fr.revoicechat.i18n;
 
-public enum LocalizedMessageTestEnum implements LocalizedMessage {
+enum LocalizedMessageTestEnum implements LocalizedMessage {
   TEST_IN_ENGLISH_ONLY,
   TEST_IN_FRENCH_ONLY,
   TEST_IN_FRENCH_AND_ENGLISH,
