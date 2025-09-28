@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
+import fr.revoicechat.risk.type.RiskCategory;
+import fr.revoicechat.risk.type.RiskType;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
@@ -24,9 +26,36 @@ class TestRiskController {
                               .when().get("/risk")
                               .then().statusCode(200)
                               .extract().body().asPrettyString();
-    assertThat(response).contains("\"type\": \"SERVER_RISK_TYPE\"",
-        "\"title\": \"risk associated to server\",",
-        "\"type\": \"SERVER_ROOM_READ_MESSAGE\"",
-        "\"title\": \"read messages on a specific room\"");
+    assertThat(response).contains("\"type\": \"RISK_TYPE_MOCK\"",
+        "\"title\": \"risk type mock\",",
+        "\"type\": \"MOCK_RISK_1\"",
+        "\"title\": \"risk 1\"",
+        "\"type\": \"MOCK_RISK_2\"",
+        "\"title\": \"risk 2\"")
+        .doesNotContain("\"type\": \"NO_RISK_TYPE_MOCK\"");
+  }
+
+  @RiskCategory("NO_RISK_TYPE_MOCK")
+  @SuppressWarnings("unused") // here for reflection test purpose
+  public enum NoRiskTypeMock implements RiskType {
+    ;
+
+    @Override
+    public String fileName() {
+      return "fr.revoicechat.risk.type.RiskTypeMock";
+    }
+  }
+
+  @RiskCategory("RISK_TYPE_MOCK")
+  @SuppressWarnings("unused") // here for reflection test purpose
+  public enum RiskTypeMock implements RiskType {
+    MOCK_RISK_1,
+    MOCK_RISK_2,
+    ;
+
+    @Override
+    public String fileName() {
+      return "fr.revoicechat.risk.type.RiskTypeMock";
+    }
   }
 }

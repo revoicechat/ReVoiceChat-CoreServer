@@ -1,12 +1,15 @@
 package fr.revoicechat.core.repository.jpa;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
+import java.io.IOError;
 import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import fr.revoicechat.core.model.server.ServerCategory;
@@ -66,6 +69,20 @@ class TestServerStructureConverter {
   }
 
   @Test
+  void testConvertToDatabaseColumnWithError() {
+    ServerStructure structure = getStructure();
+    var mapper = new ObjectMapper() {
+      @Override
+      public String writeValueAsString(final Object value) throws JsonProcessingException {
+        throw new JsonProcessingException("") {};
+      }
+    };
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    var converter = new ServerStructureConverter(mapper);
+    assertThatThrownBy(() -> converter.convertToDatabaseColumn(structure)).isInstanceOf(IOError.class);
+  }
+
+  @Test
   void testConvertToEntityAttribute() {
     var converter = new ServerStructureConverter();
     var structure = converter.convertToEntityAttribute(JSON);
@@ -84,6 +101,19 @@ class TestServerStructureConverter {
     var converter = new ServerStructureConverter();
     var structure = converter.convertToEntityAttribute("");
     assertThat(structure).usingRecursiveAssertion().isEqualTo(new ServerStructure(List.of()));
+  }
+
+  @Test
+  void testConvertToEntityAttributeWithError() {
+    var mapper = new ObjectMapper() {
+      @Override
+      public <T> T readValue(String content, TypeReference<T> valueTypeRef) throws JsonProcessingException {
+        throw new JsonProcessingException("") {};
+      }
+    };
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    var converter = new ServerStructureConverter(mapper);
+    assertThatThrownBy(() -> converter.convertToEntityAttribute(JSON)).isInstanceOf(IOError.class);
   }
 
   private static ServerStructure getStructure() {

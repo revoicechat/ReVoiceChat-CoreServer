@@ -1,7 +1,6 @@
 package fr.revoicechat.risk.service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -64,23 +63,28 @@ class RiskServiceImpl implements RiskService {
                                          .stream()
                                          .filter(Class::isEnum)
                                          .filter(clazz -> clazz.isAnnotationPresent(RiskCategory.class))
+                                         .map(clazz -> new RiskData(clazz.getEnumConstants(), clazz.getAnnotation(RiskCategory.class)))
+                                         .filter(data -> data.riskTypes.length != 0)
                                          .map(this::mapToRiskCategory)
-                                         .filter(Objects::nonNull)
                                          .toList();
   }
 
-  private RiskCategoryRepresentation mapToRiskCategory(final Class<? extends RiskType> clazz) {
-    var enums = clazz.getEnumConstants();
-    if (enums.length == 0) {
-      return null;
-    }
-    var risk = enums[0];
-    var category = clazz.getAnnotation(RiskCategory.class);
+  private RiskCategoryRepresentation mapToRiskCategory(RiskData data) {
+    var risk = data.riskTypes[0];
     return new RiskCategoryRepresentation(
-        category.value(),
-        TranslationUtils.translate(risk.fileName(), category.value()),
-        Set.of(clazz.getEnumConstants())
+        data.category.value(),
+        TranslationUtils.translate(risk.fileName(), data.category.value()),
+        Set.of(data.riskTypes)
     );
   }
 
+  private static final class RiskData {
+    private final RiskType[] riskTypes;
+    private final RiskCategory category;
+
+    private RiskData(RiskType[] riskTypes, RiskCategory category) {
+      this.riskTypes = riskTypes;
+      this.category = category;
+    }
+  }
 }

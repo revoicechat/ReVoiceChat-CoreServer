@@ -14,9 +14,6 @@ public class EntityByRoomIdRetriever implements RisksEntityRetriever {
 
   @Override
   public RiskEntity get(final Method method, final List<DataParameter> parameters) {
-    if (parameters.isEmpty()) {
-      return RiskEntity.EMPTY;
-    }
     var em = CDI.current().select(EntityManager.class).get();
     return parameters.stream()
                      .map(DataParameter::arg)
