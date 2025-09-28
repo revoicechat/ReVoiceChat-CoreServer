@@ -11,4 +11,21 @@
 
   <artifactId>revoicechat-i18n</artifactId>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jboss.jandex</groupId>
+        <artifactId>jandex-maven-plugin</artifactId>
+        <version>${org.jboss.jandex.version}</version>
+        <executions>
+          <execution>
+            <id>make-index</id>
+            <goals>
+              <goal>jandex</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

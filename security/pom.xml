@@ -30,11 +30,6 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-jwt-build</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>jakarta.ws.rs</groupId>
-      <artifactId>jakarta.ws.rs-api</artifactId>
-    </dependency>
   </dependencies>
 
   <build>
@@ -42,7 +37,7 @@
       <plugin>
         <groupId>org.jboss.jandex</groupId>
         <artifactId>jandex-maven-plugin</artifactId>
-        <version>1.2.3</version>
+        <version>${org.jboss.jandex.version}</version>
         <executions>
           <execution>
             <id>make-index</id>

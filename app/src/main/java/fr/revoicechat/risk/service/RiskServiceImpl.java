@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import fr.revoicechat.i18n.http.CurrentRequestHolder;
-import fr.revoicechat.i18n.utils.TranslationUtils;
+import fr.revoicechat.i18n.TranslationUtils;
 import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.model.ServerRoles;
 import fr.revoicechat.risk.repository.ServerRolesRepository;
@@ -78,7 +77,7 @@ class RiskServiceImpl implements RiskService {
     var category = clazz.getAnnotation(RiskCategory.class);
     return new RiskCategoryRepresentation(
         category.value(),
-        TranslationUtils.translate(risk.fileName(), category.value(), CurrentRequestHolder.getLocale()),
+        TranslationUtils.translate(risk.fileName(), category.value()),
         List.of(clazz.getEnumConstants())
     );
   }

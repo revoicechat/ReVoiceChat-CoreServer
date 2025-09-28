@@ -1,4 +1,4 @@
-package fr.revoicechat.i18n.utils;
+package fr.revoicechat.i18n;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -6,15 +6,21 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import fr.revoicechat.i18n.LocalizedMessage;
-
 public class TranslationUtils {
 
   private TranslationUtils() {/*not instantiable*/}
 
   private static final Locale DEFAULT_LOCALE = Locale.ENGLISH;
 
-  public static String translate(String fileName, String name, List<Locale> acceptedLanguage, Object... args) {
+  public static String translate(LocalizedMessage message, Object... args) {
+    return translate(message.fileName(), message.name(), args);
+  }
+
+  public static String translate(String fileName, String name, Object... args) {
+    return translate(fileName, name, CurrentLocaleHolder.getLocale(), args);
+  }
+
+  private static String translate(String fileName, String name, List<Locale> acceptedLanguage, Object... args) {
     for (Locale locale : acceptedLanguage) {
       try {
         ResourceBundle bundle = ResourceBundle.getBundle(fileName, locale, new FallbackToEnglishControl());
@@ -25,10 +31,6 @@ public class TranslationUtils {
       }
     }
     return name;
-  }
-
-  public static String translate(LocalizedMessage message, List<Locale> acceptedLanguage, Object... args) {
-    return translate(message.fileName(), message.name(), acceptedLanguage, args);
   }
 
   private static class FallbackToEnglishControl extends ResourceBundle.Control {
