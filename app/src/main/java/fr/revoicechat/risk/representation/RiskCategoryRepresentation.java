@@ -1,7 +1,7 @@
 package fr.revoicechat.risk.representation;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import fr.revoicechat.risk.service.risk.TranslatedRiskTypeSerializer;
@@ -13,10 +13,10 @@ public record RiskCategoryRepresentation(
     List<TranslatedRisk> risks
 ) {
 
-  public RiskCategoryRepresentation(final String type, final String title, Collection<RiskType> risks) {
+  public RiskCategoryRepresentation(final String type, final String title, Set<RiskType> risks) {
     this(type, title, risks.stream().map(TranslatedRisk::new).toList());
   }
 
   @JsonSerialize(using = TranslatedRiskTypeSerializer.class)
-  private record TranslatedRisk(RiskType type) {}
+  public record TranslatedRisk(RiskType type) {}
 }

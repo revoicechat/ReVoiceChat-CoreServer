@@ -2,6 +2,7 @@ package fr.revoicechat.risk.service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import fr.revoicechat.i18n.TranslationUtils;
@@ -78,7 +79,7 @@ class RiskServiceImpl implements RiskService {
     return new RiskCategoryRepresentation(
         category.value(),
         TranslationUtils.translate(risk.fileName(), category.value()),
-        List.of(clazz.getEnumConstants())
+        Set.of(clazz.getEnumConstants())
     );
   }
 
