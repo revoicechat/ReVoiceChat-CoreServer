@@ -1,1 +1,1 @@
-./mvnw clean package -DskipTests
+./mvnw clean package -DskipTests -T4C  -Dquarkus.config.locations=server.properties
