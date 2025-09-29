@@ -1,4 +1,4 @@
-package fr.revoicechat.core.service.room;
+package fr.revoicechat.voice.service.user;
 
 import java.util.UUID;
 import java.util.stream.Stream;

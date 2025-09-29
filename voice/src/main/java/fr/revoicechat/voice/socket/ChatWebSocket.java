@@ -12,8 +12,21 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.eclipse.microprofile.context.ManagedExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import fr.revoicechat.notification.Notification;
+import fr.revoicechat.notification.representation.UserNotificationRepresentation;
+import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.security.model.AuthenticatedUser;
+import fr.revoicechat.voice.notification.VoiceJoiningNotification;
+import fr.revoicechat.voice.notification.VoiceLeavingNotification;
+import fr.revoicechat.voice.service.room.VoiceRoomPredicate;
+import fr.revoicechat.voice.service.user.ConnectedUserRetriever;
+import fr.revoicechat.voice.service.user.VoiceRoomUserFinder;
+import fr.revoicechat.voice.utils.IgnoreExceptions;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.CloseReason.CloseCodes;
@@ -24,22 +37,6 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
-
-import org.eclipse.microprofile.context.ManagedExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import fr.revoicechat.core.model.Room;
-import fr.revoicechat.core.model.RoomType;
-import fr.revoicechat.core.service.room.ConnectedUserRetriever;
-import fr.revoicechat.core.service.user.RoomUserFinder;
-import fr.revoicechat.voice.utils.IgnoreExceptions;
-import fr.revoicechat.notification.Notification;
-import fr.revoicechat.notification.representation.UserNotificationRepresentation;
-import fr.revoicechat.security.UserHolder;
-import fr.revoicechat.security.model.AuthenticatedUser;
-import fr.revoicechat.voice.notification.VoiceJoiningNotification;
-import fr.revoicechat.voice.notification.VoiceLeavingNotification;
 
 @ServerEndpoint("/voice/{roomId}")
 @ApplicationScoped
@@ -52,18 +49,18 @@ public class ChatWebSocket implements ConnectedUserRetriever {
   private final ConcurrentHashMap<UUID, CompletableFuture<Void>> userQueues = new ConcurrentHashMap<>();
 
   private final ManagedExecutor executor;
-  private final EntityManager entityManager;
   private final UserHolder userHolder;
-  private final RoomUserFinder roomUserFinder;
+  private final VoiceRoomUserFinder roomUserFinder;
+  private final VoiceRoomPredicate voiceRoomPredicate;
 
   public ChatWebSocket(ManagedExecutor executor,
-                       EntityManager entityManager,
                        UserHolder userHolder,
-                       RoomUserFinder roomUserFinder) {
+                       VoiceRoomUserFinder roomUserFinder,
+                       VoiceRoomPredicate voiceRoomPredicate) {
     this.executor = executor;
-    this.entityManager = entityManager;
     this.userHolder = userHolder;
     this.roomUserFinder = roomUserFinder;
+    this.voiceRoomPredicate = voiceRoomPredicate;
   }
 
   @OnOpen
@@ -94,8 +91,7 @@ public class ChatWebSocket implements ConnectedUserRetriever {
   void handleOpen(Session session, String token, UUID roomId) {
     var user = userHolder.get(token);
     closeOldSession(user);
-    var room = entityManager.find(Room.class, roomId);
-    if (room == null || !room.getType().equals(RoomType.VOICE)) {
+    if (!voiceRoomPredicate.isVoiceRoom(roomId)) {
       closeSession(session, CloseCodes.CANNOT_ACCEPT, "Selected room cannot accept websocket chat type");
       return;
     }

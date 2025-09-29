@@ -2,6 +2,8 @@ package fr.revoicechat.core.service.room;
 
 import java.util.List;
 import java.util.UUID;
+
+import fr.revoicechat.voice.service.user.ConnectedUserRetriever;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import fr.revoicechat.core.model.RoomType;

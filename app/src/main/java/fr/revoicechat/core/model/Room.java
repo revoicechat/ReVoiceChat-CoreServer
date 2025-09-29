@@ -72,4 +72,8 @@ public class Room {
   public int hashCode() {
     return Objects.hashCode(getId());
   }
+
+  public boolean isVoiceRoom() {
+    return getType().equals(RoomType.VOICE);
+  }
 }

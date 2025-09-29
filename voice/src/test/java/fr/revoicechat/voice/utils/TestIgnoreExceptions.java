@@ -15,7 +15,7 @@ class TestIgnoreExceptions {
   @Test
   void test() {
     ExceptionRunner runner = () -> {};
-    assertThatCode(() -> IgnoreExceptions.run(runner)).doesNotThrowAnyException();
+    assertThatCode(() -> fr.revoicechat.voice.utils.IgnoreExceptions.run(runner)).doesNotThrowAnyException();
   }
 
   @Test

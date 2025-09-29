@@ -2,13 +2,15 @@ package fr.revoicechat.core.service.user;
 
 import java.util.UUID;
 import java.util.stream.Stream;
+
+import fr.revoicechat.voice.service.user.VoiceRoomUserFinder;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import fr.revoicechat.core.repository.UserRepository;
 import fr.revoicechat.notification.model.NotificationRegistrable;
 
 @ApplicationScoped
-public class RoomUserFinderImpl implements RoomUserFinder {
+public class RoomUserFinderImpl implements RoomUserFinder, VoiceRoomUserFinder {
 
   private final UserRepository userRepository;
 

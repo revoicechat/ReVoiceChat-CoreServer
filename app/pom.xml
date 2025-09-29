@@ -40,30 +40,26 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-jackson</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-websockets</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>fr.revoicechat</groupId>
       <artifactId>revoicechat-openapi</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>fr.revoicechat</groupId>
       <artifactId>revoicechat-i18n</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>fr.revoicechat</groupId>
       <artifactId>revoicechat-security</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>fr.revoicechat</groupId>
       <artifactId>revoicechat-notification</artifactId>
-      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>fr.revoicechat</groupId>
+      <artifactId>revoicechat-voice</artifactId>
     </dependency>
   </dependencies>
 

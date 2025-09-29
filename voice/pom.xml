@@ -9,16 +9,16 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>revoicechat-notification</artifactId>
+  <artifactId>revoicechat-voice</artifactId>
 
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy</artifactId>
+      <artifactId>quarkus-websockets</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-jackson</artifactId>
+      <groupId>fr.revoicechat</groupId>
+      <artifactId>revoicechat-security</artifactId>
     </dependency>
     <dependency>
       <groupId>fr.revoicechat</groupId>
@@ -26,7 +26,7 @@
     </dependency>
     <dependency>
       <groupId>fr.revoicechat</groupId>
-      <artifactId>revoicechat-security</artifactId>
+      <artifactId>revoicechat-notification</artifactId>
     </dependency>
   </dependencies>
 

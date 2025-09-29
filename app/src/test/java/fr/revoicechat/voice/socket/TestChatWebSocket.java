@@ -7,10 +7,6 @@ import static org.awaitility.Awaitility.await;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import jakarta.enterprise.inject.spi.CDI;
-import jakarta.inject.Inject;
-import jakarta.websocket.CloseReason.CloseCodes;
-import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +23,10 @@ import fr.revoicechat.security.service.SecurityTokenService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Inject;
+import jakarta.websocket.CloseReason.CloseCodes;
+import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 @CleanDatabase

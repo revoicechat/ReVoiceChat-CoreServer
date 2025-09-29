@@ -7,6 +7,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
@@ -16,8 +17,9 @@ import org.slf4j.LoggerFactory;
 
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.service.NotificationService;
+import fr.revoicechat.security.model.AuthenticatedUser;
+import fr.revoicechat.security.service.SecurityTokenService;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -31,13 +33,14 @@ class TestNotificationController {
   private static final Logger LOG = LoggerFactory.getLogger(TestNotificationController.class);
 
   @Inject NotificationService service;
+  @Inject SecurityTokenService securityTokenService;
 
   @Test
-  @TestSecurity(user = ID_USER, roles = { "USER" })
   void test() throws Exception {
+    var token = securityTokenService.generate(new AuthenticatedUserMock());
     List<String> events = new ArrayList<>();
     try (Client client = ClientBuilder.newBuilder()
-                                      .register((ClientRequestFilter) requestContext -> requestContext.getHeaders().add("Authorization", "Bearer " + ID_USER))
+                                      .register((ClientRequestFilter) requestContext -> requestContext.getHeaders().add("Authorization", "Bearer " + token))
                                       .build();
          SseEventSource ignore = source(client, events)) {
       assertThat(events).isEmpty();
@@ -67,5 +70,28 @@ class TestNotificationController {
       return source;
     }
     return null;
+  }
+
+  private class AuthenticatedUserMock implements AuthenticatedUser {
+
+    @Override
+    public UUID getId() {
+      return UUID.fromString(ID_USER);
+    }
+
+    @Override
+    public String getDisplayName() {
+      return "user";
+    }
+
+    @Override
+    public String getLogin() {
+      return "user";
+    }
+
+    @Override
+    public Set<String> getRoles() {
+      return Set.of("USER");
+    }
   }
 }
