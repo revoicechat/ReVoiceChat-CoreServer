@@ -5,7 +5,10 @@ import java.util.UUID;
 
 import fr.revoicechat.core.model.ActiveStatus;
 import fr.revoicechat.core.model.UserType;
+import fr.revoicechat.notification.model.NotificationPayload;
+import fr.revoicechat.notification.model.NotificationType;
 
+@NotificationType(name = "USER_UPDATE")
 public record UserRepresentation(
     UUID id,
     String displayName,
@@ -13,4 +16,4 @@ public record UserRepresentation(
     OffsetDateTime createdDate,
     ActiveStatus status,
     UserType type
-) {}
+) implements NotificationPayload {}

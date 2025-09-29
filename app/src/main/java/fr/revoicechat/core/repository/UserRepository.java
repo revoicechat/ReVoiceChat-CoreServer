@@ -10,5 +10,9 @@ public interface UserRepository {
   User findByLogin(String login);
   Stream<User> findByServers(UUID serverID);
   long count();
-  List<User> findAll();
+  Stream<User> everyone();
+
+  default List<User> findAll() {
+    return everyone().toList();
+  }
 }

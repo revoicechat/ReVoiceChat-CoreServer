@@ -3,12 +3,12 @@ package fr.revoicechat.core.repository.impl;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.repository.UserRepository;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @ApplicationScoped
 public class UserRepositoryImpl implements UserRepository {
@@ -46,7 +46,7 @@ public class UserRepositoryImpl implements UserRepository {
   }
 
   @Override
-  public List<User> findAll() {
-    return entityManager.createQuery("SELECT u FROM User u", User.class).getResultList();
+  public Stream<User> everyone() {
+    return entityManager.createQuery("SELECT u FROM User u", User.class).getResultStream();
   }
 }

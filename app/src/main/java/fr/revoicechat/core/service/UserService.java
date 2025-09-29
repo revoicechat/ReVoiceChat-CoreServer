@@ -123,7 +123,9 @@ public class UserService {
     Optional.ofNullable(userData.displayName()).filter(not(String::isBlank)).ifPresent(user::setDisplayName);
     Optional.ofNullable(userData.type()).ifPresent(user::setType);
     entityManager.persist(user);
-    return toRepresentation(user);
+    var representation = toRepresentation(user);
+    Notification.of(representation).sendTo(userRepository.everyone());
+    return representation;
   }
 
   private User getUser(final UUID id) {
@@ -137,7 +139,9 @@ public class UserService {
     Optional.ofNullable(userData.displayName()).filter(not(String::isBlank)).ifPresent(user::setDisplayName);
     Optional.ofNullable(userData.status()).ifPresent(user::setStatus);
     entityManager.persist(user);
-    return toRepresentation(user);
+    var representation = toRepresentation(user);
+    Notification.of(representation).sendTo(userRepository.everyone());
+    return representation;
   }
 
   private void setPassword(final User user, final PasswordUpdated password) {

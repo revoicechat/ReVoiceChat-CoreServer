@@ -25,7 +25,7 @@ public class UserControllerImpl implements UserController {
 
   @Override
   @RolesAllowed(ROLE_USER)
-  public UserRepresentation me(final UpdatableUserData userData) {
+  public UserRepresentation updateMe(final UpdatableUserData userData) {
     return userService.updateConnectedUser(userData);
   }
 

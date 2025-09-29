@@ -38,7 +38,7 @@ public interface UserController extends LoggedApi {
   @APIResponse(responseCode = "200")
   @PATCH
   @Path("/me")
-  UserRepresentation me(UpdatableUserData userData);
+  UserRepresentation updateMe(UpdatableUserData userData);
 
   @Operation(summary = "Get details of a user", description = "Retrieve the details of a specific user by its id.")
   @APIResponse(responseCode = "200")
