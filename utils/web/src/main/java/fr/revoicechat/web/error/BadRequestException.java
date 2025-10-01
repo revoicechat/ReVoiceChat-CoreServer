@@ -1,4 +1,4 @@
-package fr.revoicechat.core.error;
+package fr.revoicechat.web.error;
 
 import fr.revoicechat.i18n.LocalizedMessage;
 

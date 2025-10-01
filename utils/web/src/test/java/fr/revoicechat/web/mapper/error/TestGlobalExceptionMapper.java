@@ -1,6 +1,6 @@
-package fr.revoicechat.core.web.error;
+package fr.revoicechat.web.mapper.error;
 
-import static fr.revoicechat.core.nls.HttpStatusErrorCode.*;
+import static fr.revoicechat.web.nls.HttpStatusErrorCode.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -16,11 +16,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import fr.revoicechat.core.error.BadRequestException;
-import fr.revoicechat.core.error.ResourceNotFoundException;
 import fr.revoicechat.core.nls.CommonErrorCode;
-import fr.revoicechat.i18n.CommonMessageTestEnum;
 import fr.revoicechat.core.stub.HttpHeadersMock;
+import fr.revoicechat.web.error.BadRequestException;
+import fr.revoicechat.web.error.ResourceNotFoundException;
 import io.quarkus.security.ForbiddenException;
 import io.quarkus.security.UnauthorizedException;
 import io.quarkus.test.junit.QuarkusTest;

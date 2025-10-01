@@ -1,7 +1,7 @@
-package fr.revoicechat.core.web.error;
+package fr.revoicechat.web.mapper.error;
 
 import static fr.revoicechat.core.nls.HttpStatusErrorCode.*;
-import static fr.revoicechat.core.web.error.ErrorMapperUtils.determineResponseType;
+import static fr.revoicechat.web.mapper.error.ErrorMapperUtils.determineResponseType;
 import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -18,9 +18,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.revoicechat.core.error.BadRequestException;
-import fr.revoicechat.core.error.ResourceNotFoundException;
 import fr.revoicechat.i18n.LocalizedMessage;
+import fr.revoicechat.web.error.BadRequestException;
+import fr.revoicechat.web.error.ResourceNotFoundException;
 import io.quarkus.security.ForbiddenException;
 import io.quarkus.security.UnauthorizedException;
 

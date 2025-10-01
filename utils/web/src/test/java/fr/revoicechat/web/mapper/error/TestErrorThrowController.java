@@ -1,4 +1,4 @@
-package fr.revoicechat.core.web.error;
+package fr.revoicechat.web.mapper.error;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

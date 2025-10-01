@@ -1,4 +1,4 @@
-package fr.revoicechat.core.web.error;
+package fr.revoicechat.web.mapper.error;
 
 import static fr.revoicechat.core.nls.HttpStatusErrorCode.*;
 
