@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.model.Server;
-import fr.revoicechat.core.nls.CommonErrorCode;
 import fr.revoicechat.core.nls.ServerErrorCode;
 import fr.revoicechat.core.quarkus.profile.MonoServerProfile;
 import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
@@ -22,6 +21,7 @@ import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.representation.user.UserRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
+import fr.revoicechat.web.nls.HttpStatusErrorCode;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
@@ -83,7 +83,7 @@ class TestMonoServerController {
                            .then().statusCode(404)
                            .extract()
                            .body().asString();
-    assertThat(error).isEqualTo(CommonErrorCode.NOT_FOUND.translate(Server.class.getSimpleName(), randomId));
+    assertThat(error).isEqualTo(HttpStatusErrorCode.NOT_FOUND.translate(Server.class.getSimpleName(), randomId));
   }
 
   @Test
