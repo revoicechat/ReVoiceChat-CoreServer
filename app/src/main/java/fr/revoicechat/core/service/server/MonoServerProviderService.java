@@ -12,7 +12,7 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.revoicechat.core.error.BadRequestException;
+import fr.revoicechat.web.error.BadRequestException;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.nls.ServerErrorCode;

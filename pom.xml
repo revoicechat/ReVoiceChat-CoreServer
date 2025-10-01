@@ -16,6 +16,7 @@
     <module>security</module>
     <module>utils/i18n</module>
     <module>utils/openapi</module>
+    <module>utils/web</module>
     <module>voice</module>
   </modules>
 
@@ -68,6 +69,11 @@
       <dependency>
         <groupId>fr.revoicechat</groupId>
         <artifactId>revoicechat-voice</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.revoicechat</groupId>
+        <artifactId>revoicechat-web-utils</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>

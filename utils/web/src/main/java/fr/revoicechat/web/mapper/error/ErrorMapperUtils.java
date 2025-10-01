@@ -1,6 +1,6 @@
 package fr.revoicechat.web.mapper.error;
 
-import static fr.revoicechat.core.nls.HttpStatusErrorCode.*;
+import static fr.revoicechat.web.nls.HttpStatusErrorCode.*;
 
 import java.io.IOError;
 import java.nio.charset.StandardCharsets;

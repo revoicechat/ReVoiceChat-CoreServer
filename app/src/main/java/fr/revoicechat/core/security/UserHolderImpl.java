@@ -1,6 +1,6 @@
 package fr.revoicechat.core.security;
 
-import static fr.revoicechat.core.nls.CommonErrorCode.USER_NOT_FOUND;
+import static fr.revoicechat.core.nls.UserErrorCode.USER_NOT_FOUND;
 
 import java.util.UUID;
 import jakarta.enterprise.context.ApplicationScoped;

@@ -3,9 +3,10 @@ package fr.revoicechat.risk.service.server;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
-import fr.revoicechat.core.error.ResourceNotFoundException;
-import fr.revoicechat.core.service.ServerService;
 import fr.revoicechat.risk.model.Risk;
 import fr.revoicechat.risk.model.ServerRoles;
 import fr.revoicechat.risk.model.UserRoleMembership;
@@ -14,9 +15,7 @@ import fr.revoicechat.risk.repository.ServerRolesRepository;
 import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
 import fr.revoicechat.risk.representation.RiskRepresentation;
 import fr.revoicechat.risk.representation.ServerRoleRepresentation;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
+import fr.revoicechat.web.error.ResourceNotFoundException;
 
 @ApplicationScoped
 public class ServerRoleService {
@@ -24,13 +23,13 @@ public class ServerRoleService {
   private final RiskRepository riskRepository;
   private final ServerRolesRepository serverRolesRepository;
   private final EntityManager entityManager;
-  private final ServerService serverService;
+  private final ServerFinder serverFinder;
 
-  public ServerRoleService(final RiskRepository riskRepository, final ServerRolesRepository serverRolesRepository, final EntityManager entityManager, final ServerService serverService) {
+  public ServerRoleService(final RiskRepository riskRepository, final ServerRolesRepository serverRolesRepository, final EntityManager entityManager, final ServerFinder serverFinder) {
     this.riskRepository = riskRepository;
     this.serverRolesRepository = serverRolesRepository;
     this.entityManager = entityManager;
-    this.serverService = serverService;
+    this.serverFinder = serverFinder;
   }
 
   public List<ServerRoleRepresentation> getByServer(UUID serverId) {
@@ -43,7 +42,7 @@ public class ServerRoleService {
 
   @Transactional
   public ServerRoleRepresentation create(final UUID serverId, final CreatedServerRoleRepresentation representation) {
-    serverService.getEntity(serverId);
+    serverFinder.existsOrThrow(serverId);
     ServerRoles roles = new ServerRoles();
     roles.setId(UUID.randomUUID());
     roles.setServer(serverId);

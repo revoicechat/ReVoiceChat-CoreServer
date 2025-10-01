@@ -1,4 +1,4 @@
-package fr.revoicechat.core.nls;
+package fr.revoicechat.web.nls;
 
 import fr.revoicechat.i18n.LocalizedMessage;
 
@@ -7,6 +7,7 @@ public enum HttpStatusErrorCode implements LocalizedMessage {
   UNAUTHORIZED_MESSAGE,
   FORBIDDEN_TITLE,
   FORBIDDEN_MESSAGE,
+  NOT_FOUND,
   NOT_FOUND_TITLE,
   NOT_FOUND_MESSAGE,
   METHOD_NOT_ALLOWED_TITLE,

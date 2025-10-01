@@ -6,7 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import fr.revoicechat.core.error.BadRequestException;
+import fr.revoicechat.web.error.BadRequestException;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation.CreatedMediaDataRepresentation;
 

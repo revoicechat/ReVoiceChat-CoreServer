@@ -16,10 +16,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import fr.revoicechat.core.nls.CommonErrorCode;
-import fr.revoicechat.core.stub.HttpHeadersMock;
 import fr.revoicechat.web.error.BadRequestException;
 import fr.revoicechat.web.error.ResourceNotFoundException;
+import fr.revoicechat.web.nls.CommonMessageTestEnum;
+import fr.revoicechat.web.stub.HttpHeadersMock;
 import io.quarkus.security.ForbiddenException;
 import io.quarkus.security.UnauthorizedException;
 import io.quarkus.test.junit.QuarkusTest;
@@ -54,7 +54,7 @@ class TestGlobalExceptionMapper {
     var response = mapper.toResponse(ex);
     assertThat(response).isNotNull();
     assertThat(response.getStatus()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-    assertThat(response.getEntity()).isEqualTo(CommonErrorCode.NOT_FOUND.translate(Object.class.getSimpleName(), id));
+    assertThat(response.getEntity()).isEqualTo(NOT_FOUND.translate(Object.class.getSimpleName(), id));
   }
 
   @Test

@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import fr.revoicechat.core.error.BadRequestException;
+import fr.revoicechat.web.error.BadRequestException;
 import fr.revoicechat.core.model.ActiveStatus;
 import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.InvitationLinkStatus;

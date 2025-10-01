@@ -9,8 +9,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
-import fr.revoicechat.core.error.BadRequestException;
-import fr.revoicechat.core.error.ResourceNotFoundException;
+import fr.revoicechat.web.error.BadRequestException;
+import fr.revoicechat.web.error.ResourceNotFoundException;
 import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.server.ServerCategory;
 import fr.revoicechat.core.model.server.ServerItem;

@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import fr.revoicechat.core.error.ResourceNotFoundException;
+import fr.revoicechat.web.error.ResourceNotFoundException;
 import fr.revoicechat.core.model.MediaData;
 import fr.revoicechat.core.model.MediaDataStatus;
 import fr.revoicechat.core.model.MediaOrigin;

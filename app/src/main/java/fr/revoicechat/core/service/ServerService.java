@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import fr.revoicechat.core.error.BadRequestException;
-import fr.revoicechat.core.error.ResourceNotFoundException;
+import fr.revoicechat.risk.service.server.ServerFinder;
+import fr.revoicechat.web.error.BadRequestException;
+import fr.revoicechat.web.error.ResourceNotFoundException;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.ServerUser;
 import fr.revoicechat.core.model.User;
@@ -48,7 +49,7 @@ import jakarta.transaction.Transactional;
  * whereas other CRUD operations.
  */
 @ApplicationScoped
-public class ServerService {
+public class ServerService implements ServerFinder {
   private final ServerProviderService serverProviderService;
   private final UserHolder userHolder;
   private final EntityManager entityManager;
@@ -91,6 +92,11 @@ public class ServerService {
    */
   public ServerRepresentation get(final UUID id) {
     return map(getEntity(id));
+  }
+
+  @Override
+  public void existsOrThrow(final UUID id) {
+    getEntity(id);
   }
 
   public Server getEntity(final UUID id) {

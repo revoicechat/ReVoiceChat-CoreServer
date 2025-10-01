@@ -1,8 +1,8 @@
 package fr.revoicechat.web.error;
 
-import java.util.UUID;
+import static fr.revoicechat.web.nls.HttpStatusErrorCode.NOT_FOUND;
 
-import fr.revoicechat.core.nls.CommonErrorCode;
+import java.util.UUID;
 
 /**
  * Exception thrown when a requested resource cannot be found.
@@ -11,6 +11,6 @@ import fr.revoicechat.core.nls.CommonErrorCode;
 public class ResourceNotFoundException extends RuntimeException {
 
   public ResourceNotFoundException(Class<?> clazz, UUID id) {
-    super(CommonErrorCode.NOT_FOUND.translate(clazz.getSimpleName(), id));
+    super(NOT_FOUND.translate(clazz.getSimpleName(), id));
   }
 }

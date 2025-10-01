@@ -14,7 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.EnumSource.Mode;
 
-import fr.revoicechat.core.error.BadRequestException;
+import fr.revoicechat.web.error.BadRequestException;
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.InvitationLinkStatus;

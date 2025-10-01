@@ -5,7 +5,7 @@ import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
 
-import fr.revoicechat.core.error.ResourceNotFoundException;
+import fr.revoicechat.web.error.ResourceNotFoundException;
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.repository.MessageRepository;
 import fr.revoicechat.core.repository.page.PageResult;

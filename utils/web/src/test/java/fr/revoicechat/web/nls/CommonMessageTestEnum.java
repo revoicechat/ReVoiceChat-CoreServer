@@ -1,4 +1,4 @@
-package fr.revoicechat.web.mapper.error;
+package fr.revoicechat.web.nls;
 
 import fr.revoicechat.i18n.LocalizedMessage;
 

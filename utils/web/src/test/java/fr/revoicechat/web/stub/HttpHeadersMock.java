@@ -1,4 +1,4 @@
-package fr.revoicechat.core.stub;
+package fr.revoicechat.web.stub;
 
 import java.util.Date;
 import java.util.List;

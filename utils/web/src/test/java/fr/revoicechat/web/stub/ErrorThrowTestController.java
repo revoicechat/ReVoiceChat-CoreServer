@@ -1,4 +1,4 @@
-package fr.revoicechat.core.stub;
+package fr.revoicechat.web.stub;
 
 import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.GET;
