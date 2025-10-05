@@ -7,10 +7,13 @@ import java.util.UUID;
 
 import fr.revoicechat.risk.RisksMembership;
 import fr.revoicechat.risk.RisksMembershipData;
+import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
 import fr.revoicechat.risk.representation.ServerRoleRepresentation;
 import fr.revoicechat.risk.retriever.ServerRoleIdRetriever;
+import fr.revoicechat.risk.service.DefaultRiskType;
 import fr.revoicechat.risk.service.server.ServerRoleService;
+import fr.revoicechat.risk.type.RiskType;
 import fr.revoicechat.risk.web.api.RoleController;
 import jakarta.annotation.security.RolesAllowed;
 
@@ -33,8 +36,20 @@ public class RoleControllerImpl implements RoleController {
   @Override
   @RisksMembership
   @RisksMembershipData(risks = "ADD_USER_ROLE", retriever = ServerRoleIdRetriever.class)
-  public void getRole(final UUID roleId, final List<UUID> users) {
+  public void addUserToRole(final UUID roleId, final List<UUID> users) {
     serverRoleService.addRoleToUser(roleId, users);
+  }
+
+  @Override
+  public void removeUserToRole(final UUID roleId, final List<UUID> users) {
+    serverRoleService.removeUserToRole(roleId, users);
+  }
+
+  @Override
+  public void patchOrAddRisk(final UUID roleId, final String type, final RiskMode mode) {
+    var risk = new DefaultRiskType(type);
+    serverRoleService.addRiskOrReplace(roleId, risk, mode);
+
   }
 
   @Override

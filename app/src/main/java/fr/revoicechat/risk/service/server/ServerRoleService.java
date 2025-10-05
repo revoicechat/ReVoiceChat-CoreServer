@@ -3,6 +3,9 @@ package fr.revoicechat.risk.service.server;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
+import fr.revoicechat.risk.model.RiskMode;
+import fr.revoicechat.risk.type.RiskType;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -32,6 +35,7 @@ public class ServerRoleService {
     this.serverFinder = serverFinder;
   }
 
+  @Transactional
   public List<ServerRoleRepresentation> getByServer(UUID serverId) {
     return serverRolesRepository.getByServer(serverId).map(this::mapToRepresentation).toList();
   }
@@ -69,15 +73,7 @@ public class ServerRoleService {
   }
 
   private void mapRisks(final CreatedServerRoleRepresentation representation, final ServerRoles roles) {
-    representation.risks().forEach(risk -> {
-      var newRisk = new Risk();
-      newRisk.setId(UUID.randomUUID());
-      newRisk.setEntity(risk.entity());
-      newRisk.setMode(risk.mode());
-      newRisk.setType(risk.type());
-      newRisk.setServerRoles(roles);
-      entityManager.persist(newRisk);
-    });
+    representation.risks().forEach(risk -> newRisk(roles, risk));
   }
 
   public ServerRoleRepresentation mapToRepresentation(ServerRoles roles) {
@@ -89,7 +85,8 @@ public class ServerRoleService {
         roles.getServer(),
         riskRepository.getRisks(roles.getId())
                       .map(risk -> new RiskRepresentation(risk.getType(), risk.getEntity(), risk.getMode()))
-                      .toList()
+                      .toList(),
+        serverRolesRepository.getMembers(roles.getId())
     );
   }
 
@@ -105,11 +102,48 @@ public class ServerRoleService {
          });
   }
 
+  @Transactional
+  public void removeUserToRole(final UUID serverRoleId, final List<UUID> users) {
+    ServerRoles roles = getEntity(serverRoleId);
+    users.stream()
+         .map(user -> entityManager.find(UserRoleMembership.class, user))
+         .filter(Objects::nonNull)
+         .forEach(user -> {
+           user.getServerRoles().remove(roles);
+           entityManager.persist(user);
+         });
+  }
+
+  @Transactional
+  public void addRiskOrReplace(final UUID roleId, final RiskType type, final RiskMode mode) {
+    ServerRoles roles = getEntity(roleId);
+    riskRepository.getRisks(roleId).filter(risk -> risk.getType().equals(type))
+                  .findFirst()
+                  .ifPresentOrElse(risk -> updateMode(risk, mode),
+                      () -> newRisk(roles, new RiskRepresentation(type, null, mode))
+                  );
+  }
+
   private ServerRoles getEntity(final UUID serverRoleId) {
     ServerRoles roles = entityManager.find(ServerRoles.class, serverRoleId);
     if (roles == null) {
       throw new ResourceNotFoundException(ServerRoles.class, serverRoleId);
     }
     return roles;
+  }
+
+  private void updateMode(Risk risk, RiskMode mode) {
+    risk.setMode(mode);
+    entityManager.persist(risk);
+  }
+
+  private void newRisk(final ServerRoles roles, final RiskRepresentation risk) {
+    var newRisk = new Risk();
+    newRisk.setId(UUID.randomUUID());
+    newRisk.setEntity(risk.entity());
+    newRisk.setMode(risk.mode());
+    newRisk.setType(risk.type());
+    newRisk.setServerRoles(roles);
+    entityManager.persist(newRisk);
   }
 }

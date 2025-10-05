@@ -9,8 +9,11 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
 import fr.revoicechat.risk.representation.ServerRoleRepresentation;
+import fr.revoicechat.risk.type.RiskType;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.PUT;
@@ -46,7 +49,36 @@ public interface RoleController {
   )
   @Path("user")
   @PUT
-  void getRole(@PathParam("id") UUID roleId, List<UUID> users);
+  void addUserToRole(@PathParam("id") UUID roleId, List<UUID> users);
+
+  @Operation(summary = "Add a role to a user", description = "Add a specific role to a list of users")
+  @APIResponse(responseCode = "200", description = "Role successfully added")
+  @APIResponse(
+      responseCode = "404",
+      description = "Role not found",
+      content = @Content(
+          mediaType = "text/plain",
+          schema = @Schema(implementation = String.class, examples = "Role not found")
+      )
+  )
+  @Path("user")
+  @DELETE
+  void removeUserToRole(@PathParam("id") UUID roleId, List<UUID> users);
+
+  @Operation(summary = "Add a risk or update it", description = "Add a risk or update it")
+  @APIResponse(responseCode = "200", description = "Risk successfully updated")
+  @APIResponse(
+      responseCode = "404",
+      description = "Role not found",
+      content = @Content(
+          mediaType = "text/plain",
+          schema = @Schema(implementation = String.class, examples = "Role not found")
+      )
+  )
+  @Path("risk/{type}")
+  @PATCH
+  void patchOrAddRisk(@PathParam("id") UUID roleId,
+                      @PathParam("type") String type, RiskMode mode);
 
   @Operation(summary = "Get a role", description = "Get a role")
   @APIResponse(responseCode = "200", description = "Role successfully retrieved")

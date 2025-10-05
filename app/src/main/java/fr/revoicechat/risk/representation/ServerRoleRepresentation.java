@@ -9,6 +9,7 @@ public record ServerRoleRepresentation(
     String color,
     int priority,
     UUID serverId,
-    List<RiskRepresentation> risks
+    List<RiskRepresentation> risks,
+    List<UUID> members
 ) {
 }

@@ -24,7 +24,7 @@ public class Risk {
   @JoinColumn(name = "ROLE_ID", updatable = false)
   private ServerRoles serverRoles;
   @Convert(converter = RiskTypeConverter.class)
-  @Column(name = "RISK_NAME", columnDefinition = "TEXT")
+  @Column(name = "RISK_TYPE", columnDefinition = "TEXT")
   private RiskType type;
   private RiskMode mode;
 

@@ -19,5 +19,7 @@ public interface ServerRolesRepository {
 
   boolean isOwner(UUID server, UUID user);
 
+  List<UUID> getMembers(UUID server);
+
   record AffectedRisk(UUID role, RiskMode mode) {}
 }

@@ -63,4 +63,15 @@ public class ServerRolesRepositoryImpl implements ServerRolesRepository {
                          .getResultList()
                          .isEmpty();
   }
+
+  @Override
+  public List<UUID> getMembers(final UUID server) {
+    return entityManager.createQuery("""
+                            select m.id
+                            from UserRoleMembership m
+                            join m.serverRoles sr
+                            where sr.id = :serverId""", UUID.class)
+                        .setParameter("serverId", server)
+                        .getResultList();
+  }
 }
