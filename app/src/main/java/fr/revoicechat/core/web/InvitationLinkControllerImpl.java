@@ -9,6 +9,8 @@ import jakarta.annotation.security.RolesAllowed;
 import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
 import fr.revoicechat.core.service.invitation.InvitationLinkService;
 import fr.revoicechat.core.web.api.InvitationLinkController;
+import fr.revoicechat.risk.RisksMembershipData;
+import fr.revoicechat.risk.retriever.ServerIdRetriever;
 
 @RolesAllowed(ROLE_USER)
 public class InvitationLinkControllerImpl implements InvitationLinkController {
@@ -24,6 +26,7 @@ public class InvitationLinkControllerImpl implements InvitationLinkController {
   }
 
   @Override
+  @RisksMembershipData(risks = "SERVER_INVITATION_ADD", retriever = ServerIdRetriever.class)
   public InvitationRepresentation generateServerInvitation(UUID serverId) {
     return invitationLinkService.generateServerInvitation(serverId);
   }

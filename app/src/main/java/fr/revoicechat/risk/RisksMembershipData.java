@@ -12,6 +12,7 @@ import jakarta.interceptor.InterceptorBinding;
 @InterceptorBinding
 @Retention(RUNTIME)
 @Target({ METHOD, TYPE })
+@RisksMembership
 @Inherited
 public @interface RisksMembershipData {
 

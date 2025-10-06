@@ -3,6 +3,7 @@ package fr.revoicechat.core.web;
 import static fr.revoicechat.security.utils.RevoiceChatRoles.ROLE_USER;
 
 import java.util.UUID;
+import jakarta.annotation.security.RolesAllowed;
 
 import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
@@ -15,9 +16,7 @@ import fr.revoicechat.core.service.MessageService;
 import fr.revoicechat.core.service.RoomService;
 import fr.revoicechat.core.service.room.RoomPresenceService;
 import fr.revoicechat.core.web.api.RoomController;
-import fr.revoicechat.risk.RisksMembership;
 import fr.revoicechat.risk.RisksMembershipData;
-import jakarta.annotation.security.RolesAllowed;
 
 @RolesAllowed(ROLE_USER)
 public class RoomControllerImpl implements RoomController {
@@ -33,23 +32,25 @@ public class RoomControllerImpl implements RoomController {
   }
 
   @Override
+  @RisksMembershipData(risks = "SERVER_ROOM_READ", retriever = EntityByRoomIdRetriever.class)
   public RoomRepresentation read(UUID roomId) {
     return roomService.read(roomId);
   }
 
   @Override
+  @RisksMembershipData(risks = "SERVER_ROOM_UPDATE", retriever = EntityByRoomIdRetriever.class)
   public RoomRepresentation update(UUID roomId, CreationRoomRepresentation representation) {
     return roomService.update(roomId, representation);
   }
 
   @Override
+  @RisksMembershipData(risks = "SERVER_ROOM_DELETE", retriever = EntityByRoomIdRetriever.class)
   public UUID delete(UUID roomId) {
     return roomService.delete(roomId);
   }
 
 
   @Override
-  @RisksMembership
   @RisksMembershipData(risks = "SERVER_ROOM_READ_MESSAGE", retriever = EntityByRoomIdRetriever.class)
   public PageResult<MessageRepresentation> messages(UUID roomId, int page, int size) {
     var sizeParam = size == 0 ? 50 : size;
@@ -57,7 +58,6 @@ public class RoomControllerImpl implements RoomController {
   }
 
   @Override
-  @RisksMembership
   @RisksMembershipData(risks = "SERVER_ROOM_SEND_MESSAGE", retriever = EntityByRoomIdRetriever.class)
   public MessageRepresentation sendMessage(UUID roomId, CreatedMessageRepresentation representation) {
     return messageService.create(roomId, representation);

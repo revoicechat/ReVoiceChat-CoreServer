@@ -2,6 +2,13 @@ package fr.revoicechat.risk.type;
 
 @RiskCategory("SERVER_RISK_TYPE")
 public enum ServerRiskType implements RiskType {
+  SERVER_UPDATE,
+  SERVER_DELETE,
+  SERVER_STRUCTURE_UPDATE,
+  SERVER_INVITATION_ADD,
+  SERVER_INVITATION_FETCH,
+  SERVER_ROOM_UPDATE,
+  SERVER_ROOM_DELETE,
   ADD_ROLE,
   UPDATE_ROLE,
   ADD_USER_ROLE,

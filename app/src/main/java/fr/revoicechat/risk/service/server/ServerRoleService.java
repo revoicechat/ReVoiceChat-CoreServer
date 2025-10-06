@@ -3,14 +3,12 @@ package fr.revoicechat.risk.service.server;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-
-import fr.revoicechat.risk.model.RiskMode;
-import fr.revoicechat.risk.type.RiskType;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 import fr.revoicechat.risk.model.Risk;
+import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.model.ServerRoles;
 import fr.revoicechat.risk.model.UserRoleMembership;
 import fr.revoicechat.risk.repository.RiskRepository;
@@ -18,6 +16,7 @@ import fr.revoicechat.risk.repository.ServerRolesRepository;
 import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
 import fr.revoicechat.risk.representation.RiskRepresentation;
 import fr.revoicechat.risk.representation.ServerRoleRepresentation;
+import fr.revoicechat.risk.type.RiskType;
 import fr.revoicechat.web.error.ResourceNotFoundException;
 
 @ApplicationScoped
@@ -92,6 +91,7 @@ public class ServerRoleService {
 
   @Transactional
   public void addRoleToUser(final UUID serverRoleId, final List<UUID> users) {
+    removeUserToRole(serverRoleId);
     ServerRoles roles = getEntity(serverRoleId);
     users.stream()
          .map(user -> entityManager.find(UserRoleMembership.class, user))
@@ -100,6 +100,17 @@ public class ServerRoleService {
            user.getServerRoles().add(roles);
            entityManager.persist(user);
          });
+  }
+
+  private void removeUserToRole(final UUID serverRoleId) {
+    ServerRoles roles = getEntity(serverRoleId);
+    serverRolesRepository.getMembers(serverRoleId).stream()
+                         .map(user -> entityManager.find(UserRoleMembership.class, user))
+                         .filter(Objects::nonNull)
+                         .forEach(user -> {
+                           user.getServerRoles().remove(roles);
+                           entityManager.persist(user);
+                         });
   }
 
   @Transactional
@@ -120,7 +131,7 @@ public class ServerRoleService {
     riskRepository.getRisks(roleId).filter(risk -> risk.getType().equals(type))
                   .findFirst()
                   .ifPresentOrElse(risk -> updateMode(risk, mode),
-                      () -> newRisk(roles, new RiskRepresentation(type, null, mode))
+                                   () -> newRisk(roles, new RiskRepresentation(type, null, mode))
                   );
   }
 

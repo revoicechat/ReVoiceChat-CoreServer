@@ -8,6 +8,8 @@ import fr.revoicechat.risk.type.RiskType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -26,6 +28,7 @@ public class Risk {
   @Convert(converter = RiskTypeConverter.class)
   @Column(name = "RISK_TYPE", columnDefinition = "TEXT")
   private RiskType type;
+  @Enumerated(EnumType.STRING)
   private RiskMode mode;
 
   public UUID getId() {

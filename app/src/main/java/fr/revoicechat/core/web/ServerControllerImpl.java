@@ -13,11 +13,15 @@ import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.representation.user.UserRepresentation;
+import fr.revoicechat.core.retriever.EntityByRoomIdRetriever;
 import fr.revoicechat.core.service.RoomService;
 import fr.revoicechat.core.service.ServerService;
 import fr.revoicechat.core.service.UserService;
 import fr.revoicechat.core.service.invitation.InvitationLinkService;
 import fr.revoicechat.core.web.api.ServerController;
+import fr.revoicechat.risk.RisksMembershipData;
+import fr.revoicechat.risk.retriever.ServerIdRetriever;
+import fr.revoicechat.risk.retriever.ServerRoleIdRetriever;
 
 @RolesAllowed(ROLE_USER)
 public class ServerControllerImpl implements ServerController {
@@ -50,11 +54,13 @@ public class ServerControllerImpl implements ServerController {
   }
 
   @Override
+  @RisksMembershipData(risks = "SERVER_UPDATE", retriever = ServerIdRetriever.class)
   public ServerRepresentation updateServer(UUID id, ServerCreationRepresentation representation) {
     return serverService.update(id, representation);
   }
 
   @Override
+  @RisksMembershipData(risks = "SERVER_DELETE", retriever = ServerIdRetriever.class)
   public void deleteServer(final UUID id) {
     serverService.delete(id);
   }
@@ -70,11 +76,13 @@ public class ServerControllerImpl implements ServerController {
   }
 
   @Override
+  @RisksMembershipData(risks = "SERVER_STRUCTURE_UPDATE", retriever = ServerIdRetriever.class)
   public ServerStructure patchStructure(final UUID id, final ServerStructure structure) {
     return serverService.updateStructure(id, structure);
   }
 
   @Override
+  @RisksMembershipData(risks = "SERVER_ROOM_ADD", retriever = ServerIdRetriever.class)
   public RoomRepresentation createRoom(UUID id, CreationRoomRepresentation representation) {
     return roomService.create(id, representation);
   }
@@ -85,11 +93,13 @@ public class ServerControllerImpl implements ServerController {
   }
 
   @Override
+  @RisksMembershipData(risks = "SERVER_INVITATION_ADD", retriever = ServerIdRetriever.class)
   public InvitationRepresentation generateServerInvitation(final UUID id) {
     return invitationLinkService.generateServerInvitation(id);
   }
 
   @Override
+  @RisksMembershipData(risks = "SERVER_INVITATION_FETCH", retriever = ServerIdRetriever.class)
   public List<InvitationRepresentation> getAllServerInvitations(final UUID id) {
     return invitationLinkService.getAllServerInvitations(id);
   }
