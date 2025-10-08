@@ -1,6 +1,7 @@
 package fr.revoicechat.risk.web;
 
 import java.util.List;
+import jakarta.ws.rs.core.MediaType;
 
 import org.assertj.core.api.Assertions;
 import org.jspecify.annotations.NonNull;
@@ -16,11 +17,10 @@ import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
 import fr.revoicechat.risk.representation.RiskRepresentation;
 import fr.revoicechat.risk.representation.ServerRoleRepresentation;
-import fr.revoicechat.risk.type.ServerRiskType;
+import fr.revoicechat.risk.type.RoleRiskType;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
-import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 @CleanDatabase
@@ -75,7 +75,7 @@ class TestUserMembershipController {
         "test",
         null,
         1,
-        List.of(new RiskRepresentation(ServerRiskType.ADD_USER_ROLE, null, mode))
+        List.of(new RiskRepresentation(RoleRiskType.ADD_USER_ROLE, null, mode))
     );
   }
 
