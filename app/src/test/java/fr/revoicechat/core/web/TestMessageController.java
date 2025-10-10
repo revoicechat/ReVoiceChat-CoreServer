@@ -3,6 +3,8 @@ package fr.revoicechat.core.web;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+
+import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -18,7 +20,6 @@ import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.quarkus.profile.MultiServerProfile;
 import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
-import fr.revoicechat.core.representation.message.CreatedMessageRepresentation.CreatedMediaDataRepresentation;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
 import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
 import fr.revoicechat.core.representation.room.RoomRepresentation;

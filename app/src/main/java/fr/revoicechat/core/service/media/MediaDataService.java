@@ -5,13 +5,13 @@ import java.util.UUID;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
 import fr.revoicechat.web.error.ResourceNotFoundException;
 import fr.revoicechat.core.model.MediaData;
 import fr.revoicechat.core.model.MediaDataStatus;
 import fr.revoicechat.core.model.MediaOrigin;
 import fr.revoicechat.core.repository.MediaDataRepository;
 import fr.revoicechat.core.representation.media.MediaDataRepresentation;
-import fr.revoicechat.core.representation.message.CreatedMessageRepresentation.CreatedMediaDataRepresentation;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;

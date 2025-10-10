@@ -3,6 +3,8 @@ package fr.revoicechat.core.representation.message;
 import java.util.List;
 import java.util.Optional;
 
+import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
+
 public record CreatedMessageRepresentation(
     String text,
     List<CreatedMediaDataRepresentation> medias) {
@@ -11,6 +13,4 @@ public record CreatedMessageRepresentation(
     this.text = Optional.ofNullable(text).map(String::trim).orElse("");
     this.medias = Optional.ofNullable(medias).orElse(List.of());
   }
-
-  public record CreatedMediaDataRepresentation(String name) {}
 }

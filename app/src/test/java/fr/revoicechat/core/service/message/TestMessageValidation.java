@@ -7,9 +7,9 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
 import fr.revoicechat.web.error.BadRequestException;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
-import fr.revoicechat.core.representation.message.CreatedMessageRepresentation.CreatedMediaDataRepresentation;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest

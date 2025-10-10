@@ -2,13 +2,12 @@ package fr.revoicechat.core.service.message;
 
 import static fr.revoicechat.core.nls.MessageErrorCode.*;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import fr.revoicechat.web.error.BadRequestException;
+import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
-import fr.revoicechat.core.representation.message.CreatedMessageRepresentation.CreatedMediaDataRepresentation;
+import fr.revoicechat.web.error.BadRequestException;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class MessageValidation {
