@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.repository.MessageRepository;
-import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageNotification;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
@@ -54,7 +53,6 @@ import jakarta.transaction.Transactional;
 public class MessageService {
 
   private final EntityManager entityManager;
-  private final MessageRepository messageRepository;
   private final RoomService roomService;
   private final UserHolder userHolder;
   private final MessageValidation messageValidation;
@@ -63,36 +61,19 @@ public class MessageService {
   private final EmoteService emoteService;
 
   public MessageService(EntityManager entityManager,
-                        MessageRepository messageRepository,
                         RoomService roomService,
                         UserHolder userHolder,
                         MessageValidation messageValidation,
                         MediaDataService mediaDataService,
-                        RoomUserFinder roomUserFinder, final EmoteService emoteService) {
+                        RoomUserFinder roomUserFinder,
+                        EmoteService emoteService) {
     this.entityManager = entityManager;
-    this.messageRepository = messageRepository;
     this.roomService = roomService;
     this.userHolder = userHolder;
     this.messageValidation = messageValidation;
     this.mediaDataService = mediaDataService;
     this.roomUserFinder = roomUserFinder;
     this.emoteService = emoteService;
-  }
-
-  /**
-   * Retrieves all messages for a given chat room.
-   *
-   * @param roomId the unique identifier of the chat room
-   * @return list of messages in the room, possibly empty if no messages exist
-   */
-  @Transactional
-  public PageResult<MessageRepresentation> getMessagesByRoom(UUID roomId, int page, int size) {
-    var pageResult = messageRepository.findByRoomId(roomId, page, size);
-    return new PageResult<>(pageResult.content()
-                                      .stream()
-                                      .map(this::toRepresantation)
-                                      .toList(),
-        pageResult.pageNumber(), pageResult.pageSize(), pageResult.totalElements());
   }
 
   /**
@@ -115,7 +96,7 @@ public class MessageService {
     message.setUser(userHolder.get());
     creation.medias().stream().map(mediaDataService::create).forEach(message::addMediaData);
     entityManager.persist(message);
-    var representation = toRepresantation(message);
+    var representation = toRepresentation(message);
     Notification.of(new MessageNotification(representation, NotificationActionType.ADD)).sendTo(roomUserFinder.find(room.getId()));
     return representation;
   }
@@ -130,7 +111,7 @@ public class MessageService {
   @Transactional
   public MessageRepresentation read(UUID id) {
     var message = getMessage(id);
-    return toRepresantation(message);
+    return toRepresentation(message);
   }
 
 
@@ -147,7 +128,7 @@ public class MessageService {
     var message = getMessage(id);
     message.setText(creation.text());
     entityManager.persist(message);
-    var representation = toRepresantation(message);
+    var representation = toRepresentation(message);
     Notification.of(new MessageNotification(representation, NotificationActionType.MODIFY)).sendTo(roomUserFinder.find(message.getRoom().getId()));
     return representation;
   }
@@ -174,7 +155,7 @@ public class MessageService {
                    .orElseThrow(() -> new ResourceNotFoundException(Message.class, id));
   }
 
-  private MessageRepresentation toRepresantation(final Message message) {
+  public MessageRepresentation toRepresentation(final Message message) {
     var emotes = Stream.of(emoteService.getAll(message.getUser().getId()),
                            emoteService.getAll(message.getRoom().getServer().getId()))
                        .flatMap(Collection::stream)

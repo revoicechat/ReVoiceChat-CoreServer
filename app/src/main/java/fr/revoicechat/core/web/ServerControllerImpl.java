@@ -4,7 +4,6 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.ROLE_USER;
 
 import java.util.List;
 import java.util.UUID;
-import jakarta.annotation.security.RolesAllowed;
 
 import fr.revoicechat.core.model.server.ServerStructure;
 import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
@@ -13,7 +12,6 @@ import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.representation.user.UserRepresentation;
-import fr.revoicechat.core.retriever.EntityByRoomIdRetriever;
 import fr.revoicechat.core.service.RoomService;
 import fr.revoicechat.core.service.ServerService;
 import fr.revoicechat.core.service.UserService;
@@ -21,7 +19,7 @@ import fr.revoicechat.core.service.invitation.InvitationLinkService;
 import fr.revoicechat.core.web.api.ServerController;
 import fr.revoicechat.risk.RisksMembershipData;
 import fr.revoicechat.risk.retriever.ServerIdRetriever;
-import fr.revoicechat.risk.retriever.ServerRoleIdRetriever;
+import jakarta.annotation.security.RolesAllowed;
 
 @RolesAllowed(ROLE_USER)
 public class ServerControllerImpl implements ServerController {

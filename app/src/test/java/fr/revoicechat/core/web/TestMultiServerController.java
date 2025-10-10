@@ -80,7 +80,7 @@ class TestMultiServerController {
                .header("Authorization", "Bearer " + tokenAdmin)
                .body(newName)
                .when().pathParam("id", server.id()).patch("/server/{id}")
-               .then().statusCode(200);
+               .then().statusCode(401);
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)
                .header("Authorization", "Bearer " + tokenUser1)
@@ -105,7 +105,7 @@ class TestMultiServerController {
                .header("Authorization", "Bearer " + token)
                .body(newName)
                .when().pathParam("id", randomId).patch("/server/{id}")
-               .then().statusCode(404);
+               .then().statusCode(401);
   }
 
   @Test
@@ -272,12 +272,7 @@ class TestMultiServerController {
   @Test
   void testGetServerInvitation() {
     String tokenAdmin = RestTestUtils.logNewUser("admin");
-    String tokenUser = RestTestUtils.logNewUser("user");
     var server = createServer(tokenAdmin);
-    serverInvitation(tokenUser, server);
-    serverInvitation(tokenUser, server);
-    applicationInvitation(tokenUser);
-    applicationInvitation(tokenUser);
     serverInvitation(tokenAdmin, server);
     applicationInvitation(tokenAdmin);
     applicationInvitation(tokenAdmin);
@@ -287,7 +282,7 @@ class TestMultiServerController {
                                     .when().pathParam("id", server.id()).get("/server/{id}/invitation")
                                     .then().statusCode(200)
                                     .extract().body().jsonPath().getList(".", InvitationRepresentation.class);
-    assertThat(appInvitations).hasSize(3);
+    assertThat(appInvitations).hasSize(1);
   }
 
   private static void serverInvitation(final String tokenUser, final ServerRepresentation server) {

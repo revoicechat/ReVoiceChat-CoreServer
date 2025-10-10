@@ -12,7 +12,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import fr.revoicechat.web.error.BadRequestException;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import fr.revoicechat.core.model.ActiveStatus;
 import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.InvitationLinkStatus;
@@ -25,17 +26,15 @@ import fr.revoicechat.core.representation.user.SignupRepresentation;
 import fr.revoicechat.core.representation.user.UpdatableUserData;
 import fr.revoicechat.core.representation.user.UpdatableUserData.PasswordUpdated;
 import fr.revoicechat.core.representation.user.UserRepresentation;
-import fr.revoicechat.security.UserHolder;
-import fr.revoicechat.security.utils.PasswordUtils;
 import fr.revoicechat.core.service.server.ServerProviderService;
 import fr.revoicechat.notification.Notification;
+import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.security.utils.PasswordUtils;
+import fr.revoicechat.web.error.BadRequestException;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
-
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 public class UserService {
@@ -44,18 +43,21 @@ public class UserService {
   private final UserRepository userRepository;
   private final UserHolder userHolder;
   private final ServerProviderService serverProviderService;
+  private final ServerService serverService;
+
   @ConfigProperty(name = "revoicechat.global.app-only-accessible-by-invitation")
   boolean appOnlyAccessibleByInvitation;
-  @Inject ServerService serverService;
 
   public UserService(EntityManager entityManager,
                      UserRepository userRepository,
                      UserHolder userHolder,
-                     ServerProviderService serverProviderService) {
+                     ServerProviderService serverProviderService,
+                     ServerService serverService) {
     this.entityManager = entityManager;
     this.userRepository = userRepository;
     this.userHolder = userHolder;
     this.serverProviderService = serverProviderService;
+    this.serverService = serverService;
   }
 
   @Transactional

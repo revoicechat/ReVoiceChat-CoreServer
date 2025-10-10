@@ -15,6 +15,11 @@ import jakarta.persistence.PersistenceContext;
 @ApplicationScoped
 public class ServerRolesRepositoryImpl implements ServerRolesRepository {
 
+  private static final String SERVER_ID = "serverId";
+  private static final String USER_ID = "userId";
+  private static final String RISK_TYPE = "riskType";
+  private static final String ENTITY_ID = "entityId";
+
   @PersistenceContext EntityManager entityManager;
 
   @Override
@@ -22,8 +27,8 @@ public class ServerRolesRepositoryImpl implements ServerRolesRepository {
     return entityManager.createQuery("""
                             select u.serverRoles
                             from UserRoleMembership u
-                            where u.id = :id""", ServerRoles.class)
-                        .setParameter("id", userId)
+                            where u.id = :userId""", ServerRoles.class)
+                        .setParameter(USER_ID, userId)
                         .getResultList();
   }
 
@@ -38,16 +43,16 @@ public class ServerRolesRepositoryImpl implements ServerRolesRepository {
                               and (r.entity is null or r.entity = :entityId)
                             order by sr.priority
                             """, AffectedRisk.class)
-                        .setParameter("riskType", riskType)
-                        .setParameter("serverId", entity.serverId())
-                        .setParameter("entityId", entity.entityId())
+                        .setParameter(RISK_TYPE, riskType)
+                        .setParameter(SERVER_ID, entity.serverId())
+                        .setParameter(ENTITY_ID, entity.entityId())
                         .getResultList();
   }
 
   @Override
   public Stream<ServerRoles> getByServer(final UUID serverId) {
     return entityManager.createQuery("select r from ServerRoles r where r.server = :serverId", ServerRoles.class)
-                        .setParameter("serverId", serverId)
+                        .setParameter(SERVER_ID, serverId)
                         .getResultStream();
   }
 
@@ -56,10 +61,10 @@ public class ServerRolesRepositoryImpl implements ServerRolesRepository {
     return !entityManager.createQuery("""
                              select 1
                              from Server s
-                             where s.id = :server
-                               and s.owner.id = :user""", int.class)
-                         .setParameter("server", server)
-                         .setParameter("user", user)
+                             where s.id = :serverId
+                               and s.owner.id = :userId""", int.class)
+                         .setParameter(SERVER_ID, server)
+                         .setParameter(USER_ID, user)
                          .getResultList()
                          .isEmpty();
   }
@@ -71,7 +76,7 @@ public class ServerRolesRepositoryImpl implements ServerRolesRepository {
                             from UserRoleMembership m
                             join m.serverRoles sr
                             where sr.id = :serverId""", UUID.class)
-                        .setParameter("serverId", server)
+                        .setParameter(SERVER_ID, server)
                         .getResultList();
   }
 }

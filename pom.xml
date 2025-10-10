@@ -14,9 +14,9 @@
     <module>app</module>
     <module>notification</module>
     <module>security</module>
-    <module>utils/i18n</module>
-    <module>utils/openapi</module>
-    <module>utils/web</module>
+    <module>i18n</module>
+    <module>openapi</module>
+    <module>web</module>
     <module>voice</module>
   </modules>
 

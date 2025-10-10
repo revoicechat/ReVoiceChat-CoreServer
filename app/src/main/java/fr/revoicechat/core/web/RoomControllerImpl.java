@@ -3,6 +3,8 @@ package fr.revoicechat.core.web;
 import static fr.revoicechat.security.utils.RevoiceChatRoles.ROLE_USER;
 
 import java.util.UUID;
+
+import fr.revoicechat.core.service.message.MessagePageResult;
 import jakarta.annotation.security.RolesAllowed;
 
 import fr.revoicechat.core.repository.page.PageResult;
@@ -24,11 +26,16 @@ public class RoomControllerImpl implements RoomController {
   private final RoomService roomService;
   private final RoomPresenceService roomPresenceService;
   private final MessageService messageService;
+  private final MessagePageResult messagePageResult;
 
-  public RoomControllerImpl(final RoomService roomService, final RoomPresenceService roomPresenceService, final MessageService messageService) {
+  public RoomControllerImpl(RoomService roomService,
+                            RoomPresenceService roomPresenceService,
+                            MessageService messageService,
+                            MessagePageResult messagePageResult) {
     this.roomService = roomService;
     this.roomPresenceService = roomPresenceService;
     this.messageService = messageService;
+    this.messagePageResult = messagePageResult;
   }
 
   @Override
@@ -54,7 +61,7 @@ public class RoomControllerImpl implements RoomController {
   @RisksMembershipData(risks = "SERVER_ROOM_READ_MESSAGE", retriever = EntityByRoomIdRetriever.class)
   public PageResult<MessageRepresentation> messages(UUID roomId, int page, int size) {
     var sizeParam = size == 0 ? 50 : size;
-    return messageService.getMessagesByRoom(roomId, page, sizeParam);
+    return messagePageResult.getMessagesByRoom(roomId, page, sizeParam);
   }
 
   @Override

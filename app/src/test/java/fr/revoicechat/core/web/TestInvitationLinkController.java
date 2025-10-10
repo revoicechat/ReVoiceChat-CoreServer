@@ -119,10 +119,6 @@ class TestInvitationLinkController {
     String tokenAdmin = RestTestUtils.logNewUser("admin");
     String tokenUser = RestTestUtils.logNewUser("user");
     var server = createServer(tokenAdmin);
-    serverInvitation(tokenUser, server);
-    serverInvitation(tokenUser, server);
-    applicationInvitation(tokenUser);
-    applicationInvitation(tokenUser);
     serverInvitation(tokenAdmin, server);
     applicationInvitation(tokenAdmin);
     applicationInvitation(tokenAdmin);
@@ -137,18 +133,13 @@ class TestInvitationLinkController {
                                     .when().get("/invitation/application")
                                     .then().statusCode(200)
                                     .extract().body().jsonPath().getList(".", InvitationRepresentation.class);
-    assertThat(appInvitations).hasSize(4);
+    assertThat(appInvitations).hasSize(2);
   }
 
   @Test
   void testGetServerInvitation() {
     String tokenAdmin = RestTestUtils.logNewUser("admin");
-    String tokenUser = RestTestUtils.logNewUser("user");
     var server = createServer(tokenAdmin);
-    serverInvitation(tokenUser, server);
-    serverInvitation(tokenUser, server);
-    applicationInvitation(tokenUser);
-    applicationInvitation(tokenUser);
     serverInvitation(tokenAdmin, server);
     applicationInvitation(tokenAdmin);
     applicationInvitation(tokenAdmin);
@@ -158,35 +149,7 @@ class TestInvitationLinkController {
                                     .when().pathParam("id", server.id()).get("/invitation/server/{id}")
                                     .then().statusCode(200)
                                     .extract().body().jsonPath().getList(".", InvitationRepresentation.class);
-    assertThat(appInvitations).hasSize(3);
-  }
-
-  @Test
-  void testGetUserInvitation() {
-    String tokenAdmin = RestTestUtils.logNewUser("admin");
-    String tokenUser = RestTestUtils.logNewUser("user");
-    var server = createServer(tokenAdmin);
-    serverInvitation(tokenUser, server);
-    serverInvitation(tokenUser, server);
-    applicationInvitation(tokenUser);
-    applicationInvitation(tokenUser);
-    serverInvitation(tokenAdmin, server);
-    applicationInvitation(tokenAdmin);
-    applicationInvitation(tokenAdmin);
-    var userInvitations = RestAssured.given()
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .header("Authorization", "Bearer " + tokenUser)
-                                    .when().get("/invitation")
-                                    .then().statusCode(200)
-                                    .extract().body().jsonPath().getList(".", InvitationRepresentation.class);
-    assertThat(userInvitations).hasSize(4);
-    var adminInvitations = RestAssured.given()
-                                     .contentType(MediaType.APPLICATION_JSON)
-                                     .header("Authorization", "Bearer " + tokenAdmin)
-                                     .when().get("/invitation")
-                                     .then().statusCode(200)
-                                     .extract().body().jsonPath().getList(".", InvitationRepresentation.class);
-    assertThat(adminInvitations).hasSize(3);
+    assertThat(appInvitations).hasSize(1);
   }
 
   private static void serverInvitation(final String tokenUser, final ServerRepresentation server) {

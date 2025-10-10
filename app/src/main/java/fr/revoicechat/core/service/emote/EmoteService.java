@@ -53,6 +53,7 @@ public class EmoteService {
     return toRepresentation(getEntity(id));
   }
 
+  @Transactional
   public List<EmoteRepresentation> getAll(final UUID id) {
     return emoteRepository.findByEntity(id)
                           .map(this::toRepresentation)
