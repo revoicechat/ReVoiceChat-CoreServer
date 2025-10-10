@@ -80,7 +80,7 @@ public class EmoteService {
   public EmoteRepresentation update(final UUID id, final CreationEmoteRepresentation representation) {
     var user = userHolder.getId();
     var emote = getEntity(id);
-    if (!hasRisk(emote, user, EmoteRiskType.UPDATE_EMOTE)) {
+    if (hasRisk(emote, user, EmoteRiskType.UPDATE_EMOTE)) {
       emote.setContent(representation.content());
       emote.setKeywords(representation.keywords());
       entityManager.persist(emote);
