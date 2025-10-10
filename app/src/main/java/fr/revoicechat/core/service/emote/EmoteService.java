@@ -2,6 +2,7 @@ package fr.revoicechat.core.service.emote;
 
 import static fr.revoicechat.risk.nls.RiskMembershipErrorCode.RISK_MEMBERSHIP_ERROR;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -113,6 +114,10 @@ public class EmoteService {
   }
 
   private EmoteRepresentation toRepresentation(Emote emote) {
-    return new EmoteRepresentation(emote.getId(), emote.getContent(), emote.getKeywords());
+    return new EmoteRepresentation(
+        emote.getId(),
+        emote.getContent(),
+        new ArrayList<>(emote.getKeywords())
+    );
   }
 }

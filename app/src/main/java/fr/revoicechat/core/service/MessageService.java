@@ -2,10 +2,11 @@ package fr.revoicechat.core.service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
-import fr.revoicechat.web.error.ResourceNotFoundException;
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.repository.MessageRepository;
 import fr.revoicechat.core.repository.page.PageResult;
@@ -13,12 +14,14 @@ import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageNotification;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
 import fr.revoicechat.core.representation.notification.NotificationActionType;
+import fr.revoicechat.core.service.emote.EmoteService;
 import fr.revoicechat.core.service.media.MediaDataService;
 import fr.revoicechat.core.service.message.MessageValidation;
 import fr.revoicechat.core.service.user.RoomUserFinder;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.representation.UserNotificationRepresentation;
 import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.web.error.ResourceNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -42,6 +45,7 @@ import jakarta.transaction.Transactional;
  *   <li>Transform domain entities into {@link MessageRepresentation} objects</li>
  *   <li>Notify clients about message events via the textual chat service</li>
  * </ul>
+ *
  * @see MessageRepository
  * @see Notification
  * @see RoomService
@@ -56,6 +60,7 @@ public class MessageService {
   private final MessageValidation messageValidation;
   private final MediaDataService mediaDataService;
   private final RoomUserFinder roomUserFinder;
+  private final EmoteService emoteService;
 
   public MessageService(EntityManager entityManager,
                         MessageRepository messageRepository,
@@ -63,7 +68,7 @@ public class MessageService {
                         UserHolder userHolder,
                         MessageValidation messageValidation,
                         MediaDataService mediaDataService,
-                        RoomUserFinder roomUserFinder) {
+                        RoomUserFinder roomUserFinder, final EmoteService emoteService) {
     this.entityManager = entityManager;
     this.messageRepository = messageRepository;
     this.roomService = roomService;
@@ -71,10 +76,12 @@ public class MessageService {
     this.messageValidation = messageValidation;
     this.mediaDataService = mediaDataService;
     this.roomUserFinder = roomUserFinder;
+    this.emoteService = emoteService;
   }
 
   /**
    * Retrieves all messages for a given chat room.
+   *
    * @param roomId the unique identifier of the chat room
    * @return list of messages in the room, possibly empty if no messages exist
    */
@@ -85,12 +92,13 @@ public class MessageService {
                                       .stream()
                                       .map(this::toRepresantation)
                                       .toList(),
-                            pageResult.pageNumber(), pageResult.pageSize(), pageResult.totalElements());
+        pageResult.pageNumber(), pageResult.pageSize(), pageResult.totalElements());
   }
 
   /**
    * Creates and persists a new message in the specified chat room.
    * Also notifies connected clients about the new message.
+   *
    * @param roomId   the unique identifier of the chat room where the message will be added
    * @param creation the message data to create
    * @return a representation of the created message
@@ -114,6 +122,7 @@ public class MessageService {
 
   /**
    * Retrieves the details of a specific message.
+   *
    * @param id the unique identifier of the message
    * @return a representation of the message
    * @throws ResourceNotFoundException if the message does not exist
@@ -127,6 +136,7 @@ public class MessageService {
 
   /**
    * Updates the content of an existing message and notifies connected clients.
+   *
    * @param id       the unique identifier of the message to update
    * @param creation the new message content
    * @return a representation of the updated message
@@ -144,6 +154,7 @@ public class MessageService {
 
   /**
    * Deletes a message from the repository and notifies connected clients.
+   *
    * @param id the unique identifier of the message to delete
    * @return the UUID of the deleted message
    * @throws ResourceNotFoundException if the message does not exist
@@ -153,7 +164,7 @@ public class MessageService {
     var message = getMessage(id);
     var room = message.getRoom().getId();
     entityManager.remove(message);
-    var deletedMessage = new MessageNotification(new MessageRepresentation(id, null, room, null, null, null), NotificationActionType.REMOVE);
+    var deletedMessage = new MessageNotification(new MessageRepresentation(id, null, room, null, null, null, null), NotificationActionType.REMOVE);
     Notification.of(deletedMessage).sendTo(roomUserFinder.find(room));
     return id;
   }
@@ -164,6 +175,10 @@ public class MessageService {
   }
 
   private MessageRepresentation toRepresantation(final Message message) {
+    var emotes = Stream.of(emoteService.getAll(message.getUser().getId()),
+                           emoteService.getAll(message.getRoom().getServer().getId()))
+                       .flatMap(Collection::stream)
+                       .toList();
     return new MessageRepresentation(
         message.getId(),
         message.getText(),
@@ -171,7 +186,8 @@ public class MessageService {
         new UserNotificationRepresentation(message.getUser().getId(), message.getUser().getDisplayName()),
         message.getCreatedDate().atOffset(ZoneOffset.UTC),
         message.getMediaDatas().stream()
-               .map(mediaDataService::toRepresentation).toList()
+               .map(mediaDataService::toRepresentation).toList(),
+        emotes
     );
   }
 }

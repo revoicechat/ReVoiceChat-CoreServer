@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import fr.revoicechat.core.representation.emote.EmoteRepresentation;
 import fr.revoicechat.core.representation.media.MediaDataRepresentation;
 import fr.revoicechat.notification.representation.UserNotificationRepresentation;
 
@@ -13,5 +14,6 @@ public record MessageRepresentation(
     UUID roomId,
     UserNotificationRepresentation user,
     OffsetDateTime createdDate,
-    List<MediaDataRepresentation> medias
+    List<MediaDataRepresentation> medias,
+    List<EmoteRepresentation> emotes
 ) {}
