@@ -17,7 +17,7 @@ import io.smallrye.jwt.build.Jwt;
 
 @Default
 @Singleton
-class JwtService implements SecurityTokenService {
+public class JwtService implements SecurityTokenService {
   private static final Logger LOG = LoggerFactory.getLogger(JwtService.class);
 
   private final JWTParser jwtParser;

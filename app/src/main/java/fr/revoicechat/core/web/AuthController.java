@@ -29,11 +29,11 @@ import fr.revoicechat.security.utils.PasswordUtils;
 public class AuthController {
 
   private final UserService userService;
-  private final SecurityTokenService tokenService;
+  private final SecurityTokenService securityTokenService;
 
-  public AuthController(final UserService userService, final SecurityTokenService tokenService) {
+  public AuthController(final UserService userService, final SecurityTokenService securityTokenService) {
     this.userService = userService;
-    this.tokenService = tokenService;
+    this.securityTokenService = securityTokenService;
   }
 
   @Operation(summary = "Register a new user", description = "Creates a new user account with the provided signup details.")
@@ -71,7 +71,7 @@ public class AuthController {
   public Response login(UserPassword request) {
     var user = userService.findByLogin(request.username());
     if (user != null && PasswordUtils.matches(request.password(), user.getPassword())) {
-      return Response.ok(tokenService.generate(user)).build();
+      return Response.ok(securityTokenService.generate(user)).build();
     } else {
       return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid credentials").build();
     }

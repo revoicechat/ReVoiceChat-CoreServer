@@ -17,14 +17,14 @@ import io.quarkus.security.identity.SecurityIdentity;
 @ApplicationScoped
 public class UserHolderImpl implements UserHolder, NotificationRegistrableHolder {
 
-  private final SecurityTokenService tokenService;
+  private final SecurityTokenService securityTokenService;
   private final SecurityIdentity securityIdentity;
   private final EntityManager entityManager;
 
-  public UserHolderImpl(SecurityTokenService tokenService,
+  public UserHolderImpl(SecurityTokenService securityTokenService,
                         SecurityIdentity securityIdentity,
                         EntityManager entityManager) {
-    this.tokenService = tokenService;
+    this.securityTokenService = securityTokenService;
     this.securityIdentity = securityIdentity;
     this.entityManager = entityManager;
   }
@@ -54,7 +54,7 @@ public class UserHolderImpl implements UserHolder, NotificationRegistrableHolder
 
   @Override
   public UUID peekId(final String jwtToken) {
-    return tokenService.retrieveUserAsId(jwtToken);
+    return securityTokenService.retrieveUserAsId(jwtToken);
   }
 
   private User getUser(UUID id) {
