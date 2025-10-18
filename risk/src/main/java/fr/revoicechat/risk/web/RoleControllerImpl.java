@@ -4,7 +4,6 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.ROLE_USER;
 
 import java.util.List;
 import java.util.UUID;
-import jakarta.annotation.security.RolesAllowed;
 
 import fr.revoicechat.risk.RisksMembershipData;
 import fr.revoicechat.risk.model.RiskMode;
@@ -14,6 +13,7 @@ import fr.revoicechat.risk.retriever.ServerRoleIdRetriever;
 import fr.revoicechat.risk.service.DefaultRiskType;
 import fr.revoicechat.risk.service.server.ServerRoleService;
 import fr.revoicechat.risk.web.api.RoleController;
+import jakarta.annotation.security.RolesAllowed;
 
 @RolesAllowed(ROLE_USER)
 public class RoleControllerImpl implements RoleController {

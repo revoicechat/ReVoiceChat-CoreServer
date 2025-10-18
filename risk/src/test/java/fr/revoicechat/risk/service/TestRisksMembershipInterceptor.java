@@ -2,8 +2,6 @@ package fr.revoicechat.risk.service;
 
 import java.util.List;
 import java.util.UUID;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.spi.CDI;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +14,8 @@ import fr.revoicechat.risk.technicaldata.RiskEntity;
 import fr.revoicechat.risk.type.RiskType;
 import io.quarkus.security.UnauthorizedException;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.spi.CDI;
 
 @QuarkusTest
 class TestRisksMembershipInterceptor {

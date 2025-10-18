@@ -19,7 +19,7 @@ import jakarta.inject.Singleton;
 
 @Singleton
 @Unremovable
-class RiskServiceImpl implements RiskService {
+public class RiskServiceImpl implements RiskService {
 
   private final ServerRolesRepository serverRolesRepository;
   private final UserHolder userHolder;
@@ -78,13 +78,6 @@ class RiskServiceImpl implements RiskService {
     );
   }
 
-  private static final class RiskData {
-    private final RiskType[] riskTypes;
-    private final RiskCategory category;
-
-    private RiskData(RiskType[] riskTypes, RiskCategory category) {
-      this.riskTypes = riskTypes;
-      this.category = category;
-    }
-  }
+  @SuppressWarnings("java:S6218") // equals and hashcode is not necessary here
+  private record RiskData(RiskType[] riskTypes, RiskCategory category) {}
 }

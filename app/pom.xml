@@ -49,11 +49,15 @@
     </dependency>
     <dependency>
       <groupId>fr.revoicechat</groupId>
+      <artifactId>revoicechat-web-utils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>fr.revoicechat</groupId>
       <artifactId>revoicechat-voice</artifactId>
     </dependency>
     <dependency>
       <groupId>fr.revoicechat</groupId>
-      <artifactId>revoicechat-web-utils</artifactId>
+      <artifactId>revoicechat-risk</artifactId>
     </dependency>
   </dependencies>
 

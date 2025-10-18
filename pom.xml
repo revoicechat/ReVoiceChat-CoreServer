@@ -18,6 +18,7 @@
     <module>openapi</module>
     <module>web</module>
     <module>voice</module>
+    <module>risk</module>
   </modules>
 
   <properties>
@@ -74,6 +75,11 @@
       <dependency>
         <groupId>fr.revoicechat</groupId>
         <artifactId>revoicechat-web-utils</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.revoicechat</groupId>
+        <artifactId>revoicechat-risk</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>

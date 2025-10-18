@@ -4,19 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import fr.revoicechat.core.junit.CleanDatabase;
-import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.risk.type.RiskCategory;
 import fr.revoicechat.risk.type.RiskType;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
 import jakarta.ws.rs.core.MediaType;
 
 /** @see fr.revoicechat.risk.web.api.RiskController */
 @QuarkusTest
-@TestProfile(BasicIntegrationTestProfile.class)
-@CleanDatabase
 class TestRiskController {
 
   @Test

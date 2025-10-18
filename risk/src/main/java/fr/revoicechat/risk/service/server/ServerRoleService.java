@@ -3,9 +3,6 @@ package fr.revoicechat.risk.service.server;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
 import fr.revoicechat.risk.model.Risk;
 import fr.revoicechat.risk.model.RiskMode;
@@ -18,6 +15,9 @@ import fr.revoicechat.risk.representation.RiskRepresentation;
 import fr.revoicechat.risk.representation.ServerRoleRepresentation;
 import fr.revoicechat.risk.type.RiskType;
 import fr.revoicechat.web.error.ResourceNotFoundException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class ServerRoleService {
