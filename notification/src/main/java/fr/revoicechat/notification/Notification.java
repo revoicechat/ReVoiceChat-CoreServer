@@ -25,6 +25,10 @@ public class Notification {
     return getNotificationSender().ping(registrable);
   }
 
+  public void sendTo(NotificationRegistrable targetedUser) {
+    sendTo(Stream.of(targetedUser));
+  }
+
   public void sendTo(Stream<? extends NotificationRegistrable> targetedUsers) {
     getNotificationSender().send(targetedUsers, data);
   }

@@ -1,5 +1,8 @@
 package fr.revoicechat.core.service;
 
+import static fr.revoicechat.core.model.MediaOrigin.ATTACHMENT;
+import static fr.revoicechat.core.representation.notification.NotificationActionType.*;
+
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
@@ -12,7 +15,6 @@ import fr.revoicechat.core.repository.MessageRepository;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageNotification;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
-import fr.revoicechat.core.representation.notification.NotificationActionType;
 import fr.revoicechat.core.service.emote.EmoteService;
 import fr.revoicechat.core.service.media.MediaDataService;
 import fr.revoicechat.core.service.message.MessageValidation;
@@ -94,10 +96,10 @@ public class MessageService {
     message.setCreatedDate(LocalDateTime.now());
     message.setRoom(room);
     message.setUser(userHolder.get());
-    creation.medias().stream().map(mediaDataService::create).forEach(message::addMediaData);
+    creation.medias().stream().map(data -> mediaDataService.create(data, ATTACHMENT)).forEach(message::addMediaData);
     entityManager.persist(message);
     var representation = toRepresentation(message);
-    Notification.of(new MessageNotification(representation, NotificationActionType.ADD)).sendTo(roomUserFinder.find(room.getId()));
+    Notification.of(new MessageNotification(representation, ADD)).sendTo(roomUserFinder.find(room.getId()));
     return representation;
   }
 
@@ -129,7 +131,7 @@ public class MessageService {
     message.setText(creation.text());
     entityManager.persist(message);
     var representation = toRepresentation(message);
-    Notification.of(new MessageNotification(representation, NotificationActionType.MODIFY)).sendTo(roomUserFinder.find(message.getRoom().getId()));
+    Notification.of(new MessageNotification(representation, MODIFY)).sendTo(roomUserFinder.find(message.getRoom().getId()));
     return representation;
   }
 
@@ -145,7 +147,7 @@ public class MessageService {
     var message = getMessage(id);
     var room = message.getRoom().getId();
     entityManager.remove(message);
-    var deletedMessage = new MessageNotification(new MessageRepresentation(id, null, room, null, null, null, null), NotificationActionType.REMOVE);
+    var deletedMessage = new MessageNotification(new MessageRepresentation(id, null, room, null, null, null, null), REMOVE);
     Notification.of(deletedMessage).sendTo(roomUserFinder.find(room));
     return id;
   }

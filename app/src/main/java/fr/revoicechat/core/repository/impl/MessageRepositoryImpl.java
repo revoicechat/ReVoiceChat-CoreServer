@@ -2,6 +2,7 @@ package fr.revoicechat.core.repository.impl;
 
 import java.util.List;
 import java.util.UUID;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -20,10 +21,10 @@ public class MessageRepositoryImpl implements MessageRepository {
   public PageResult<Message> findByRoomId(UUID roomId, int page, int size) {
     // Fetch content
     List<Message> content = em.createQuery("""
-                                               SELECT m
-                                               FROM Message m
-                                               WHERE m.room.id = :roomId
-                                               ORDER BY m.createdDate DESC""", Message.class)
+                                  SELECT m
+                                  FROM Message m
+                                  WHERE m.room.id = :roomId
+                                  ORDER BY m.createdDate DESC""", Message.class)
                               .setParameter("roomId", roomId)
                               .setFirstResult(page * size)   // offset
                               .setMaxResults(size)           // limit
@@ -36,6 +37,17 @@ public class MessageRepositoryImpl implements MessageRepository {
                    .getSingleResult();
 
     return new PageResult<>(content, page, size, total);
+  }
+
+  @Override
+  public Message findByMedia(final UUID mediaId) {
+    return em.createQuery("""
+                 select m
+                 from Message m
+                 join m.mediaDatas md
+                 where md.id = :id""", Message.class)
+             .setParameter("id", mediaId)
+             .getSingleResult();
   }
 
 }

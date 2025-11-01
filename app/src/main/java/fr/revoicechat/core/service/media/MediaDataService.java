@@ -5,13 +5,13 @@ import java.util.UUID;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
-import fr.revoicechat.web.error.ResourceNotFoundException;
 import fr.revoicechat.core.model.MediaData;
 import fr.revoicechat.core.model.MediaDataStatus;
 import fr.revoicechat.core.model.MediaOrigin;
 import fr.revoicechat.core.repository.MediaDataRepository;
+import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
 import fr.revoicechat.core.representation.media.MediaDataRepresentation;
+import fr.revoicechat.web.error.ResourceNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -24,21 +24,24 @@ public class MediaDataService {
   private final EntityManager entityManager;
   private final MediaDataRepository mediaDataRepository;
   private final FileTypeDetermination fileTypeDetermination;
+  private final MediaDataNotifierService mediaDataNotifierService;
 
-  public MediaDataService(EntityManager entityManager,
-                          MediaDataRepository mediaDataRepository,
-                          FileTypeDetermination fileTypeDetermination) {
+  public MediaDataService(final EntityManager entityManager,
+                          final MediaDataRepository mediaDataRepository,
+                          final FileTypeDetermination fileTypeDetermination,
+                          final MediaDataNotifierService mediaDataNotifierService) {
     this.entityManager = entityManager;
     this.mediaDataRepository = mediaDataRepository;
     this.fileTypeDetermination = fileTypeDetermination;
+    this.mediaDataNotifierService = mediaDataNotifierService;
   }
 
-  public MediaData create(final CreatedMediaDataRepresentation creation) {
+  public MediaData create(final CreatedMediaDataRepresentation creation, MediaOrigin origin) {
     MediaData mediaData = new MediaData();
     mediaData.setId(UUID.randomUUID());
     mediaData.setName(creation.name());
     mediaData.setType(fileTypeDetermination.get(creation.name()));
-    mediaData.setOrigin(MediaOrigin.ATTACHMENT);
+    mediaData.setOrigin(origin);
     mediaData.setStatus(MediaDataStatus.DOWNLOADING);
     entityManager.persist(mediaData);
     return mediaData;
@@ -53,6 +56,7 @@ public class MediaDataService {
     var mediaData = getEntity(id);
     mediaData.setStatus(MediaDataStatus.valueOf(status.name()));
     entityManager.persist(mediaData);
+    mediaDataNotifierService.notify(mediaData);
     return toRepresentation(mediaData);
   }
 
