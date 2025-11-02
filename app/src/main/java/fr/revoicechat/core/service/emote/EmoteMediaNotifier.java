@@ -34,7 +34,11 @@ public class EmoteMediaNotifier implements MediaNotifier {
   @Override
   public void notify(final MediaData mediaData) {
     Emote emote = internalEmoteService.getEntity(mediaData.getId());
-    var notification = Notification.of(new EmoteNotification(internalEmoteService.toRepresentation(emote), MODIFY));
+    var notification = Notification.of(new EmoteNotification(
+        internalEmoteService.toRepresentation(emote),
+        emote.getEntity(),
+        MODIFY
+    ));
     notifyUser(emote, notification);
     notifyServer(emote, notification);
   }
