@@ -65,7 +65,7 @@ public class ServerControllerImpl implements ServerController {
 
   @Override
   public List<RoomRepresentation> getRooms(UUID id) {
-    return roomService.findAll(id);
+    return roomService.findAllForCurrentUser(id);
   }
 
   @Override

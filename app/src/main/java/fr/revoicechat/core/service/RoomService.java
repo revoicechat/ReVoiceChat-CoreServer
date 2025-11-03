@@ -9,8 +9,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
-import fr.revoicechat.web.error.BadRequestException;
-import fr.revoicechat.web.error.ResourceNotFoundException;
 import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.server.ServerCategory;
 import fr.revoicechat.core.model.server.ServerItem;
@@ -24,6 +22,11 @@ import fr.revoicechat.core.representation.room.RoomNotification;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.service.user.RoomUserFinder;
 import fr.revoicechat.notification.Notification;
+import fr.revoicechat.risk.service.RiskService;
+import fr.revoicechat.risk.technicaldata.RiskEntity;
+import fr.revoicechat.risk.type.RoomRiskType;
+import fr.revoicechat.web.error.BadRequestException;
+import fr.revoicechat.web.error.ResourceNotFoundException;
 
 /**
  * Service responsible for managing {@link Room} entities.
@@ -44,12 +47,18 @@ public class RoomService {
   private final RoomRepository repository;
   private final ServerService serverService;
   private final RoomUserFinder roomUserFinder;
+  private final RiskService riskService;
 
-  public RoomService(EntityManager entityManager, final RoomRepository repository, final ServerService serverService, RoomUserFinder roomUserFinder) {
+  public RoomService(EntityManager entityManager,
+                     RoomRepository repository,
+                     ServerService serverService,
+                     RoomUserFinder roomUserFinder,
+                     RiskService riskService) {
     this.entityManager = entityManager;
     this.repository = repository;
     this.serverService = serverService;
     this.roomUserFinder = roomUserFinder;
+    this.riskService = riskService;
   }
 
   /**
@@ -57,7 +66,16 @@ public class RoomService {
    * @return a list of available rooms, possibly empty
    */
   public List<RoomRepresentation> findAll(final UUID id) {
+    return repository.findByServerId(id).stream().map(this::toReprsentation).toList();
+  }
+
+  /**
+   * Retrieves all available rooms of a server.
+   * @return a list of available rooms, possibly empty
+   */
+  public List<RoomRepresentation> findAllForCurrentUser(final UUID id) {
     return repository.findByServerId(id).stream()
+                     .filter(room -> riskService.hasRisk(new RiskEntity(id, room.getId()), RoomRiskType.SERVER_ROOM_READ))
                      .map(this::toReprsentation)
                      .toList();
   }
