@@ -29,7 +29,7 @@ import io.quarkus.security.UnauthorizedException;
 public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {
   private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionMapper.class);
 
-  @ConfigProperty(name = "revoicechat.error.log") boolean logError;
+  @ConfigProperty(name = "revoicechat.dev.error.log") boolean logError;
   @Context HttpHeaders headers;
 
   private final UnknownErrorFileGenerator errorFileGenerator;

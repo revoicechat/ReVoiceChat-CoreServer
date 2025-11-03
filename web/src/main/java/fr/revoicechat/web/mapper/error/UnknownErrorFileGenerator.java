@@ -18,7 +18,7 @@ public class UnknownErrorFileGenerator {
 
   private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-  @ConfigProperty(name = "revoicechat.error.log.directory.path", defaultValue = "log/errors")
+  @ConfigProperty(name = "revoicechat.dev.error.log.directory.path", defaultValue = "log/errors")
   String errorLogDirectoryPath;
 
   public String generate(Throwable exception) {

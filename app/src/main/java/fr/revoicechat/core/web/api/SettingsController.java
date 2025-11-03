@@ -1,5 +1,6 @@
 package fr.revoicechat.core.web.api;
 
+import java.util.Map;
 import java.util.UUID;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
@@ -12,7 +13,12 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/settings")
 @Tag(name = "Settings", description = "Endpoints for managing settings")
-public interface UserSettingsController {
+public interface SettingsController {
+
+  @Operation(summary = "Get general settings", description = "Retrieve the settings of the app.")
+  @APIResponse(responseCode = "200")
+  @GET
+  Map<String, Object> genealSetings();
 
   @Tag(name = "User")
   @Operation(summary = "Get settings of the connected user", description = "Retrieve the settings of the connected user.")
