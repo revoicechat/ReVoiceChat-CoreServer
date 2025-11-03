@@ -9,6 +9,7 @@ import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.repository.UserRepository;
 import fr.revoicechat.core.representation.emote.EmoteNotification;
+import fr.revoicechat.core.representation.notification.NotificationActionType;
 import fr.revoicechat.core.service.media.MediaNotifier;
 import fr.revoicechat.notification.Notification;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -32,12 +33,12 @@ public class EmoteMediaNotifier implements MediaNotifier {
   }
 
   @Override
-  public void notify(final MediaData mediaData) {
+  public void notify(final MediaData mediaData, NotificationActionType actionType) {
     Emote emote = internalEmoteService.getEntity(mediaData.getId());
     var notification = Notification.of(new EmoteNotification(
         internalEmoteService.toRepresentation(emote),
         emote.getEntity(),
-        MODIFY
+        actionType
     ));
     notifyUser(emote, notification);
     notifyServer(emote, notification);

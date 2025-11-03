@@ -1,12 +1,11 @@
 package fr.revoicechat.core.service.message;
 
-import static fr.revoicechat.core.representation.notification.NotificationActionType.MODIFY;
-
 import fr.revoicechat.core.model.MediaData;
 import fr.revoicechat.core.model.MediaOrigin;
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.repository.MessageRepository;
 import fr.revoicechat.core.representation.message.MessageNotification;
+import fr.revoicechat.core.representation.notification.NotificationActionType;
 import fr.revoicechat.core.service.MessageService;
 import fr.revoicechat.core.service.media.MediaNotifier;
 import fr.revoicechat.core.service.user.RoomUserFinder;
@@ -28,12 +27,12 @@ public class MessageMediaNotifier implements MediaNotifier {
   }
 
   @Override
-  public void notify(final MediaData mediaData) {
+  public void notify(final MediaData mediaData, NotificationActionType actionType) {
     var message = messageRepository.findByMedia(mediaData.getId());
     if (message == null) {
       throw new ResourceNotFoundException(Message.class, mediaData.getId());
     }
-    Notification.of(new MessageNotification(messageService.toRepresentation(message), MODIFY))
+    Notification.of(new MessageNotification(messageService.toRepresentation(message), actionType))
                 .sendTo(roomUserFinder.find(message.getRoom().getId()));
   }
 
