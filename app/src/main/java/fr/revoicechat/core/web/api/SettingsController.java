@@ -29,7 +29,7 @@ public interface SettingsController extends LoggedApi  {
   @Tag(name = "User")
   @Operation(summary = "Get settings of the connected user", description = "Retrieve the settings of the connected user.")
   @APIResponse(responseCode = "200")
-  @Produces(MediaType.TEXT_PLAIN)
+  @Produces(MediaType.APPLICATION_JSON)
   @GET
   @Path("/me")
   String me();
@@ -37,7 +37,7 @@ public interface SettingsController extends LoggedApi  {
   @Tag(name = "User")
   @Operation(summary = "Get settings of the connected user", description = "Retrieve the settings of the connected user.")
   @APIResponse(responseCode = "200")
-  @Produces(MediaType.TEXT_PLAIN)
+  @Produces(MediaType.APPLICATION_JSON)
   @GET
   @Path("/user/{id}")
   String ofUser(@PathParam("id") UUID id);
@@ -46,7 +46,7 @@ public interface SettingsController extends LoggedApi  {
   @Operation(summary = "Update settings of the connected user", description = "Update the settings of the connected user.")
   @APIResponse(responseCode = "200")
   @Consumes(MediaType.TEXT_PLAIN)
-  @Produces(MediaType.TEXT_PLAIN)
+  @Produces(MediaType.APPLICATION_JSON)
   @PATCH
   @Path("/me")
   String me(String settings);
