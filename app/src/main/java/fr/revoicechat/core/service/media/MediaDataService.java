@@ -1,5 +1,7 @@
 package fr.revoicechat.core.service.media;
 
+import static fr.revoicechat.core.model.MediaDataStatus.STORED;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -11,6 +13,7 @@ import fr.revoicechat.core.model.MediaOrigin;
 import fr.revoicechat.core.repository.MediaDataRepository;
 import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
 import fr.revoicechat.core.representation.media.MediaDataRepresentation;
+import fr.revoicechat.core.representation.notification.NotificationActionType;
 import fr.revoicechat.web.error.ResourceNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
@@ -56,7 +59,8 @@ public class MediaDataService {
     var mediaData = getEntity(id);
     mediaData.setStatus(MediaDataStatus.valueOf(status.name()));
     entityManager.persist(mediaData);
-    mediaDataNotifierService.notify(mediaData);
+    mediaDataNotifierService.notify(mediaData, status.equals(STORED) ? NotificationActionType.MODIFY
+                                                                     : NotificationActionType.REMOVE);
     return toRepresentation(mediaData);
   }
 

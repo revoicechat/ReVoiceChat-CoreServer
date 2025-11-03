@@ -1,6 +1,7 @@
 package fr.revoicechat.core.service.media;
 
 import fr.revoicechat.core.model.MediaData;
+import fr.revoicechat.core.representation.notification.NotificationActionType;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
@@ -15,10 +16,10 @@ public class MediaDataNotifierService {
     this.mediaNotifiers = mediaNotifiers;
   }
 
-  public void notify(MediaData mediaData) {
+  public void notify(MediaData mediaData, NotificationActionType actionType) {
     mediaNotifiers.stream()
                   .filter(notifier -> notifier.origin().equals(mediaData.getOrigin()))
                   .findFirst()
-                  .ifPresent(notifier -> notifier.notify(mediaData));
+                  .ifPresent(notifier -> notifier.notify(mediaData, actionType));
   }
 }
