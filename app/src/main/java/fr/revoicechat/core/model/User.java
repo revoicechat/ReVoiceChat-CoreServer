@@ -33,6 +33,12 @@ public class User implements NotificationRegistrable, AuthenticatedUser {
   private LocalDateTime createdDate;
   @Enumerated(EnumType.STRING)
   private UserType type = UserType.USER;
+  /**
+   * The settings do not currently drive the backend behaviour, but only the frontend behaviour.
+   * It's stored as a string so the system does not parse the value into an object.
+    */
+  @Column(columnDefinition = "TEXT")
+  private String settings;
 
   public User() {
     super();
@@ -103,6 +109,14 @@ public class User implements NotificationRegistrable, AuthenticatedUser {
 
   public void setType(final UserType type) {
     this.type = type;
+  }
+
+  public String getSettings() {
+    return this.settings;
+  }
+
+  public void setSettings(final String settings) {
+    this.settings = settings;
   }
 
   @Override

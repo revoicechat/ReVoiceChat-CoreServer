@@ -133,7 +133,7 @@ public class UserService {
     return representation;
   }
 
-  private User getUser(final UUID id) {
+  public User getUser(final UUID id) {
     return Optional.ofNullable(entityManager.find(User.class, id)).orElseThrow(() -> new NotFoundException("User not found"));
   }
 
