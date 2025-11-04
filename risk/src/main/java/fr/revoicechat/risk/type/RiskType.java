@@ -12,10 +12,4 @@ import fr.revoicechat.risk.service.risk.RiskTypeSerializer;
  */
 @JsonDeserialize(using = RiskTypeDeserializer.class)
 @JsonSerialize(using = RiskTypeSerializer.class)
-public interface RiskType extends LocalizedMessage {
-
-  @Override
-  default String fileName() {
-    return RiskType.class.getCanonicalName();
-  }
-}
+public interface RiskType extends LocalizedMessage {}

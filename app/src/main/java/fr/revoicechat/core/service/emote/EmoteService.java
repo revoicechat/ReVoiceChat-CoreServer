@@ -18,7 +18,7 @@ import fr.revoicechat.core.service.media.MediaDataNotifierService;
 import fr.revoicechat.core.service.media.MediaDataService;
 import fr.revoicechat.risk.service.RiskService;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
-import fr.revoicechat.risk.type.EmoteRiskType;
+import fr.revoicechat.core.risk.EmoteRiskType;
 import fr.revoicechat.risk.type.RiskType;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.web.error.BadRequestException;

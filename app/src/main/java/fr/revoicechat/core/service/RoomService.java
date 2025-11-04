@@ -24,7 +24,7 @@ import fr.revoicechat.core.service.user.RoomUserFinder;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.risk.service.RiskService;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
-import fr.revoicechat.risk.type.RoomRiskType;
+import fr.revoicechat.core.risk.RoomRiskType;
 import fr.revoicechat.web.error.BadRequestException;
 import fr.revoicechat.web.error.ResourceNotFoundException;
 
