@@ -19,7 +19,6 @@ import fr.revoicechat.core.representation.emote.EmoteRepresentation;
 import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
 import fr.revoicechat.core.risk.EmoteRiskType;
 import fr.revoicechat.core.service.emote.risk.EmoteRiskSupplier;
-import fr.revoicechat.core.service.media.MediaDataNotifierService;
 import fr.revoicechat.core.service.media.MediaDataService;
 import fr.revoicechat.risk.type.RiskType;
 import fr.revoicechat.security.UserHolder;
@@ -34,21 +33,21 @@ public class EmoteUpdaterService {
   private final EntityManager entityManager;
   private final UserHolder userHolder;
   private final EmoteRetrieverService emoteRetrieverService;
-  private final MediaDataNotifierService mediaDataNotifierService;
   private final Instance<EmoteRiskSupplier> emoteRiskSuppliers;
+  private final EmoteMediaNotifier emoteMediaNotifier;
 
   @Inject
   public EmoteUpdaterService(MediaDataService mediaDataService,
                              EntityManager entityManager,
                              UserHolder userHolder,
+                             EmoteMediaNotifier emoteMediaNotifier,
                              EmoteRetrieverService emoteRetrieverService,
-                             MediaDataNotifierService mediaDataNotifierService,
                              Instance<EmoteRiskSupplier> emoteRiskSuppliers) {
     this.mediaDataService = mediaDataService;
     this.entityManager = entityManager;
     this.userHolder = userHolder;
+    this.emoteMediaNotifier = emoteMediaNotifier;
     this.emoteRetrieverService = emoteRetrieverService;
-    this.mediaDataNotifierService = mediaDataNotifierService;
     this.emoteRiskSuppliers = emoteRiskSuppliers;
   }
 
@@ -76,7 +75,7 @@ public class EmoteUpdaterService {
       emote.setContent(representation.content());
       emote.setKeywords(representation.keywords());
       entityManager.persist(emote);
-      mediaDataNotifierService.notify(emote.getMedia(), MODIFY);
+      emoteMediaNotifier.notify(emote, MODIFY);
       return emoteRetrieverService.toRepresentation(emote);
     } else {
       throw new UnauthorizedException(RISK_MEMBERSHIP_ERROR.translate(EmoteRiskType.UPDATE_EMOTE));
@@ -89,7 +88,7 @@ public class EmoteUpdaterService {
     var emote = emoteRetrieverService.getEntity(id);
     if (hasRisk(emote, user, EmoteRiskType.REMOVE_EMOTE)) {
       entityManager.remove(emote);
-      mediaDataNotifierService.notify(emote.getMedia(), REMOVE);
+      emoteMediaNotifier.notify(emote, REMOVE);
     } else {
       throw new UnauthorizedException(RISK_MEMBERSHIP_ERROR.translate(EmoteRiskType.REMOVE_EMOTE));
     }
