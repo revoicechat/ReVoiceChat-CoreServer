@@ -33,6 +33,18 @@ public interface EmoteController extends LoggedApi {
   @Path("/me")
   EmoteRepresentation addToMyEmotes(CreationEmoteRepresentation emote);
 
+  @Operation(summary = "Get emote for the all app")
+  @APIResponse(responseCode = "200", description = "emotes successfully retrieved")
+  @GET
+  @Path("/global")
+  List<EmoteRepresentation> getGlobalEmotes();
+
+  @Operation(summary = "Add an emote for the all app")
+  @APIResponse(responseCode = "200", description = "emotes successfully added")
+  @PUT
+  @Path("/global")
+  EmoteRepresentation addToGlobalEmotes(CreationEmoteRepresentation emote);
+
   @Operation(summary = "Get emote of a server")
   @APIResponse(responseCode = "200", description = "emotes successfully retrieved")
   @GET
