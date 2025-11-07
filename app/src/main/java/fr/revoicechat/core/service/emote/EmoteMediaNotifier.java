@@ -1,7 +1,5 @@
 package fr.revoicechat.core.service.emote;
 
-import static fr.revoicechat.core.representation.notification.NotificationActionType.MODIFY;
-
 import fr.revoicechat.core.model.Emote;
 import fr.revoicechat.core.model.MediaData;
 import fr.revoicechat.core.model.MediaOrigin;
@@ -21,22 +19,22 @@ public class EmoteMediaNotifier implements MediaNotifier {
 
   private final EntityManager entityManager;
   private final UserRepository userRepository;
-  private final InternalEmoteService internalEmoteService;
+  private final EmoteRetrieverService emoteRetrieverService;
 
   @Inject
   public EmoteMediaNotifier(EntityManager entityManager,
                             UserRepository userRepository,
-                            InternalEmoteService internalEmoteService) {
+                            EmoteRetrieverService emoteRetrieverService) {
     this.entityManager = entityManager;
     this.userRepository = userRepository;
-    this.internalEmoteService = internalEmoteService;
+    this.emoteRetrieverService = emoteRetrieverService;
   }
 
   @Override
   public void notify(final MediaData mediaData, NotificationActionType actionType) {
-    Emote emote = internalEmoteService.getEntity(mediaData.getId());
+    Emote emote = emoteRetrieverService.getEntity(mediaData.getId());
     var notification = Notification.of(new EmoteNotification(
-        internalEmoteService.toRepresentation(emote),
+        emoteRetrieverService.toRepresentation(emote),
         emote.getEntity(),
         actionType
     ));

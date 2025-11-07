@@ -9,13 +9,16 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.repository.MessageRepository;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageNotification;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
-import fr.revoicechat.core.service.emote.EmoteService;
+import fr.revoicechat.core.service.emote.EmoteRetrieverService;
 import fr.revoicechat.core.service.media.MediaDataService;
 import fr.revoicechat.core.service.message.MessageValidation;
 import fr.revoicechat.core.service.user.RoomUserFinder;
@@ -23,9 +26,6 @@ import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.representation.UserNotificationRepresentation;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.web.error.ResourceNotFoundException;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
 /**
  * Service layer for managing chat messages within rooms.
@@ -60,7 +60,7 @@ public class MessageService {
   private final MessageValidation messageValidation;
   private final MediaDataService mediaDataService;
   private final RoomUserFinder roomUserFinder;
-  private final EmoteService emoteService;
+  private final EmoteRetrieverService emoteService;
 
   public MessageService(EntityManager entityManager,
                         RoomService roomService,
@@ -68,7 +68,7 @@ public class MessageService {
                         MessageValidation messageValidation,
                         MediaDataService mediaDataService,
                         RoomUserFinder roomUserFinder,
-                        EmoteService emoteService) {
+                        EmoteRetrieverService emoteService) {
     this.entityManager = entityManager;
     this.roomService = roomService;
     this.userHolder = userHolder;
