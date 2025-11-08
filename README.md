@@ -35,3 +35,9 @@ Expected output :
      Loaded: loaded (/etc/systemd/system/rvc-core.service; enabled; preset: enabled)
      Active: active (running) since Sun 2025-08-24 12:14:11 UTC; 1s ago
 ```
+
+## License
+
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+
+Copyright (C) 2025 RevoiceChat.fr
