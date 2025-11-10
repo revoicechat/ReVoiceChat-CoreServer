@@ -16,7 +16,7 @@ import fr.revoicechat.core.model.server.ServerRoom;
 import fr.revoicechat.core.model.server.ServerStructure;
 import fr.revoicechat.core.nls.RoomErrorCode;
 import fr.revoicechat.core.repository.RoomRepository;
-import fr.revoicechat.core.representation.notification.NotificationActionType;
+import fr.revoicechat.notification.representation.NotificationActionType;
 import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
 import fr.revoicechat.core.representation.room.RoomNotification;
 import fr.revoicechat.core.representation.room.RoomRepresentation;

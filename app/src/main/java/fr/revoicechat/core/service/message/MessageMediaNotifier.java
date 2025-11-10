@@ -5,7 +5,7 @@ import fr.revoicechat.core.model.MediaOrigin;
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.repository.MessageRepository;
 import fr.revoicechat.core.representation.message.MessageNotification;
-import fr.revoicechat.core.representation.notification.NotificationActionType;
+import fr.revoicechat.notification.representation.NotificationActionType;
 import fr.revoicechat.core.service.MessageService;
 import fr.revoicechat.core.service.media.MediaNotifier;
 import fr.revoicechat.core.service.user.RoomUserFinder;

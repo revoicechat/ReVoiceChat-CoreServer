@@ -2,7 +2,7 @@ package fr.revoicechat.core.representation.server;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import fr.revoicechat.core.representation.notification.NotificationActionType;
+import fr.revoicechat.notification.representation.NotificationActionType;
 import fr.revoicechat.notification.model.NotificationPayload;
 import fr.revoicechat.notification.model.NotificationType;
 

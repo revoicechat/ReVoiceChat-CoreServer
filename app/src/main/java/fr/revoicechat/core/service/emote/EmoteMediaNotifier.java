@@ -7,7 +7,7 @@ import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.repository.UserRepository;
 import fr.revoicechat.core.representation.emote.EmoteNotification;
-import fr.revoicechat.core.representation.notification.NotificationActionType;
+import fr.revoicechat.notification.representation.NotificationActionType;
 import fr.revoicechat.core.service.media.MediaNotifier;
 import fr.revoicechat.notification.Notification;
 import jakarta.enterprise.context.ApplicationScoped;

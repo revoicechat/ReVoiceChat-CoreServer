@@ -1,6 +1,6 @@
 package fr.revoicechat.core.service.emote;
 
-import static fr.revoicechat.core.representation.notification.NotificationActionType.*;
+import static fr.revoicechat.notification.representation.NotificationActionType.*;
 import static fr.revoicechat.risk.nls.RiskMembershipErrorCode.RISK_MEMBERSHIP_ERROR;
 
 import java.util.UUID;

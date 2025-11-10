@@ -1,4 +1,4 @@
-package fr.revoicechat.core.representation.notification;
+package fr.revoicechat.notification.representation;
 
 public enum NotificationActionType {
   ADD, MODIFY, REMOVE

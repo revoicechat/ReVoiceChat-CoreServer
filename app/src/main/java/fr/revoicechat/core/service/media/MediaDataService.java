@@ -13,7 +13,7 @@ import fr.revoicechat.core.model.MediaOrigin;
 import fr.revoicechat.core.repository.MediaDataRepository;
 import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
 import fr.revoicechat.core.representation.media.MediaDataRepresentation;
-import fr.revoicechat.core.representation.notification.NotificationActionType;
+import fr.revoicechat.notification.representation.NotificationActionType;
 import fr.revoicechat.web.error.ResourceNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;

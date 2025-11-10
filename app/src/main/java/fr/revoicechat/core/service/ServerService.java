@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -20,7 +21,8 @@ import fr.revoicechat.core.model.server.ServerRoom;
 import fr.revoicechat.core.model.server.ServerStructure;
 import fr.revoicechat.core.repository.RoomRepository;
 import fr.revoicechat.core.repository.UserRepository;
-import fr.revoicechat.core.representation.notification.NotificationActionType;
+import fr.revoicechat.notification.model.NotificationRegistrable;
+import fr.revoicechat.notification.representation.NotificationActionType;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
@@ -98,6 +100,11 @@ public class ServerService implements ServerFinder {
   @Override
   public void existsOrThrow(final UUID id) {
     getEntity(id);
+  }
+
+  @Override
+  public Stream<NotificationRegistrable> findUserForServer(final UUID serverId) {
+    return serverProviderService.getUsers(serverId).map(NotificationRegistrable.class::cast);
   }
 
   public Server getEntity(final UUID id) {
