@@ -46,7 +46,7 @@ public class UserHolderImpl implements UserHolder, NotificationRegistrableHolder
     try {
       return getUser(peekId(jwtToken));
     } catch (NotFoundException e) {
-      throw e;
+      return null;
     } catch (Exception e) {
       throw new WebApplicationException("Invalid token", 401);
     }

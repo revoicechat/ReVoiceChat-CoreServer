@@ -25,6 +25,8 @@ import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
 import jakarta.websocket.CloseReason.CloseCodes;
 import jakarta.ws.rs.core.MediaType;
 
@@ -34,6 +36,7 @@ import jakarta.ws.rs.core.MediaType;
 class TestChatWebSocket {
 
   @Inject SecurityTokenService jwtService;
+  @Inject EntityManager entityManager;
 
   @Test
   void test() throws Exception {
@@ -43,6 +46,25 @@ class TestChatWebSocket {
     RestTestUtils.addAllRiskToAllUser(user1);
     try (var webSocketRoom1User1 = WebSocket.of(room1, user1);
          var webSocketRoom1User2 = WebSocket.of(room1, user2)) {
+      await().atMost(20, TimeUnit.SECONDS)
+             .untilAsserted(() -> {
+               webSocketRoom1User1.send("test");
+               assertThat(webSocketRoom1User1.getMessage()).isNull();
+               assertThat(webSocketRoom1User1.getByteMessage()).isNull();
+               assertThat(webSocketRoom1User2.getMessage()).isNotNull();
+               assertThat(webSocketRoom1User2.getByteMessage()).isNull();
+             });
+    }
+  }
+
+  @Test
+  void testWithQueryParam() throws Exception {
+    String user1 = RestTestUtils.logNewUser("userA");
+    String user2 = RestTestUtils.logNewUser("userB");
+    UUID room1 = createRoom(user1, "voice 1", VOICE);
+    RestTestUtils.addAllRiskToAllUser(user1);
+    try (var webSocketRoom1User1 = WebSocket.of("ws://localhost:8081/api/voice/" + room1 + "?token=" + user1);
+         var webSocketRoom1User2 = WebSocket.of("ws://localhost:8081/api/voice/" + room1 + "?token=" + user2)) {
       await().atMost(20, TimeUnit.SECONDS)
              .untilAsserted(() -> {
                webSocketRoom1User1.send("test");
@@ -159,8 +181,8 @@ class TestChatWebSocket {
       await().atMost(5, TimeUnit.SECONDS)
              .untilAsserted(() -> {
                assertThat(webSocket.closeReason().get()).isNotNull();
-               assertThat(webSocket.closeReason().get().getCloseCode()).isEqualTo(CloseCodes.PROTOCOL_ERROR);
-               assertThat(webSocket.closeReason().get().getReasonPhrase()).startsWith("Error handling user ");
+               assertThat(webSocket.closeReason().get().getCloseCode()).isEqualTo(CloseCodes.VIOLATED_POLICY);
+               assertThat(webSocket.closeReason().get().getReasonPhrase()).startsWith("Invalid token");
              });
     }
   }

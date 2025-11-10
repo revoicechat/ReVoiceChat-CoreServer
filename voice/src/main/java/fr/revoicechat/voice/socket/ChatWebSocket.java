@@ -5,6 +5,7 @@ import static fr.revoicechat.voice.risk.VoiceRiskType.*;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -42,7 +43,7 @@ import fr.revoicechat.voice.service.user.ConnectedUserRetriever;
 import fr.revoicechat.voice.service.user.VoiceRoomUserFinder;
 import fr.revoicechat.voice.utils.IgnoreExceptions;
 
-@ServerEndpoint("/voice/{roomId}")
+@ServerEndpoint(value = "/voice/{roomId}", configurator = WebSocketAuthConfigurator.class)
 @ApplicationScoped
 public class ChatWebSocket implements ConnectedUserRetriever {
   private static final Logger LOG = LoggerFactory.getLogger(ChatWebSocket.class);
@@ -100,6 +101,10 @@ public class ChatWebSocket implements ConnectedUserRetriever {
   @Transactional
   void handleOpen(Session session, String token, UUID roomId) {
     var user = userHolder.get(token);
+    if (user == null) {
+      closeSession(session, CloseCodes.VIOLATED_POLICY, "Invalid token");
+      return;
+    }
     closeOldSession(user);
     if (!voiceRoomPredicate.isVoiceRoom(roomId)) {
       closeSession(session, CloseCodes.CANNOT_ACCEPT, "Selected room cannot accept websocket chat type");
@@ -122,6 +127,13 @@ public class ChatWebSocket implements ConnectedUserRetriever {
   }
 
   private String token(Session session) {
+    return Optional.ofNullable(session.getUserProperties())
+                   .map(props -> props.get("auth-token"))
+                   .map(String.class::cast)
+                   .orElseGet(() -> tokenFromQueryParam(session));
+  }
+
+  private static String tokenFromQueryParam(final Session session) {
     Map<String, List<String>> params = session.getRequestParameterMap();
     List<String> tokens = params.getOrDefault("token", List.of());
     if (tokens.isEmpty()) {
@@ -207,6 +219,7 @@ public class ChatWebSocket implements ConnectedUserRetriever {
   }
 
   public record UserSession(UUID user, UUID room, VoiceRisks risks, Session session) {}
+
   public record VoiceRisks(boolean join, boolean send, boolean receive) {}
 
   private void closeSession(Session session, CloseCodes code, String reason) {
