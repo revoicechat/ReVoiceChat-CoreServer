@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
@@ -12,8 +13,11 @@ import org.jboss.resteasy.plugins.providers.sse.SseImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.model.NotificationData;
 import fr.revoicechat.notification.model.NotificationRegistrable;
+import fr.revoicechat.notification.representation.UserConnected;
+import fr.revoicechat.notification.representation.UserDisconnected;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.sse.SseEventSink;
@@ -39,7 +43,9 @@ public class NotificationService implements NotificationRegistry, NotificationSe
 
   @Override
   public void register(NotificationRegistrable registrable, SseEventSink sink) {
-    getProcessor(registrable.getId()).add(new SseHolder(sink));
+    var id = registrable.getId();
+    getProcessor(id).add(new SseHolder(sink));
+    notifyConnection(id);
   }
 
   @Override
@@ -69,6 +75,25 @@ public class NotificationService implements NotificationRegistry, NotificationSe
         holders.remove(holder);
       }
     }
+    notifyDisconnection(userId, emitters, holders);
+  }
+
+  private void notifyConnection(UUID id) {
+    if (getProcessor(id).size() == 1) {
+      LOG.debug("user {} connected", id);
+      Notification.of(new UserConnected(id)).sendTo(getAllUsersExcept(id));
+    }
+  }
+
+  private void notifyDisconnection(UUID id, Set<SseHolder> emitters, Collection<SseHolder> holders) {
+    if (!emitters.isEmpty() && holders.isEmpty()) {
+      LOG.debug("user {} disconnected", id);
+      Notification.of(new UserDisconnected(id)).sendTo(getAllUsersExcept(id));
+    }
+  }
+
+  private Stream<NotificationRegistrable> getAllUsersExcept(final UUID id) {
+    return processors.keySet().stream().filter(uuid -> !uuid.equals(id)).map(uuid -> () -> uuid);
   }
 
   public Collection<SseHolder> getProcessor(UUID userId) {
