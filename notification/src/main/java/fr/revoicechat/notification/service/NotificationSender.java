@@ -2,6 +2,7 @@ package fr.revoicechat.notification.service;
 
 import java.util.stream.Stream;
 
+import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.notification.model.NotificationData;
 import fr.revoicechat.notification.model.NotificationRegistrable;
 
@@ -10,5 +11,5 @@ public interface NotificationSender {
   void send(Stream<? extends NotificationRegistrable> targetedUsers, NotificationData data);
 
   /** Ping a single user. */
-  boolean ping(NotificationRegistrable registrable);
+  ActiveStatus ping(NotificationRegistrable registrable);
 }

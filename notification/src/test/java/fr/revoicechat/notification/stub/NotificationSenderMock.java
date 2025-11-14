@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.notification.model.NotificationData;
 import fr.revoicechat.notification.model.NotificationRegistrable;
 import fr.revoicechat.notification.service.NotificationSender;
@@ -18,8 +19,9 @@ public class NotificationSenderMock implements NotificationSender {
   }
 
   @Override
-  public boolean ping(final NotificationRegistrable registrable) {
-    return ping.add(registrable);
+  public ActiveStatus ping(final NotificationRegistrable registrable) {
+    ping.add(registrable);
+    return ActiveStatus.ONLINE;
   }
 
   public List<NotificationSent> getNotifications() {

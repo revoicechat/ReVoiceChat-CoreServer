@@ -57,11 +57,14 @@ public class NotificationService implements NotificationRegistry, NotificationSe
    * the SSE holder in wrap in another concurrent hashmap
    */
   @Override
-  public boolean ping(NotificationRegistrable registrable) {
+  public ActiveStatus ping(NotificationRegistrable registrable) {
     var id = registrable.getId();
     LOG.debug("ping user {}", id);
     var holder = getProcessor(registrable.getId());
-    return new HashSet<>(holder).stream().anyMatch(sse -> sse.send(NotificationData.ping()));
+    if (new HashSet<>(holder).stream().anyMatch(sse -> sse.send(NotificationData.ping()))) {
+      return registrable.getStatus();
+    }
+    return ActiveStatus.OFFLINE;
   }
 
   private void sendAndCloseIfNecessary(final NotificationData notificationData, final NotificationRegistrable user) {

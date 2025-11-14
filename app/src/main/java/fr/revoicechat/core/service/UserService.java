@@ -14,7 +14,6 @@ import java.util.UUID;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.InvitationLinkStatus;
 import fr.revoicechat.core.model.Room;
@@ -166,12 +165,8 @@ public class UserService {
         user.getDisplayName(),
         user.getLogin(),
         user.getCreatedDate().atOffset(ZoneOffset.UTC),
-        getActiveStatus(user),
+        Notification.ping(user),
         user.getType()
     );
-  }
-
-  private ActiveStatus getActiveStatus(final User user) {
-    return Notification.ping(user) ? user.getStatus() : ActiveStatus.OFFLINE;
   }
 }

@@ -2,6 +2,7 @@ package fr.revoicechat.notification;
 
 import java.util.stream.Stream;
 
+import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.notification.model.NotificationData;
 import fr.revoicechat.notification.model.NotificationPayload;
 import fr.revoicechat.notification.model.NotificationRegistrable;
@@ -21,7 +22,7 @@ public class Notification {
     return notification;
   }
 
-  public static boolean ping(NotificationRegistrable registrable) {
+  public static ActiveStatus ping(NotificationRegistrable registrable) {
     return getNotificationSender().ping(registrable);
   }
 

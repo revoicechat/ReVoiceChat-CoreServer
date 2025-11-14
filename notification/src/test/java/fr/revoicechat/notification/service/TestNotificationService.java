@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
+import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.notification.model.NotificationData;
 import fr.revoicechat.notification.model.NotificationRegistrable;
 import fr.revoicechat.notification.service.NotificationService.SseHolder;
@@ -62,7 +63,7 @@ class TestNotificationService {
   @Test
   void testPingWithNoRegistry() {
     var registrable1 = NotificationRegistrable.forId(UUID.randomUUID());
-    assertThat(new NotificationService().ping(registrable1)).isFalse();
+    assertThat(new NotificationService().ping(registrable1)).isEqualTo(ActiveStatus.OFFLINE);
   }
 
   @Test
@@ -71,7 +72,7 @@ class TestNotificationService {
     var sink1 = new SseEventSinkMock();
     var service = new NotificationService();
     service.register(registrable1, sink1);
-    assertThat(service.ping(registrable1)).isTrue();
+    assertThat(service.ping(registrable1)).isEqualTo(ActiveStatus.ONLINE);
   }
 
   @Test
@@ -83,7 +84,7 @@ class TestNotificationService {
     var service = new NotificationService();
     service.register(registrable1, sink1);
     service.register(registrable1, sink2);
-    assertThat(service.ping(registrable1)).isTrue();
+    assertThat(service.ping(registrable1)).isEqualTo(ActiveStatus.ONLINE);
   }
 
   @Test
@@ -96,7 +97,7 @@ class TestNotificationService {
     var service = new NotificationService();
     service.register(registrable1, sink1);
     service.register(registrable1, sink2);
-    assertThat(service.ping(registrable1)).isFalse();
+    assertThat(service.ping(registrable1)).isEqualTo(ActiveStatus.OFFLINE);
   }
 
   @Test
