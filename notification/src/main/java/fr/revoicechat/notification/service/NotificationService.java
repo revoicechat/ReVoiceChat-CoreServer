@@ -60,9 +60,13 @@ public class NotificationService implements NotificationRegistry, NotificationSe
   public ActiveStatus ping(NotificationRegistrable registrable) {
     var id = registrable.getId();
     LOG.debug("ping user {}", id);
-    var holder = getProcessor(registrable.getId());
-    if (new HashSet<>(holder).stream().anyMatch(sse -> sse.send(NotificationData.ping()))) {
-      return registrable.getStatus();
+    var holders = getProcessor(registrable.getId());
+    for (SseHolder holder : new HashSet<>(holders)) {
+      if (holder.send(NotificationData.ping())) {
+        return registrable.getStatus();
+      } else {
+        holders.remove(holder);
+      }
     }
     return ActiveStatus.OFFLINE;
   }
