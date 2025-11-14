@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import fr.revoicechat.core.model.ActiveStatus;
+import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.InvitationLinkStatus;
 import fr.revoicechat.core.model.Room;

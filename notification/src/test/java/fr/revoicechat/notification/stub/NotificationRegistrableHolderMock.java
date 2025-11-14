@@ -19,6 +19,6 @@ public class NotificationRegistrableHolderMock implements NotificationRegistrabl
   @Override
   public NotificationRegistrable get() {
     var id = UUID.fromString(securityIdentity.getPrincipal().getName());
-    return new NotificationRegistrableMock(id);
+    return NotificationRegistrable.forId(id);
   }
 }

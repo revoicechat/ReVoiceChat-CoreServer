@@ -8,6 +8,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+import fr.revoicechat.notification.model.NotificationRegistrable;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -21,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.revoicechat.core.junit.CleanDatabase;
-import fr.revoicechat.core.model.ActiveStatus;
+import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.representation.user.UserRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
@@ -50,7 +52,7 @@ class TestNotificationController {
          SseEventSource ignore = source(client, events)) {
       assertThat(events).isEmpty();
       assertThat(service.getProcessor(user.id())).hasSize(1);
-      Notification.ping(user::id);
+      Notification.ping(NotificationRegistrable.forId(user.id()));
       await().during(1, SECONDS);
       assertThat(events).containsExactly("{\"type\":\"PING\",\"data\":{}}");
       var retrievedUser = RestAssured.given()

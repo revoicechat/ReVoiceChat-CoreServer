@@ -13,7 +13,7 @@ import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.core.junit.CleanDatabase;
-import fr.revoicechat.core.model.ActiveStatus;
+import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.representation.user.AdminUpdatableUserData;
 import fr.revoicechat.core.representation.user.UpdatableUserData;

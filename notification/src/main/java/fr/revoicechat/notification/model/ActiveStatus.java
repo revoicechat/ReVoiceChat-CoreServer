@@ -1,4 +1,4 @@
-package fr.revoicechat.core.model;
+package fr.revoicechat.notification.model;
 
 public enum ActiveStatus {
     ONLINE, AWAY, OFFLINE

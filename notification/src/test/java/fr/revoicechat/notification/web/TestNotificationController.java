@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.revoicechat.notification.Notification;
+import fr.revoicechat.notification.model.NotificationRegistrable;
 import fr.revoicechat.notification.service.NotificationService;
 import fr.revoicechat.security.model.AuthenticatedUser;
 import fr.revoicechat.security.service.SecurityTokenService;
@@ -45,7 +46,7 @@ class TestNotificationController {
          SseEventSource ignore = source(client, events)) {
       assertThat(events).isEmpty();
       assertThat(service.getProcessor(UUID.fromString(ID_USER))).hasSize(1);
-      Notification.ping(() -> UUID.fromString(ID_USER));
+      Notification.ping(NotificationRegistrable.forId(UUID.fromString(ID_USER)));
       await().during(1, SECONDS);
       assertThat(events).containsExactly("{\"type\":\"PING\",\"data\":{}}");
     }
@@ -72,7 +73,7 @@ class TestNotificationController {
     return null;
   }
 
-  private class AuthenticatedUserMock implements AuthenticatedUser {
+  private static class AuthenticatedUserMock implements AuthenticatedUser {
 
     @Override
     public UUID getId() {

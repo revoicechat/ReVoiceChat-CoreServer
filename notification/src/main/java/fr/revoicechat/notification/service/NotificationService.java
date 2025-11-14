@@ -14,10 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.revoicechat.notification.Notification;
+import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.notification.model.NotificationData;
 import fr.revoicechat.notification.model.NotificationRegistrable;
-import fr.revoicechat.notification.representation.UserConnected;
-import fr.revoicechat.notification.representation.UserDisconnected;
+import fr.revoicechat.notification.representation.UserStatusUpdate;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.sse.SseEventSink;
@@ -45,12 +45,12 @@ public class NotificationService implements NotificationRegistry, NotificationSe
   public void register(NotificationRegistrable registrable, SseEventSink sink) {
     var id = registrable.getId();
     getProcessor(id).add(new SseHolder(sink));
-    notifyConnection(id);
+    notifyConnection(registrable);
   }
 
   @Override
   public void send(Stream<? extends NotificationRegistrable> targetedUsers, NotificationData data) {
-    targetedUsers.forEach(user -> sendAndCloseIfNecessary(data, user.getId()));
+    targetedUsers.forEach(user -> sendAndCloseIfNecessary(data, user));
   }
 
   /**
@@ -64,36 +64,36 @@ public class NotificationService implements NotificationRegistry, NotificationSe
     return new HashSet<>(holder).stream().anyMatch(sse -> sse.send(NotificationData.ping()));
   }
 
-  private void sendAndCloseIfNecessary(final NotificationData notificationData, final UUID userId) {
-    var holders = getProcessor(userId);
+  private void sendAndCloseIfNecessary(final NotificationData notificationData, final NotificationRegistrable user) {
+    var holders = getProcessor(user.getId());
     var emitters = new HashSet<>(holders);
     for (SseHolder holder : emitters) {
-      LOG.debug("send message to user {}", userId);
+      LOG.debug("send message to user {}", user.getId());
       var sent = holder.send(notificationData);
       if (!sent) {
-        LOG.debug("sse closed for user {}", userId);
+        LOG.debug("sse closed for user {}", user.getId());
         holders.remove(holder);
       }
     }
-    notifyDisconnection(userId, emitters, holders);
+    notifyDisconnection(user, emitters, holders);
   }
 
-  private void notifyConnection(UUID id) {
-    if (getProcessor(id).size() == 1) {
-      LOG.debug("user {} connected", id);
-      Notification.of(new UserConnected(id)).sendTo(getAllUsersExcept(id));
+  private void notifyConnection(NotificationRegistrable registrable) {
+    if (getProcessor(registrable.getId()).size() == 1) {
+      LOG.debug("user {} connected", registrable.getId());
+      Notification.of(new UserStatusUpdate(registrable.getId(), registrable.getStatus())).sendTo(getAllUsersExcept(registrable.getId()));
     }
   }
 
-  private void notifyDisconnection(UUID id, Set<SseHolder> emitters, Collection<SseHolder> holders) {
+  private void notifyDisconnection(NotificationRegistrable registrable, Set<SseHolder> emitters, Collection<SseHolder> holders) {
     if (!emitters.isEmpty() && holders.isEmpty()) {
-      LOG.debug("user {} disconnected", id);
-      Notification.of(new UserDisconnected(id)).sendTo(getAllUsersExcept(id));
+      LOG.debug("user {} disconnected", registrable.getId());
+      Notification.of(new UserStatusUpdate(registrable.getId(), ActiveStatus.ONLINE)).sendTo(getAllUsersExcept(registrable.getId()));
     }
   }
 
   private Stream<NotificationRegistrable> getAllUsersExcept(final UUID id) {
-    return processors.keySet().stream().filter(uuid -> !uuid.equals(id)).map(uuid -> () -> uuid);
+    return processors.keySet().stream().filter(uuid -> !uuid.equals(id)).map(NotificationRegistrable::forId);
   }
 
   public Collection<SseHolder> getProcessor(UUID userId) {
@@ -117,7 +117,6 @@ public class NotificationService implements NotificationRegistry, NotificationSe
         return false;
       }
     }
-
     void close() {sink.close();}
   }
 }

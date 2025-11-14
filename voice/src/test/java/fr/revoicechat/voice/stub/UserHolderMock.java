@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import fr.revoicechat.notification.NotificationRegistrableHolder;
+import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.notification.model.NotificationRegistrable;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.security.model.AuthenticatedUser;
@@ -58,6 +59,11 @@ public class UserHolderMock implements UserHolder, NotificationRegistrableHolder
     @Override
     public Set<String> getRoles() {
       return Set.of();
+    }
+
+    @Override
+    public ActiveStatus getStatus() {
+      return ActiveStatus.ONLINE;
     }
   }
 }

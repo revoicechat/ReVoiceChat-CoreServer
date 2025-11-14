@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.core.junit.CleanDatabase;
-import fr.revoicechat.core.model.ActiveStatus;
+import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.representation.login.UserPassword;
 import fr.revoicechat.core.representation.user.SignupRepresentation;

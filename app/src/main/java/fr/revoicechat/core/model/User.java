@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+
+import fr.revoicechat.notification.model.ActiveStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -95,6 +97,7 @@ public class User implements NotificationRegistrable, AuthenticatedUser {
     this.createdDate = createdDate;
   }
 
+  @Override
   public ActiveStatus getStatus() {
     return status;
   }

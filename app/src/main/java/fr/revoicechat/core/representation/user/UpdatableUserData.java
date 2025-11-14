@@ -1,6 +1,6 @@
 package fr.revoicechat.core.representation.user;
 
-import fr.revoicechat.core.model.ActiveStatus;
+import fr.revoicechat.notification.model.ActiveStatus;
 
 public record UpdatableUserData(
     String displayName,

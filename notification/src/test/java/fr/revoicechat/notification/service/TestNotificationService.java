@@ -8,9 +8,9 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.notification.model.NotificationData;
+import fr.revoicechat.notification.model.NotificationRegistrable;
 import fr.revoicechat.notification.service.NotificationService.SseHolder;
 import fr.revoicechat.notification.stub.NotificationPayloadMock;
-import fr.revoicechat.notification.stub.NotificationRegistrableMock;
 import fr.revoicechat.notification.stub.SseEventSinkMock;
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -20,9 +20,9 @@ class TestNotificationService {
   @Test
   void testRegister() {
     // Given
-    var registrable1 = new NotificationRegistrableMock(UUID.randomUUID());
-    var registrable2 = new NotificationRegistrableMock(UUID.randomUUID());
-    var registrable3 = new NotificationRegistrableMock(UUID.randomUUID());
+    var registrable1 = NotificationRegistrable.forId(UUID.randomUUID());
+    var registrable2 = NotificationRegistrable.forId(UUID.randomUUID());
+    var registrable3 = NotificationRegistrable.forId(UUID.randomUUID());
     var sink1 = new SseEventSinkMock();
     var sink2 = new SseEventSinkMock();
     var sink3 = new SseEventSinkMock();
@@ -42,7 +42,7 @@ class TestNotificationService {
   @Test
   void testSend() {
     // Given
-    var registrable1 = new NotificationRegistrableMock(UUID.randomUUID());
+    var registrable1 = NotificationRegistrable.forId(UUID.randomUUID());
     var sink1 = new SseEventSinkMock();
     var sink2 = new SseEventSinkMock();
     sink2.close();
@@ -61,13 +61,13 @@ class TestNotificationService {
 
   @Test
   void testPingWithNoRegistry() {
-    var registrable1 = new NotificationRegistrableMock(UUID.randomUUID());
+    var registrable1 = NotificationRegistrable.forId(UUID.randomUUID());
     assertThat(new NotificationService().ping(registrable1)).isFalse();
   }
 
   @Test
   void testPingWithOneRegistry() {
-    var registrable1 = new NotificationRegistrableMock(UUID.randomUUID());
+    var registrable1 = NotificationRegistrable.forId(UUID.randomUUID());
     var sink1 = new SseEventSinkMock();
     var service = new NotificationService();
     service.register(registrable1, sink1);
@@ -76,7 +76,7 @@ class TestNotificationService {
 
   @Test
   void testPingWithOneRegistryCloseAndOneOpen() {
-    var registrable1 = new NotificationRegistrableMock(UUID.randomUUID());
+    var registrable1 = NotificationRegistrable.forId(UUID.randomUUID());
     var sink1 = new SseEventSinkMock();
     var sink2 = new SseEventSinkMock();
     sink2.close();
@@ -88,7 +88,7 @@ class TestNotificationService {
 
   @Test
   void testPingWithOnlyClosedRegistry() {
-    var registrable1 = new NotificationRegistrableMock(UUID.randomUUID());
+    var registrable1 = NotificationRegistrable.forId(UUID.randomUUID());
     var sink1 = new SseEventSinkMock();
     sink1.close();
     var sink2 = new SseEventSinkMock();
@@ -101,7 +101,7 @@ class TestNotificationService {
 
   @Test
   void testShutdownSseEmitters() {
-    var registrable1 = new NotificationRegistrableMock(UUID.randomUUID());
+    var registrable1 = NotificationRegistrable.forId(UUID.randomUUID());
     var sink1 = new SseEventSinkMock();
     var sink2 = new SseEventSinkMock();
     var service = new NotificationService();
