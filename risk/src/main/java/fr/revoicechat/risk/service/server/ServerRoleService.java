@@ -3,9 +3,6 @@ package fr.revoicechat.risk.service.server;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.representation.NotificationActionType;
@@ -21,6 +18,9 @@ import fr.revoicechat.risk.representation.RiskRepresentation;
 import fr.revoicechat.risk.representation.ServerRoleRepresentation;
 import fr.revoicechat.risk.type.RiskType;
 import fr.revoicechat.web.error.ResourceNotFoundException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class ServerRoleService {
@@ -101,7 +101,6 @@ public class ServerRoleService {
 
   @Transactional
   public void addRoleToUser(final UUID serverRoleId, final List<UUID> users) {
-    removeUserToRole(serverRoleId);
     ServerRoles roles = getEntity(serverRoleId);
     users.stream()
          .map(user -> entityManager.find(UserRoleMembership.class, user))
@@ -111,17 +110,6 @@ public class ServerRoleService {
            entityManager.persist(user);
          });
     Notification.of(new NotificationServerRole(mapToRepresentation(roles), NotificationActionType.MODIFY)).sendTo(serverFinder.findUserForServer(roles.getServer()));
-  }
-
-  private void removeUserToRole(final UUID serverRoleId) {
-    ServerRoles roles = getEntity(serverRoleId);
-    serverRolesRepository.getMembers(serverRoleId).stream()
-                         .map(user -> entityManager.find(UserRoleMembership.class, user))
-                         .filter(Objects::nonNull)
-                         .forEach(user -> {
-                           user.getServerRoles().remove(roles);
-                           entityManager.persist(user);
-                         });
   }
 
   @Transactional

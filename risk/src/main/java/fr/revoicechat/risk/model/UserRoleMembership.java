@@ -1,8 +1,10 @@
 package fr.revoicechat.risk.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import jakarta.persistence.Entity;
@@ -21,11 +23,11 @@ public class UserRoleMembership {
   @JoinTable(name = "RVC_USER_SERVER_ROLES",
       joinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID"),
       inverseJoinColumns = @JoinColumn(name = "SERVER_ROLE_ID", referencedColumnName = "ID"))
-  private List<ServerRoles> serverRoles;
+  private Set<ServerRoles> serverRoles;
 
   public UserRoleMembership() {
     super();
-    setServerRoles(new ArrayList<>());
+    setServerRoles(new HashSet<>());
   }
 
   public UUID getId() {
@@ -36,11 +38,11 @@ public class UserRoleMembership {
     this.id = id;
   }
 
-  public List<ServerRoles> getServerRoles() {
+  public Set<ServerRoles> getServerRoles() {
     return serverRoles;
   }
 
-  public void setServerRoles(final List<ServerRoles> serverRoles) {
+  public void setServerRoles(final Set<ServerRoles> serverRoles) {
     this.serverRoles = serverRoles;
   }
 
