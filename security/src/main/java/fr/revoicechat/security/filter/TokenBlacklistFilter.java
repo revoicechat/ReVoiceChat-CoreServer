@@ -24,18 +24,18 @@ public class TokenBlacklistFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext ctx) {
         if (ctx.getSecurityContext().getUserPrincipal() instanceof JsonWebToken jsonWebToken) {
             String token = jsonWebToken.getRawToken();
-            if (token != null && isInvalid(jsonWebToken, token)) {
+            if (token != null && isInvalid(jsonWebToken)) {
                 ctx.abortWith(Response.status(401).build());
             }
         }
     }
 
-    private boolean isInvalid(final JsonWebToken jsonWebToken, final String token) {
-        return blacklistService.isBlacklisted(token)
+    private boolean isInvalid(final JsonWebToken jsonWebToken) {
+        return blacklistService.isBlacklisted(jsonWebToken.getRawToken())
                || isExpired(jsonWebToken.getExpirationTime());
     }
 
     private boolean isExpired(final long expirationTime) {
-    return System.currentTimeMillis() < expirationTime;
+    return System.currentTimeMillis() > expirationTime;
   }
 }
