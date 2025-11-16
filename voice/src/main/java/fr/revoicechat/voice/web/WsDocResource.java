@@ -5,6 +5,7 @@ import java.util.Map;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import fr.revoicechat.voice.socket.chat.ChatWebSocket;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -14,7 +15,7 @@ import jakarta.ws.rs.core.Response;
 /**
  * Here for documentation purpose.
  *
- * @see fr.revoicechat.voice.socket.ChatWebSocket
+ * @see ChatWebSocket
  */
 @Path("/voice")
 @Tag(name = "WebSocket")

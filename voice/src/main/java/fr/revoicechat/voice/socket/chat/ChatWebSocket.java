@@ -1,4 +1,4 @@
-package fr.revoicechat.voice.socket;
+package fr.revoicechat.voice.socket.chat;
 
 import static fr.revoicechat.voice.risk.VoiceRiskType.*;
 
@@ -9,22 +9,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
-import jakarta.websocket.CloseReason;
-import jakarta.websocket.CloseReason.CloseCodes;
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnError;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
-import jakarta.websocket.Session;
-import jakarta.websocket.server.PathParam;
-import jakarta.websocket.server.ServerEndpoint;
 
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.slf4j.Logger;
@@ -41,7 +28,20 @@ import fr.revoicechat.voice.service.room.RoomRisksEntityRetriever;
 import fr.revoicechat.voice.service.room.VoiceRoomPredicate;
 import fr.revoicechat.voice.service.user.ConnectedUserRetriever;
 import fr.revoicechat.voice.service.user.VoiceRoomUserFinder;
+import fr.revoicechat.voice.socket.CompletionStageService;
+import fr.revoicechat.voice.socket.WebSocketAuthConfigurator;
 import fr.revoicechat.voice.utils.IgnoreExceptions;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.CloseReason.CloseCodes;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.PathParam;
+import jakarta.websocket.server.ServerEndpoint;
 
 @ServerEndpoint(value = "/voice/{roomId}", configurator = WebSocketAuthConfigurator.class)
 @ApplicationScoped
@@ -50,9 +50,8 @@ public class ChatWebSocket implements ConnectedUserRetriever {
 
   // Thread-safe set of connected sessions
   private static final Set<UserSession> sessions = ConcurrentHashMap.newKeySet();
-  // One queue per user (serialized execution)
-  private final ConcurrentHashMap<UUID, CompletableFuture<Void>> userQueues = new ConcurrentHashMap<>();
 
+  private final CompletionStageService completionStageService;
   private final ManagedExecutor executor;
   private final UserHolder userHolder;
   private final VoiceRoomUserFinder roomUserFinder;
@@ -60,12 +59,14 @@ public class ChatWebSocket implements ConnectedUserRetriever {
   private final RoomRisksEntityRetriever roomRisksEntityRetriever;
   private final RiskService riskService;
 
-  public ChatWebSocket(final ManagedExecutor executor,
+  public ChatWebSocket(final CompletionStageService completionStageService,
+                       final ManagedExecutor executor,
                        final UserHolder userHolder,
                        final VoiceRoomUserFinder roomUserFinder,
                        final VoiceRoomPredicate voiceRoomPredicate,
                        final RoomRisksEntityRetriever roomRisksEntityRetriever,
                        final RiskService riskService) {
+    this.completionStageService = completionStageService;
     this.executor = executor;
     this.userHolder = userHolder;
     this.roomUserFinder = roomUserFinder;
@@ -91,7 +92,7 @@ public class ChatWebSocket implements ConnectedUserRetriever {
       return;
     }
     // enqueue the actual heavy work
-    enqueue(userId, session, () -> CompletableFuture.runAsync(() -> handleOpen(session, token, roomId), executor));
+    completionStageService.enqueue(userId, session, () -> CompletableFuture.runAsync(() -> handleOpen(session, token, roomId), executor));
   }
 
   /**
@@ -182,7 +183,7 @@ public class ChatWebSocket implements ConnectedUserRetriever {
   public void onClose(Session session) {
     sessions.stream().filter(userSession -> userSession.session.equals(session))
             .findFirst()
-            .ifPresent(userSession -> enqueue(userSession.user, session, () -> CompletableFuture.runAsync(() -> handleCloseSession(userSession), executor)));
+            .ifPresent(userSession -> completionStageService.enqueue(userSession.user, session, () -> CompletableFuture.runAsync(() -> handleCloseSession(userSession), executor)));
   }
 
   @Transactional
@@ -224,21 +225,5 @@ public class ChatWebSocket implements ConnectedUserRetriever {
 
   private void closeSession(Session session, CloseCodes code, String reason) {
     IgnoreExceptions.run(() -> session.close(new CloseReason(code, reason)));
-  }
-
-  /**
-   * Utility: enqueue a task for a specific user, so tasks run sequentially.
-   */
-  private void enqueue(UUID userId, Session session, Supplier<CompletionStage<Void>> task) {
-    userQueues.compute(userId, (id, prev) -> {
-      CompletableFuture<Void> start = (prev == null ? CompletableFuture.completedFuture(null) : prev);
-      return start
-          .thenComposeAsync(v -> task.get(), executor)
-          .exceptionally(t -> {
-            LOG.error("Error handling user {}", userId, t);
-            closeSession(session, CloseCodes.PROTOCOL_ERROR, "Error handling user " + userId);
-            return null;
-          });
-    });
   }
 }
