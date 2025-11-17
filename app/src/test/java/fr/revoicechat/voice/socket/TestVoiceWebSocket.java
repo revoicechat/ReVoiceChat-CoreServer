@@ -20,7 +20,7 @@ import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import fr.revoicechat.security.service.SecurityTokenService;
-import fr.revoicechat.voice.socket.voice.VoiceWebSocket;
+import fr.revoicechat.live.voice.socket.VoiceWebSocket;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;

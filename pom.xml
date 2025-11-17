@@ -17,7 +17,7 @@
     <module>i18n</module>
     <module>openapi</module>
     <module>web</module>
-    <module>voice</module>
+    <module>live</module>
     <module>risk</module>
   </modules>
 
@@ -69,7 +69,7 @@
       </dependency>
       <dependency>
         <groupId>fr.revoicechat</groupId>
-        <artifactId>revoicechat-voice</artifactId>
+        <artifactId>revoicechat-live</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

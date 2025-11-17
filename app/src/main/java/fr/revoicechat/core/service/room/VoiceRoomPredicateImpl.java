@@ -3,7 +3,7 @@ package fr.revoicechat.core.service.room;
 import java.util.UUID;
 
 import fr.revoicechat.core.model.Room;
-import fr.revoicechat.voice.service.room.VoiceRoomPredicate;
+import fr.revoicechat.live.voice.service.VoiceRoomPredicate;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 

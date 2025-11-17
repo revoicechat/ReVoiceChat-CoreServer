@@ -11,7 +11,7 @@ import jakarta.persistence.EntityManager;
 import fr.revoicechat.core.model.Room;
 import fr.revoicechat.risk.RisksEntityRetriever;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
-import fr.revoicechat.voice.service.risk.RoomRisksEntityRetriever;
+import fr.revoicechat.live.common.service.RoomRisksEntityRetriever;
 
 @ApplicationScoped
 public class EntityByRoomIdRetriever implements RisksEntityRetriever, RoomRisksEntityRetriever {

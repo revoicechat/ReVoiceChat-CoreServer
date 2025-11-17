@@ -3,7 +3,7 @@ package fr.revoicechat.core.service.user;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import fr.revoicechat.voice.service.user.VoiceRoomUserFinder;
+import fr.revoicechat.live.voice.service.VoiceRoomUserFinder;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import fr.revoicechat.core.repository.UserRepository;

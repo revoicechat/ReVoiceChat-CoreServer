@@ -41,7 +41,7 @@
     </dependency>
     <dependency>
       <groupId>fr.revoicechat</groupId>
-      <artifactId>revoicechat-voice</artifactId>
+      <artifactId>revoicechat-live</artifactId>
     </dependency>
     <dependency>
       <groupId>fr.revoicechat</groupId>
