@@ -132,7 +132,7 @@ public class VoiceWebSocket implements ConnectedUserRetriever {
 
   @Transactional
   public void handleCloseSession(final VoiceSession voiceSession) {
-    LOG.info("Client disconnected: {}", voiceSession.sessionId());
+    LOG.info("Client disconnected: {}", voiceSession);
     Notification.of(new VoiceLeavingNotification(voiceSession.user(), voiceSession.room())).sendTo(roomUserFinder.find(voiceSession.room()));
     webSocketService.closeSession(voiceSession.session(), CloseCodes.NORMAL_CLOSURE, "Client disconnected");
     sessions.remove(voiceSession);

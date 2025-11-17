@@ -6,10 +6,7 @@ import jakarta.websocket.Session;
 
 import fr.revoicechat.live.risk.LiveDiscussionRisks;
 
-record Streamer(UUID user,
-                String streamName,
-                LiveDiscussionRisks risks,
-                Session session) implements StreamSession {
+record Streamer(UUID user, String streamName, LiveDiscussionRisks risks, Session session) implements StreamAgent {
 
   @Override
   public String sessionId() {
@@ -18,5 +15,10 @@ record Streamer(UUID user,
 
   public boolean is(final UUID user, final String streamName) {
     return Objects.equals(this.user, user) && Objects.equals(this.streamName, streamName);
+  }
+
+  @Override
+  public String toString() {
+    return sessionId();
   }
 }

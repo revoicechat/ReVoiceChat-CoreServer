@@ -1,11 +1,15 @@
 package fr.revoicechat.live.stream.socket;
 
-import java.util.UUID;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-import fr.revoicechat.live.risk.LiveDiscussionRisks;
-import fr.revoicechat.live.common.socket.SessionHolder;
+record StreamSession(Streamer streamer, Set<Viewer> viewers) {
 
-public interface StreamSession extends SessionHolder {
-  UUID user();
-  LiveDiscussionRisks risks();
+  public StreamSession(final Streamer streamer) {
+    this(streamer, ConcurrentHashMap.newKeySet());
+  }
+
+  public void remove(final Viewer viewer) {
+    viewers.remove(viewer);
+  }
 }

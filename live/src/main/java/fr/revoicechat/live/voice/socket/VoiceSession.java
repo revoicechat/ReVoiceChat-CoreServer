@@ -14,4 +14,9 @@ public record VoiceSession(UUID user,
   public String sessionId() {
     return session.getId();
   }
+
+  @Override
+  public String toString() {
+    return sessionId();
+  }
 }
