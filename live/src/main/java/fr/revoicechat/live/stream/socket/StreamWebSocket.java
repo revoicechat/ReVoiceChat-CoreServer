@@ -30,6 +30,33 @@ import fr.revoicechat.live.voice.service.VoiceRoomUserFinder;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.security.UserHolder;
 
+/**
+ * WebSocket endpoint for managing video/audio streaming sessions.
+ *
+ * <p>This endpoint enables users to broadcast streams and view streams from others
+ * within voice rooms. It distinguishes between streamers (broadcasters) and viewers,
+ * managing their connections, permissions, and message routing.</p>
+ *
+ * <p>The endpoint is available at {@code /stream/{userId}/{name}} where:</p>
+ * <ul>
+ *   <li>{@code userId} - the ID of the user who is streaming</li>
+ *   <li>{@code name} - the name/identifier of the stream</li>
+ * </ul>
+ *
+ * <p>Key features:</p>
+ * <ul>
+ *   <li>One-to-many streaming (one streamer, multiple viewers)</li>
+ *   <li>Permission-based access control for streaming and viewing</li>
+ *   <li>Automatic stream cleanup when streamer disconnects</li>
+ *   <li>Real-time notifications for stream lifecycle events</li>
+ *   <li>Room-based stream isolation</li>
+ * </ul>
+ *
+ * @see StreamSession
+ * @see Streamer
+ * @see Viewer
+ * @see WebSocketService
+ */
 @ServerEndpoint(value = "/stream/{userId}/{name}", configurator = WebSocketAuthConfigurator.class)
 @ApplicationScoped
 public class StreamWebSocket {
@@ -56,12 +83,39 @@ public class StreamWebSocket {
     this.roomUserFinder = roomUserFinder;
   }
 
+  /**
+   * Called when a client opens a WebSocket connection to a stream.
+   *
+   * <p>Delegates to {@link WebSocketService#onOpen} for authentication,
+   * then calls {@link #handleOpen} for stream-specific logic.</p>
+   *
+   * @param session the WebSocket session being opened
+   * @param userId the user ID from the URL path (the streamer's ID)
+   * @param name the stream name from the URL path
+   */
   @OnOpen
   @SuppressWarnings("unused") // call by websocket listener
   public void onOpen(Session session, @PathParam("userId") String userId, @PathParam("name") String name) {
     webSocketService.onOpen(session, token -> handleOpen(session, token, userId, name));
   }
 
+  /**
+   * Handles the actual connection logic, determining if the user is starting a stream or joining one.
+   *
+   * <p>This method runs in a transactional context and performs the following:</p>
+   * <ol>
+   *   <li>Validates the user token</li>
+   *   <li>Verifies the user is connected to a voice room</li>
+   *   <li>Determines if the user is the streamer or a viewer</li>
+   *   <li>Calls {@link #startStream} if the user is starting their own stream</li>
+   *   <li>Calls {@link #joinStream} if the user is joining another user's stream</li>
+   * </ol>
+   *
+   * @param session the WebSocket session
+   * @param token the authentication token
+   * @param userIdAsString the streamer's user ID as a string
+   * @param streamName the name of the stream
+   */
   @Transactional
   void handleOpen(Session session, String token, String userIdAsString, final String streamName) {
     UUID streamedUserId = UUID.fromString(userIdAsString);
@@ -83,18 +137,43 @@ public class StreamWebSocket {
     }
   }
 
+  /**
+   * Called when a text message is received from a client.
+   *
+   * <p>Routes the message from streamer to all authorized viewers.</p>
+   *
+   * @param message the text message content
+   * @param sender the session that sent the message
+   */
   @OnMessage
   @SuppressWarnings("unused") // call by websocket listener
   public void onMessage(String message, Session sender) {
     webSocketService.onMessage(message, sender, getReceiver(sender));
   }
 
+  /**
+   * Called when a binary message (stream data) is received from a client.
+   *
+   * <p>Routes the stream data from streamer to all authorized viewers.</p>
+   *
+   * @param message the binary message content (typically video/audio data)
+   * @param sender the session that sent the message
+   */
   @OnMessage
   @SuppressWarnings("unused") // call by websocket listener
   public void onMessage(byte[] message, Session sender) {
     webSocketService.onMessage(message, sender, getReceiver(sender));
   }
 
+  /**
+   * Determines which sessions should receive stream data from the sender.
+   *
+   * <p>Only the streamer can send data, and only viewers with receive permissions
+   * will get the data. The sender is excluded from receivers.</p>
+   *
+   * @param sender the session sending the stream data (must be the streamer)
+   * @return stream of viewer sessions that should receive the data
+   */
   private Stream<Session> getReceiver(Session sender) {
     var current = get(sender);
     if (current == null || !current.streamer().risks().send()) {
@@ -107,6 +186,17 @@ public class StreamWebSocket {
                   .filter(session -> !session.getId().equals(sender.getId()));
   }
 
+  /**
+   * Called when a WebSocket connection is closed.
+   *
+   * <p>Handles two scenarios:</p>
+   * <ul>
+   *   <li>If the streamer disconnects: stops the entire stream, disconnecting all viewers</li>
+   *   <li>If a viewer disconnects: removes only that viewer from the stream</li>
+   * </ul>
+   *
+   * @param session the session being closed
+   */
   @OnClose
   @SuppressWarnings("unused") // call by websocket listener
   public void onClose(Session session) {
@@ -119,7 +209,15 @@ public class StreamWebSocket {
     }
   }
 
-
+  /**
+   * Starts a new stream for the given streamer.
+   *
+   * <p>If a stream with the same user and name already exists, it is stopped first.
+   * Notifies all room participants that a new stream has started.</p>
+   *
+   * @param streamer the streamer starting the broadcast
+   * @param roomId the room where the stream is happening
+   */
   private void startStream(Streamer streamer, UUID roomId) {
     if (!streamer.risks().send()) {
       webSocketService.closeSession(streamer.session(), CloseCodes.CANNOT_ACCEPT, "User in not allowed to stream in this room");
@@ -131,6 +229,17 @@ public class StreamWebSocket {
     Notification.of(new StreamStart(streamer.user(), streamer.streamName())).sendTo(roomUserFinder.find(roomId));
   }
 
+  /**
+   * Adds a viewer to an existing stream.
+   *
+   * <p>Validates that the viewer has permission to receive stream data and that
+   * the requested stream exists. Notifies room participants of the new viewer.</p>
+   *
+   * @param viewer the viewer joining the stream
+   * @param streamedUserId the ID of the user who is streaming
+   * @param streamName the name of the stream
+   * @param roomId the room where the stream is happening
+   */
   private void joinStream(Viewer viewer, UUID streamedUserId, String streamName, UUID roomId) {
     if (!viewer.risks().receive()) {
       webSocketService.closeSession(viewer.session(), CloseCodes.CANNOT_ACCEPT, "User in not allowed to watch a stream in this room");
@@ -145,6 +254,14 @@ public class StreamWebSocket {
     Notification.of(new StreamJoin(streamedUserId, streamName, viewer.user())).sendTo(roomUserFinder.find(roomId));
   }
 
+  /**
+   * Removes a viewer from a stream when they disconnect.
+   *
+   * <p>Locates the viewer's session, removes them from the stream's viewer list,
+   * and notifies room participants that the viewer has left.</p>
+   *
+   * @param session the viewer's session being closed
+   */
   private void leaveStream(final Session session) {
     var closingViewer = getClosingViewer(session);
     if (closingViewer != null) {
@@ -156,6 +273,15 @@ public class StreamWebSocket {
     }
   }
 
+  /**
+   * Stops a stream completely, disconnecting all viewers and the streamer.
+   *
+   * <p>Closes all viewer sessions, closes the streamer session, removes the stream
+   * from active streams, and notifies room participants that the stream has ended.</p>
+   *
+   * @param stream the stream session to stop
+   * @param roomId the room where the stream was happening
+   */
   private void stopStream(StreamSession stream, UUID roomId) {
     if (stream != null) {
       stream.viewers().forEach(this::handleCloseSession);
@@ -165,6 +291,15 @@ public class StreamWebSocket {
     }
   }
 
+  /**
+   * Finds a viewer session that is being closed.
+   *
+   * <p>Searches through all active streams to find which stream contains
+   * the given viewer session.</p>
+   *
+   * @param session the viewer session being closed
+   * @return a record containing the stream and viewer, or null if not found
+   */
   private ClosingViewer getClosingViewer(final Session session) {
     for (final StreamSession streamSession : streams) {
       for (final Viewer viewer : streamSession.viewers()) {
@@ -176,20 +311,47 @@ public class StreamWebSocket {
     return null;
   }
 
+  /**
+   * Helper record for tracking a viewer that is leaving a stream.
+   *
+   * @param stream the stream session
+   * @param viewer the viewer leaving
+   */
   private record ClosingViewer(StreamSession stream, Viewer viewer) {}
 
+  /**
+   * Handles the actual session close logic for a stream participant.
+   *
+   * <p>Logs the disconnection and closes the WebSocket session cleanly.</p>
+   *
+   * @param user the stream agent (streamer or viewer) being disconnected
+   */
   @Transactional
   void handleCloseSession(final StreamAgent user) {
     LOG.info("Client disconnected: {}", user);
     webSocketService.closeSession(user.session(), CloseCodes.NORMAL_CLOSURE, "Client disconnected");
   }
 
+  /**
+   * Called when an error occurs on a WebSocket connection.
+   *
+   * <p>Delegates error handling to {@link WebSocketService}.</p>
+   *
+   * @param session the session where the error occurred
+   * @param throwable the error
+   */
   @OnError
   @SuppressWarnings("unused") // call by websocket listener
   public void onError(Session session, Throwable throwable) {
     webSocketService.onError(session, throwable);
   }
 
+  /**
+   * Finds a stream session by the streamer's WebSocket session.
+   *
+   * @param session the streamer's WebSocket session
+   * @return the stream session, or null if not found
+   */
   private StreamSession get(Session session) {
     return streams.stream()
                   .filter(e -> e.streamer().is(session))
@@ -197,6 +359,13 @@ public class StreamWebSocket {
                   .orElse(null);
   }
 
+  /**
+   * Finds a stream session by streamer ID and stream name.
+   *
+   * @param streamedUserId the streamer's user ID
+   * @param streamName the stream name
+   * @return the stream session, or null if not found
+   */
   private StreamSession get(UUID streamedUserId, String streamName) {
     return streams.stream()
                   .filter(e -> e.streamer().is(streamedUserId, streamName))

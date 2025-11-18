@@ -19,6 +19,17 @@ import org.slf4j.LoggerFactory;
 
 import fr.revoicechat.security.UserHolder;
 
+/**
+ * Core WebSocket service providing common functionality for WebSocket connection management.
+ * This service handles authentication, message routing, session lifecycle, and asynchronous
+ * task execution for WebSocket endpoints.
+ *
+ * <p>The service uses a {@link CompletionStageService} to queue and execute tasks asynchronously,
+ * ensuring proper ordering and thread safety for WebSocket operations.</p>
+ *
+ * @see CompletionStageService
+ * @see UserHolder
+ */
 @ApplicationScoped
 public class WebSocketService {
   private static final Logger LOG = LoggerFactory.getLogger(WebSocketService.class);
