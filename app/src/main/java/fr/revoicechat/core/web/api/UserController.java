@@ -1,5 +1,6 @@
 package fr.revoicechat.core.web.api;
 
+import java.util.List;
 import java.util.UUID;
 
 import fr.revoicechat.core.representation.user.AdminUpdatableUserData;
@@ -67,4 +68,9 @@ public interface UserController extends LoggedApi {
   @PATCH
   @Path("/{id}")
   UserRepresentation updateAsAdmin(@PathParam("id") UUID id, AdminUpdatableUserData userData);
+
+  @Operation(summary = "fetch all user")
+  @APIResponse(responseCode = "200")
+  @GET
+  List<UserRepresentation> fetchAll();
 }

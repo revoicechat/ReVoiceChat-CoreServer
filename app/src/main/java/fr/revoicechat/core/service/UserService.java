@@ -110,6 +110,12 @@ public class UserService {
     return toRepresentation(getUser(id));
   }
 
+  public List<UserRepresentation> fetchAll() {
+    return entityManager.createQuery("select u from User u", User.class).getResultStream()
+                        .map(this::toRepresentation)
+                        .toList();
+  }
+
   @Transactional
   public List<UserRepresentation> fetchUserForServer(final UUID id) {
     return serverProviderService.getUsers(id).map(this::toRepresentation).toList();
