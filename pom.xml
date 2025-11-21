@@ -160,10 +160,10 @@
       <artifactId>quarkus-hibernate-orm</artifactId>
     </dependency>
 
-<!--    <dependency>-->
-<!--      <groupId>io.quarkus</groupId>-->
-<!--      <artifactId>quarkus-scheduler</artifactId>-->
-<!--    </dependency>-->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-scheduler</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

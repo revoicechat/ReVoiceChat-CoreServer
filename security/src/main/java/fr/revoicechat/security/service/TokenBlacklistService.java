@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 import fr.revoicechat.security.model.BlacklistedToken;
-// import io.quarkus.scheduler.Scheduled;
+import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -34,7 +34,7 @@ public class TokenBlacklistService {
   }
 
   /** Run hourly */
-  // @Scheduled(cron = "0 0 * * * ?")
+  @Scheduled(cron = "0 0 * * * ?")
   @Transactional
   public void cleanupExpiredTokens() {
     entityManager.createQuery("DELETE FROM BlacklistedToken b WHERE b.expiresAt < :now")
