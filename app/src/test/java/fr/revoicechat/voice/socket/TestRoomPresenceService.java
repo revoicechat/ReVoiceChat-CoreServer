@@ -33,7 +33,7 @@ class TestRoomPresenceService {
     RestTestUtils.logNewUser("user2");
     UUID room = createRoom(user1);
     RestTestUtils.addAllRiskToAllUser(user1);
-    try (var webSocket = WebSocket.of(room, user1)) {
+    try (var _ = WebSocket.of(room, user1)) {
       await().atMost(20, TimeUnit.SECONDS)
              .untilAsserted(() -> {
                var presence = RestAssured.given()
@@ -58,8 +58,7 @@ class TestRoomPresenceService {
     String user2 = RestTestUtils.logNewUser("user2");
     UUID room = createRoom(user1);
     RestTestUtils.addAllRiskToAllUser(user1);
-    try (var webSocket1 = WebSocket.of(room, user1);
-         var webSocket2 = WebSocket.of(room, user2)) {
+    try (var _ = WebSocket.of(room, user1); var _ = WebSocket.of(room, user2)) {
       await().atMost(20, TimeUnit.SECONDS)
              .untilAsserted(() -> {
                var presence = RestAssured.given()

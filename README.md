@@ -9,7 +9,7 @@ This repository provide the source code of server-side of `RevoiceChat`
 
 ### Prerequisite
 
- - JDK 21
+ - JDK 25
  - PostGreSQL
 
 ### [How to install](INSTALL.md)

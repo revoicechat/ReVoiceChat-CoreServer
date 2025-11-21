@@ -37,7 +37,7 @@ html {
     z-index: 1;
     min-width: 30px;
     background-color: #4695eb;
-    color: white;
+    color: black;
 }
 
 @media (max-width: 1200px) {

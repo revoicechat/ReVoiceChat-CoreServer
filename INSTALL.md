@@ -1,13 +1,13 @@
 # Host to install ReVoiceChat-CoreServer
 
-## Install Java 21
+## Install Java 25
 
 ```sh
-wget https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.deb
+wget https://download.oracle.com/java/25/latest/jdk-25_linux-x64_bin.deb
 ```
 
 ```sh 
-sudo dpkg -i jdk-21_linux-x64_bin.deb
+sudo dpkg -i jdk-25_linux-x64_bin.deb
 ```
 
 ```sh

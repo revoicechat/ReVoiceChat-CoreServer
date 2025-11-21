@@ -105,7 +105,7 @@ public class NotificationService implements NotificationRegistry, NotificationSe
   }
 
   public Collection<SseHolder> getProcessor(UUID userId) {
-    return processors.computeIfAbsent(userId, id -> Collections.synchronizedSet(new HashSet<>()));
+    return processors.computeIfAbsent(userId, _ -> Collections.synchronizedSet(new HashSet<>()));
   }
 
   @PreDestroy
@@ -120,7 +120,7 @@ public class NotificationService implements NotificationRegistry, NotificationSe
       try {
         sink.send(new SseImpl().newEventBuilder().data(data).build());
         return true;
-      } catch (Exception e) {
+      } catch (Exception _) {
         sink.close();
         return false;
       }

@@ -49,7 +49,7 @@ class TestNotificationController {
     try (Client client = ClientBuilder.newBuilder()
                                       .register((ClientRequestFilter) requestContext -> requestContext.getHeaders().add("Authorization", "Bearer " + token))
                                       .build();
-         SseEventSource ignore = source(client, events)) {
+         var _ = source(client, events)) {
       assertThat(events).isEmpty();
       assertThat(service.getProcessor(user.id())).hasSize(1);
       Notification.ping(NotificationRegistrable.forId(user.id()));

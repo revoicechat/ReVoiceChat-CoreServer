@@ -30,7 +30,7 @@ public class UnknownErrorFileGenerator {
     try (var printer = new PrintStream(logFile.toFile())) {
       Files.createDirectories(logDir);
       exception.printStackTrace(printer);
-    } catch (IOException ioe) {
+    } catch (IOException _) {
       fileName = "unable to generate an internal error file";
     }
     return fileName;
