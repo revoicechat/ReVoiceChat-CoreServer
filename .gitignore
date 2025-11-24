@@ -43,6 +43,7 @@ latest.log.*.gz
 /**/server.docker.properties
 /**/application-server.properties
 /**/application-dynamic-*.yml
+maven-settings-local.xml
 
 /jwt
 /**/jwt
