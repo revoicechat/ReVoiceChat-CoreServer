@@ -14,6 +14,6 @@ public record RoomPresence(
     UUID id,
     String name,
     List<UserRepresentation> allUser,
-    List<UserRepresentation> connectedUser
+    List<ConnectedUserRepresentation> connectedUser
 ) {
 }

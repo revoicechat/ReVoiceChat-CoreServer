@@ -3,14 +3,15 @@ package fr.revoicechat.core.service.room;
 import java.util.List;
 import java.util.UUID;
 
-import fr.revoicechat.live.voice.service.ConnectedUserRetriever;
-import jakarta.enterprise.context.ApplicationScoped;
-
 import fr.revoicechat.core.model.RoomType;
+import fr.revoicechat.core.representation.room.ConnectedUserRepresentation;
 import fr.revoicechat.core.representation.room.RoomPresence;
 import fr.revoicechat.core.representation.user.UserRepresentation;
 import fr.revoicechat.core.service.RoomService;
 import fr.revoicechat.core.service.UserService;
+import fr.revoicechat.live.stream.service.StreamRetriever;
+import fr.revoicechat.live.voice.service.ConnectedUserRetriever;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class RoomPresenceService {
@@ -18,20 +19,34 @@ public class RoomPresenceService {
   private final RoomService roomService;
   private final UserService userService;
   private final ConnectedUserRetriever connectedUserRetriever;
+  private final StreamRetriever streamRetriever;
 
-  public RoomPresenceService(RoomService roomService, UserService userService, ConnectedUserRetriever connectedUserRetriever) {
+  public RoomPresenceService(RoomService roomService,
+                             UserService userService,
+                             ConnectedUserRetriever connectedUserRetriever,
+                             StreamRetriever streamRetriever) {
     this.roomService = roomService;
     this.userService = userService;
     this.connectedUserRetriever = connectedUserRetriever;
+    this.streamRetriever = streamRetriever;
   }
 
-  public RoomPresence get(final UUID id) {
-    var room = roomService.getRoom(id);
-    List<UserRepresentation> allUser = userService.fetchUserForRoom(id);
+  public RoomPresence get(final UUID roomId) {
+    var room = roomService.getRoom(roomId);
+    List<UserRepresentation> allUser = userService.fetchUserForRoom(roomId);
     if (room.getType().equals(RoomType.TEXT)) {
-      return new RoomPresence(id, room.getName(), allUser, List.of());
+      return new RoomPresence(roomId, room.getName(), allUser, List.of());
     }
-    List<UserRepresentation> connectedUser = connectedUserRetriever.getConnectedUsers(id).map(userService::get).toList();
-    return new RoomPresence(id, room.getName(), allUser, connectedUser);
+    return new RoomPresence(roomId, room.getName(), allUser, getConnectedUser(roomId));
+  }
+
+  private List<ConnectedUserRepresentation> getConnectedUser(final UUID roomId) {
+    return connectedUserRetriever.getConnectedUsers(roomId)
+                                 .map(this::mapToRepresentation)
+                                 .toList();
+  }
+
+  private ConnectedUserRepresentation mapToRepresentation(final UUID userId) {
+    return new ConnectedUserRepresentation(userService.get(userId), streamRetriever.fetch(userId));
   }
 }
