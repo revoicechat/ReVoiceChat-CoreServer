@@ -47,7 +47,7 @@ class TestRoomPresenceService {
                    .anyMatch(user -> user.login().equals("user1"))
                    .anyMatch(user -> user.login().equals("user2"));
                Assertions.assertThat(presence.connectedUser()).hasSize(1)
-                         .anyMatch(user -> user.login().equals("user1"));
+                         .anyMatch(user -> user.user().login().equals("user1"));
              });
     }
   }
@@ -72,8 +72,8 @@ class TestRoomPresenceService {
                          .anyMatch(user -> user.login().equals("user1"))
                          .anyMatch(user -> user.login().equals("user2"));
                Assertions.assertThat(presence.connectedUser()).hasSize(2)
-                         .anyMatch(user -> user.login().equals("user1"))
-                         .anyMatch(user -> user.login().equals("user2"));
+                         .anyMatch(user -> user.user().login().equals("user1"))
+                         .anyMatch(user -> user.user().login().equals("user2"));
              });
     }
   }
