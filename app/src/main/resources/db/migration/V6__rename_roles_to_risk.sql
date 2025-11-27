@@ -1,1 +1,0 @@
-alter table RVC_ROLE rename to RVC_RISK;
