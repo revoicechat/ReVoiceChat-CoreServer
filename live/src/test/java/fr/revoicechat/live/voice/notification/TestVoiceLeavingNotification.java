@@ -23,7 +23,7 @@ class TestVoiceLeavingNotification {
                                                                    {
                                                                      "type" : "VOICE_LEAVING",
                                                                      "data" : {
-                                                                       "userId" : "ec55c4b3-5474-43d0-8f4d-953e0a08e228",
+                                                                       "user" : "ec55c4b3-5474-43d0-8f4d-953e0a08e228",
                                                                        "roomId" : "d081700a-0c4f-430a-85ea-5e82ce485ce7"
                                                                      }
                                                                    }""");

@@ -62,8 +62,8 @@ class TestUserServiceNoNeedInvitation {
     assertThat(resultRepresentation).isNotNull();
     assertUser(resultRepresentation);
     entityManager.refresh(invitation);
-    assertThat(invitation.getStatus()).isEqualTo(InvitationLinkStatus.CREATED);
-    assertThat(invitation.getApplier()).isNull();
+    assertThat(invitation.getStatus()).isEqualTo(InvitationLinkStatus.USED);
+    assertThat(invitation.getApplier()).isNotNull();
   }
 
   private void assertUser(final UserRepresentation resultRepresentation) {
