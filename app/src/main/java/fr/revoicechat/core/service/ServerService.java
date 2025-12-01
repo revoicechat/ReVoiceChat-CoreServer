@@ -21,6 +21,7 @@ import fr.revoicechat.core.model.server.ServerRoom;
 import fr.revoicechat.core.model.server.ServerStructure;
 import fr.revoicechat.core.repository.RoomRepository;
 import fr.revoicechat.core.repository.UserRepository;
+import fr.revoicechat.core.representation.server.NewUserInServer;
 import fr.revoicechat.notification.model.NotificationRegistrable;
 import fr.revoicechat.notification.representation.NotificationActionType;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
@@ -143,6 +144,7 @@ public class ServerService implements ServerFinder {
         server.setOwner(user);
         entityManager.persist(server);
       }
+      Notification.of(new NewUserInServer(server.getId(), user.getId())).sendTo(userRepository.findByServers(id));
     }
   }
 
