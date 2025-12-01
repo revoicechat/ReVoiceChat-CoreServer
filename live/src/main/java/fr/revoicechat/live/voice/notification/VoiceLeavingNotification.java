@@ -12,8 +12,8 @@ import fr.revoicechat.notification.model.NotificationType;
     {
       "type" : "VOICE_LEAVING",
       "data" : {
-        "userId" : "B0faEeD2-f2Ac-DCFD-eDda-b0c4A022636e",
+        "user" : "B0faEeD2-f2Ac-DCFD-eDda-b0c4A022636e",
         "roomId" : "0a9B9dC8-1feb-6262-4f69-BABd478482Df"
       }
     }""")
-public record VoiceLeavingNotification(UUID userId, UUID roomId) implements NotificationPayload {}
+public record VoiceLeavingNotification(UUID user, UUID roomId) implements NotificationPayload {}
