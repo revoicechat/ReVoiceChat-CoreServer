@@ -7,6 +7,7 @@ import fr.revoicechat.risk.type.RiskType;
 public enum ServerRiskType implements RiskType {
   SERVER_UPDATE,
   SERVER_DELETE,
+  SERVER_ROOM_ADD,
   SERVER_ROOM_UPDATE,
   SERVER_ROOM_DELETE,
 }

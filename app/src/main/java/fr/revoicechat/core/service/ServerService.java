@@ -1,6 +1,7 @@
 package fr.revoicechat.core.service;
 
 import static fr.revoicechat.core.nls.ServerErrorCode.SERVER_STRUCTURE_WITH_ROOM_THAT_DOES_NOT_EXISTS;
+import static fr.revoicechat.notification.representation.NotificationActionType.MODIFY;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,27 +15,24 @@ import jakarta.transaction.Transactional;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.ServerUser;
 import fr.revoicechat.core.model.User;
-import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.model.server.ServerCategory;
 import fr.revoicechat.core.model.server.ServerItem;
 import fr.revoicechat.core.model.server.ServerRoom;
 import fr.revoicechat.core.model.server.ServerStructure;
 import fr.revoicechat.core.repository.RoomRepository;
 import fr.revoicechat.core.repository.UserRepository;
-import fr.revoicechat.core.representation.server.NewUserInServer;
-import fr.revoicechat.notification.model.NotificationRegistrable;
-import fr.revoicechat.notification.representation.NotificationActionType;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
+import fr.revoicechat.core.representation.server.NewUserInServer;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.representation.server.ServerUpdateNotification;
 import fr.revoicechat.core.service.server.ServerProviderService;
 import fr.revoicechat.notification.Notification;
+import fr.revoicechat.notification.model.NotificationRegistrable;
 import fr.revoicechat.risk.service.server.ServerFinder;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.web.error.BadRequestException;
 import fr.revoicechat.web.error.ResourceNotFoundException;
-import io.quarkus.security.UnauthorizedException;
 
 /**
  * Service responsible for managing {@link Server} entities.
@@ -165,17 +163,11 @@ public class ServerService implements ServerFinder {
   @Transactional
   public ServerRepresentation update(final UUID id, final ServerCreationRepresentation representation) {
     var server = getEntity(id);
-    if (cannotBeUpdate(server)) {
-      throw new UnauthorizedException("user is not allowed to update this server");
-    }
     server.setName(representation.name());
     entityManager.persist(server);
-    return map(server);
-  }
-
-  private boolean cannotBeUpdate(final Server server) {
-    User user = userHolder.get();
-    return !user.getType().equals(UserType.ADMIN) && !server.getOwner().equals(user);
+    var updatedServer = map(server);
+    Notification.of(new ServerUpdateNotification(updatedServer, MODIFY)).sendTo(userRepository.findByServers(id));
+    return updatedServer;
   }
 
   private ServerRepresentation map(final Server server) {
@@ -204,7 +196,7 @@ public class ServerService implements ServerFinder {
     server.setStructure(structure);
     entityManager.persist(server);
     var newStructure = getStructure(id);
-    Notification.of(new ServerUpdateNotification(map(server), NotificationActionType.MODIFY)).sendTo(userRepository.findByServers(id));
+    Notification.of(new ServerUpdateNotification(map(server), MODIFY)).sendTo(userRepository.findByServers(id));
     return newStructure;
   }
 
