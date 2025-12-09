@@ -51,6 +51,7 @@ git clone https://github.com/revoicechat/ReVoiceChat-CoreServer
 ## generate rsa key for JWT tokens
 
 ```sh
+cd ReVoiceChat-CoreServer/
 ./scripts/generate_jwtKey.sh
 ```
 
@@ -69,3 +70,8 @@ Edit `./server.properties`
 ```sh
 nano ./server.properties
 ```
+
+Edit `quarkus.datasource.username` to the psql username you added earlier
+Add psql password to `quarkus.datasource.password`
+
+Your CoreServer is now setup !
