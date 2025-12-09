@@ -40,12 +40,12 @@ CREATE DATABASE revoicechat_db OWNER = revoicechat_user;
 
 ```exit``` to quit postgres user
 
-## Clone this repository
+## Clone this repository (if not already done)
 
 For this guide, we will use `/srv/rvc` but you can use any directory (don't forget to change `/srv/rvc` to your path)
 
 ```sh
-git clone https://github.com/revoicechat/ReVoiceChat-server
+git clone https://github.com/revoicechat/ReVoiceChat-CoreServer
 ```
 
 ## generate rsa key for JWT tokens
@@ -58,10 +58,14 @@ it will generate two file in `/jwt`
 
 ## Configure server.properties
 
-Copy `server.exemple.properties` to `app/server.properties`
+Copy `server.exemple.properties` to `server.properties`
 
 ```sh 
-cp ./server.exemple.properties ./app/server.properties
+cp ./server.exemple.properties ./server.properties
 ```
 
-Edit `./app/server.properties`
+Edit `./server.properties`
+
+```sh
+nano ./server.properties
+```
