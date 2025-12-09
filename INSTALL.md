@@ -29,13 +29,11 @@ psql
 ```
 
 ```sql
-CREATE
-USER revoicechat_user WITH PASSWORD 'secure_password';
+CREATE USER revoicechat_user WITH PASSWORD 'secure_password';
 ```
 
 ```sql
-CREATE
-DATABASE revoicechat_db OWNER = revoicechat_user;
+CREATE DATABASE revoicechat_db OWNER = revoicechat_user;
 ```
 
 `exit` to quit psql
