@@ -3,11 +3,11 @@ Description=ReVoiceChat Core Server
 
 [Service]
 Type=simple
-User=administrateur
-Group=administrateur
+User=[YOUR USER]
+Group=[YOUR USER GROUP]
 
 WorkingDirectory=[PATH TO YOUR DIR]
-ExecStart=/usr/bin/java -Dquarkus.config.locations=server.properties -jar [PATH TO YOUR DIR]/app/target/quarkus-app/quarkus-run.jar
+ExecStart=/usr/bin/java -Xmx2G -Xms1G -jar [PATH TO YOUR DIR]/app/target/revoicechat.jar
 
 [Install]
 WantedBy=multi-user.target
