@@ -28,9 +28,9 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <skipITs>true</skipITs>
     <compiler-plugin.version>3.14.0</compiler-plugin.version>
-    <quarkus.platform.version>3.29.4</quarkus.platform.version>
+    <quarkus.platform.version>3.30.2</quarkus.platform.version>
     <surefire-plugin.version>3.5.3</surefire-plugin.version>
-    <org.jboss.jandex.version>1.2.3</org.jboss.jandex.version>
+    <io.smallrye.jandex.version>3.5.3</io.smallrye.jandex.version>
     <org.reflection.version>0.10.2</org.reflection.version>
     <org.assertj.version>3.27.3</org.assertj.version>
 
