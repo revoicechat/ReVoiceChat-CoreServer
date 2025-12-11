@@ -32,7 +32,6 @@ import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.security.utils.PasswordUtils;
 import fr.revoicechat.web.error.BadRequestException;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
@@ -45,25 +44,32 @@ public class UserService {
   private final UserHolder userHolder;
   private final ServerProviderService serverProviderService;
   private final ServerService serverService;
-
-  @ConfigProperty(name = "revoicechat.global.app-only-accessible-by-invitation")
-  boolean appOnlyAccessibleByInvitation;
-  @Inject PasswordValidation passwordValidation;
+  private final PasswordValidation passwordValidation;
+  private final boolean appOnlyAccessibleByInvitation;
 
   public UserService(EntityManager entityManager,
                      UserRepository userRepository,
                      UserHolder userHolder,
                      ServerProviderService serverProviderService,
-                     ServerService serverService) {
+                     ServerService serverService,
+                     PasswordValidation passwordValidation,
+                     @ConfigProperty(name = "revoicechat.global.app-only-accessible-by-invitation")
+                     boolean appOnlyAccessibleByInvitation) {
     this.entityManager = entityManager;
     this.userRepository = userRepository;
     this.userHolder = userHolder;
     this.serverProviderService = serverProviderService;
     this.serverService = serverService;
+    this.passwordValidation = passwordValidation;
+    this.appOnlyAccessibleByInvitation = appOnlyAccessibleByInvitation;
   }
 
   @Transactional
   public UserRepresentation create(final SignupRepresentation signer) {
+    if (signer.username() == null || signer.username().isEmpty()) {
+      throw new BadRequestException(USER_LOGIN_INVALID);
+    }
+    passwordValidation.validate(signer.password());
     if (userRepository.count() == 0) {
       return generateUser(signer, null, UserType.ADMIN);
     }
@@ -73,10 +79,6 @@ public class UserService {
     if (appOnlyAccessibleByInvitation && !isValideInvitation(invitationLink)) {
       throw new BadRequestException(USER_WITH_NO_VALID_INVITATION);
     }
-    if (signer.username() == null || signer.username().isEmpty()) {
-      throw new BadRequestException(USER_LOGIN_INVALID);
-    }
-    passwordValidation.validate(signer.password());
     return generateUser(signer, invitationLink, UserType.USER);
   }
 
