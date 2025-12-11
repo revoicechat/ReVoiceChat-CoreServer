@@ -6,8 +6,8 @@ Type=simple
 User=[YOUR USER]
 Group=[YOUR USER GROUP]
 
-WorkingDirectory=[PATH TO YOUR DIR]
-ExecStart=/usr/bin/java -Xmx2G -Xms1G -jar [PATH TO YOUR DIR]/app/target/quarkus-app/quarkus-run.jar
+WorkingDirectory=/srv/rvc/ReVoiceChat-CoreServer
+ExecStart=/usr/bin/java -Xmx2G -Xms1G -jar /srv/rvc/ReVoiceChat-CoreServer/app/target/quarkus-app/quarkus-run.jar
 
 [Install]
 WantedBy=multi-user.target
