@@ -65,14 +65,7 @@ Copy `server.exemple.properties` to `server.properties`
 cp ./server.exemple.properties ./server.properties
 ```
 
-Edit `./server.properties`
-
-```sh
-nano ./server.properties
-```
-
-Edit `quarkus.datasource.username` to the psql username you added earlier
-Add psql password to `quarkus.datasource.password`
+Edit `./server.properties` and update `quarkus.datasource.username` and `quarkus.datasource.password`
 
 ### Build the app
  - run `./scripts/build-app.sh`
@@ -85,24 +78,24 @@ Add psql password to `quarkus.datasource.password`
 ```sh
 cp rvc-core.service.example rvc-core.service
 ```
-- Link the service file : 
+- Link the service file
 ```sh
 sudo systemctl link /srv/rvc/ReVoiceChat-CoreServer/rvc-core.service
 ```
-- Enable service : ``
+- Enable service
 ```sh
 sudo systemctl enable rvc-core.service
 ```
-- Start service : ``
+- Start service
 ```sh
 sudo systemctl start rvc-core.service
 ```
-- Check service status : ``
+- Check service status
 ```sh
 sudo systemctl status rvc-core.service
 ```
 
-Expected output : 
+Expected output
 ```log 
 * rvc-core.service - ReVoiceChat Core Server
      Loaded: loaded (/etc/systemd/system/rvc-core.service; enabled; preset: enabled)
