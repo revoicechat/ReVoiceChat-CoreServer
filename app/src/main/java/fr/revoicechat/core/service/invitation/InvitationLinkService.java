@@ -88,6 +88,9 @@ public class InvitationLinkService {
   }
 
   public List<InvitationRepresentation> getAllServerInvitations(final UUID id) {
+    if (severAppMode.isMonoMode()) {
+      return getAllApplicationInvitations();
+    }
     return invitationLinkRepository.getAllFromServer(id)
                                    .map(this::toRepresentation)
                                    .toList();
