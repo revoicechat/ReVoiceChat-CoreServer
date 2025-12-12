@@ -7,7 +7,7 @@ wget https://download.oracle.com/java/25/latest/jdk-25_linux-x64_bin.deb
 ```
 
 ```sh 
-sudo dpkg -i jdk-25_linux-x64_bin.deb
+sudo apt install ./jdk-25_linux-x64_bin.deb
 ```
 
 ```sh
