@@ -1,9 +1,7 @@
 package fr.revoicechat.core.service;
 
-import static fr.revoicechat.core.nls.ServerErrorCode.SERVER_STRUCTURE_WITH_ROOM_THAT_DOES_NOT_EXISTS;
 import static fr.revoicechat.notification.representation.NotificationActionType.MODIFY;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,13 +9,7 @@ import java.util.UUID;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.ServerUser;
 import fr.revoicechat.core.model.User;
-import fr.revoicechat.core.model.server.ServerCategory;
-import fr.revoicechat.core.model.server.ServerItem;
-import fr.revoicechat.core.model.server.ServerRoom;
-import fr.revoicechat.core.model.server.ServerStructure;
-import fr.revoicechat.core.repository.RoomRepository;
 import fr.revoicechat.core.repository.UserRepository;
-import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.NewUserInServer;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
@@ -27,7 +19,6 @@ import fr.revoicechat.core.service.server.ServerProviderService;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.risk.service.server.ServerRoleService;
 import fr.revoicechat.security.UserHolder;
-import fr.revoicechat.web.error.BadRequestException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
