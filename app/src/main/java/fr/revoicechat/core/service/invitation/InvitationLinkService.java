@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import fr.revoicechat.core.config.SeverAppMode;
+import fr.revoicechat.core.service.server.ServerEntityService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -25,13 +26,13 @@ public class InvitationLinkService {
 
   private final UserHolder userHolder;
   private final EntityManager entityManager;
-  private final ServerService serverService;
+  private final ServerEntityService serverService;
   private final InvitationLinkRepository invitationLinkRepository;
   private final SeverAppMode severAppMode;
 
   public InvitationLinkService(final UserHolder userHolder,
                                final EntityManager entityManager,
-                               final ServerService serverService,
+                               final ServerEntityService serverService,
                                final InvitationLinkRepository invitationLinkRepository,
                                final SeverAppMode severAppMode) {
     this.userHolder = userHolder;

@@ -16,6 +16,7 @@ import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.repository.ServerRepository;
 import fr.revoicechat.core.repository.UserRepository;
 import io.quarkus.arc.properties.IfBuildProperty;
+import jakarta.enterprise.inject.spi.CDI;
 
 /**
  * {@link ServerProviderService} implementation for multiple-server mode.
@@ -29,17 +30,17 @@ public class MultiServerProviderService implements ServerProviderService {
 
   private final ServerRepository serverRepository;
   private final UserRepository userRepository;
-  private final NewServerCreator newServerCreator;
   private final ServerDeleterService serverDeleterService;
+  private final NewServerCreator newServerCreator;
 
   public MultiServerProviderService(ServerRepository serverRepository,
                                     UserRepository userRepository,
-                                    NewServerCreator newServerCreator,
-                                    ServerDeleterService serverDeleterService) {
+                                    ServerDeleterService serverDeleterService,
+                                    NewServerCreator newServerCreator) {
     this.serverRepository = serverRepository;
     this.userRepository = userRepository;
-    this.newServerCreator = newServerCreator;
     this.serverDeleterService = serverDeleterService;
+    this.newServerCreator = newServerCreator;
   }
 
   @PostConstruct

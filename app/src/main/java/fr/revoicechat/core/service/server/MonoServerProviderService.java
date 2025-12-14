@@ -5,20 +5,20 @@ import static fr.revoicechat.core.config.SeverAppMode.MONO_SERVER;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.revoicechat.web.error.BadRequestException;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.nls.ServerErrorCode;
 import fr.revoicechat.core.repository.ServerRepository;
 import fr.revoicechat.core.repository.UserRepository;
+import fr.revoicechat.web.error.BadRequestException;
 import io.quarkus.arc.properties.IfBuildProperty;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
 /**
  * {@link ServerProviderService} implementation for single-server mode.

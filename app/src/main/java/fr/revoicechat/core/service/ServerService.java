@@ -7,10 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.ServerUser;
@@ -26,13 +22,15 @@ import fr.revoicechat.core.representation.server.NewUserInServer;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.representation.server.ServerUpdateNotification;
+import fr.revoicechat.core.service.server.ServerEntityService;
 import fr.revoicechat.core.service.server.ServerProviderService;
 import fr.revoicechat.notification.Notification;
-import fr.revoicechat.notification.model.NotificationRegistrable;
-import fr.revoicechat.risk.service.server.ServerFinder;
+import fr.revoicechat.risk.service.server.ServerRoleService;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.web.error.BadRequestException;
-import fr.revoicechat.web.error.ResourceNotFoundException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 /**
  * Service responsible for managing {@link Server} entities.
@@ -50,22 +48,28 @@ import fr.revoicechat.web.error.ResourceNotFoundException;
  * whereas other CRUD operations.
  */
 @ApplicationScoped
-public class ServerService implements ServerFinder {
+public class ServerService {
 
+  private final ServerEntityService serverEntityService;
   private final ServerProviderService serverProviderService;
+  private final ServerRoleService serverRoleService;
   private final UserHolder userHolder;
   private final EntityManager entityManager;
   private final RoomRepository roomRepository;
   private final RoomService roomService;
   private final UserRepository userRepository;
 
-  public ServerService(final ServerProviderService serverProviderService,
+  public ServerService(final ServerEntityService serverEntityService,
+                       final ServerProviderService serverProviderService,
+                       final ServerRoleService serverRoleService,
                        final UserHolder userHolder,
                        final EntityManager entityManager,
                        final RoomRepository roomRepository,
                        final RoomService roomService,
                        final UserRepository userRepository) {
+    this.serverEntityService = serverEntityService;
     this.serverProviderService = serverProviderService;
+    this.serverRoleService = serverRoleService;
     this.userHolder = userHolder;
     this.entityManager = entityManager;
     this.roomRepository = roomRepository;
@@ -93,22 +97,7 @@ public class ServerService implements ServerFinder {
    * @throws java.util.NoSuchElementException if no server with the given ID exists
    */
   public ServerRepresentation get(final UUID id) {
-    return map(getEntity(id));
-  }
-
-  @Override
-  public void existsOrThrow(final UUID id) {
-    getEntity(id);
-  }
-
-  @Override
-  public Stream<NotificationRegistrable> findUserForServer(final UUID serverId) {
-    return serverProviderService.getUsers(serverId).map(NotificationRegistrable.class::cast);
-  }
-
-  public Server getEntity(final UUID id) {
-    return Optional.ofNullable(entityManager.find(Server.class, id))
-                   .orElseThrow(() -> new ResourceNotFoundException(Server.class, id));
+    return map(serverEntityService.getEntity(id));
   }
 
   /**
@@ -119,7 +108,6 @@ public class ServerService implements ServerFinder {
   @Transactional
   public ServerRepresentation create(final ServerCreationRepresentation representation) {
     Server server = new Server();
-    server.setId(UUID.randomUUID());
     server.setName(representation.name());
     serverProviderService.create(server);
     ServerUser serverUser = new ServerUser();
@@ -142,6 +130,7 @@ public class ServerService implements ServerFinder {
         server.setOwner(user);
         entityManager.persist(server);
       }
+      serverRoleService.addUserToDefaultServerRole(user.getId(), server.getId());
       Notification.of(new NewUserInServer(server.getId(), user.getId())).sendTo(userRepository.findByServers(server.getId()));
     }
   }
@@ -162,7 +151,7 @@ public class ServerService implements ServerFinder {
    */
   @Transactional
   public ServerRepresentation update(final UUID id, final ServerCreationRepresentation representation) {
-    var server = getEntity(id);
+    var server = serverEntityService.getEntity(id);
     server.setName(representation.name());
     entityManager.persist(server);
     var updatedServer = map(server);
@@ -179,7 +168,7 @@ public class ServerService implements ServerFinder {
   }
 
   public ServerStructure getStructure(final UUID id) {
-    return Optional.ofNullable(getEntity(id).getStructure())
+    return Optional.ofNullable(serverEntityService.getEntity(id).getStructure())
                    .orElseGet(() -> new ServerStructure(new ArrayList<>(roomService.findAll(id).stream()
                                                                                    .map(RoomRepresentation::id)
                                                                                    .map(ServerRoom::new)
@@ -192,7 +181,7 @@ public class ServerService implements ServerFinder {
     if (!roomId.isEmpty() && !roomRepository.findIdThatAreNotInRoom(id, roomId).isEmpty()) {
       throw new BadRequestException(SERVER_STRUCTURE_WITH_ROOM_THAT_DOES_NOT_EXISTS);
     }
-    var server = getEntity(id);
+    var server = serverEntityService.getEntity(id);
     server.setStructure(structure);
     entityManager.persist(server);
     var newStructure = getStructure(id);

@@ -87,7 +87,7 @@ class TestMonoServerProviderService {
   private static class NewServerCreatorMock extends NewServerCreator {
     private boolean called = false;
 
-    public NewServerCreatorMock() {super(null, new UserHolderMock<>(new User()));}
+    public NewServerCreatorMock() {super(null, new UserHolderMock<>(new User()), null);}
 
     @Override
     public Server create(final Server server) {

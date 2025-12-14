@@ -33,6 +33,17 @@ public class ServerRolesRepositoryImpl implements ServerRolesRepository {
   }
 
   @Override
+  public List<ServerRoles> getDefaultServerRoles(final UUID id) {
+    return entityManager.createQuery("""
+                            select sr
+                            from ServerRoles sr
+                            where sr.server = :serverId
+                              and sr.defaultRole""", ServerRoles.class)
+                        .setParameter(SERVER_ID, id)
+                        .getResultList();
+  }
+
+  @Override
   public List<AffectedRisk> getAffectedRisks(final RiskEntity entity, final RiskType riskType) {
     return entityManager.createQuery("""
                             select sr.id, r.mode

@@ -5,6 +5,7 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.*;
 import java.util.List;
 import java.util.UUID;
 
+import fr.revoicechat.core.service.server.ServerEntityService;
 import jakarta.annotation.security.RolesAllowed;
 
 import fr.revoicechat.core.representation.emote.CreationEmoteRepresentation;
@@ -20,11 +21,11 @@ import fr.revoicechat.security.UserHolder;
 public class EmoteControllerImpl implements EmoteController {
 
   private final UserHolder userHolder;
-  private final ServerService serverService;
+  private final ServerEntityService serverService;
   private final EmoteUpdaterService emoteUpdaterService;
   private final EmoteRetrieverService emoteRetrieverService;
 
-  public EmoteControllerImpl(UserHolder userHolder, ServerService serverService, EmoteUpdaterService emoteUpdaterService, EmoteRetrieverService emoteRetrieverService) {
+  public EmoteControllerImpl(UserHolder userHolder, ServerEntityService serverService, EmoteUpdaterService emoteUpdaterService, EmoteRetrieverService emoteRetrieverService) {
     this.userHolder = userHolder;
     this.serverService = serverService;
     this.emoteUpdaterService = emoteUpdaterService;

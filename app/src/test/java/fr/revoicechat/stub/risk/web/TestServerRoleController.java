@@ -55,7 +55,7 @@ class TestServerRoleController {
                             .when().pathParam("id", server.id()).get("/server/{id}/role")
                             .then().statusCode(200)
                             .extract().jsonPath().getList(".", ServerRoleRepresentation.class);
-    Assertions.assertThat(result).hasSize(1);
+    Assertions.assertThat(result).hasSize(2);
   }
 
   private static ServerRepresentation createServer(String token) {

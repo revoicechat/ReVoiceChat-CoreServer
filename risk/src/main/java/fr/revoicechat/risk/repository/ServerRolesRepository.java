@@ -13,6 +13,8 @@ public interface ServerRolesRepository {
 
   List<ServerRoles> getServerRoles(final UUID userId);
 
+  List<ServerRoles> getDefaultServerRoles(final UUID id);
+
   List<AffectedRisk> getAffectedRisks(RiskEntity entity, RiskType riskType);
 
   Stream<ServerRoles> getByServer(UUID serverId);

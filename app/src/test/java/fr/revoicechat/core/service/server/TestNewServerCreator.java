@@ -27,7 +27,7 @@ class TestNewServerCreator {
     try (var em = new MockEntityManager()) {
       Server server = new Server();
       // When
-      new NewServerCreator(em, new UserHolderMock<>(new User())).create(server);
+      new NewServerCreator(em, new UserHolderMock<>(new User()), _ -> {}).create(server);
       // Then
       softly.assertThat(server.getId()).isNotNull();
       assertThat(em.saved).hasSize(5);

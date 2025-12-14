@@ -22,7 +22,8 @@ public class ServerRoles {
   private String name;
   private String color;
   private int priority;
-
+  /** When a user join a server, he automatically has this role */
+  private boolean defaultRole;
   @Column(name = "SERVER_ID", nullable = false, updatable = false)
   private UUID server;
 
@@ -54,6 +55,14 @@ public class ServerRoles {
 
   public void setColor(final String color) {
     this.color = color;
+  }
+
+  public boolean isDefaultRole() {
+    return defaultRole;
+  }
+
+  public void setDefaultRole(final boolean defaultRole) {
+    this.defaultRole = defaultRole;
   }
 
   public UUID getServer() {

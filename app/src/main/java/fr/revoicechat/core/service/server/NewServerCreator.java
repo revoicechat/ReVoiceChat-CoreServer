@@ -3,27 +3,32 @@ package fr.revoicechat.core.service.server;
 import java.util.List;
 import java.util.UUID;
 
-import fr.revoicechat.security.UserHolder;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
-
 import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.server.ServerCategory;
 import fr.revoicechat.core.model.server.ServerRoom;
 import fr.revoicechat.core.model.server.ServerStructure;
+import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
+import fr.revoicechat.risk.service.server.ServerRoleDefaultCreator;
+import fr.revoicechat.security.UserHolder;
+import io.quarkus.arc.Unremovable;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
+@Unremovable
 @ApplicationScoped
 public class NewServerCreator {
 
   private final EntityManager entityManager;
   private final UserHolder holder;
+  private final ServerRoleDefaultCreator serverRoleCreator;
 
-  public NewServerCreator(EntityManager entityManager, final UserHolder holder) {
+  public NewServerCreator(EntityManager entityManager, UserHolder holder, ServerRoleDefaultCreator serverRoleCreator) {
     this.entityManager = entityManager;
     this.holder = holder;
+    this.serverRoleCreator = serverRoleCreator;
   }
 
   @Transactional
@@ -42,6 +47,7 @@ public class NewServerCreator {
         new ServerCategory("vocal", List.of(new ServerRoom(vocal.getId())))
     )));
     entityManager.persist(server);
+    serverRoleCreator.createDefault(server.getId());
     return server;
   }
 

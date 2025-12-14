@@ -13,7 +13,7 @@ import io.quarkus.test.junit.QuarkusTest;
 @QuarkusTest
 class TestGenerateFictiveUsers {
 
-  private final ServerService serverService = new ServerService(null, null, null, null, null, null) {
+  private final ServerService serverService = new ServerService(null, null, null, null, null, null, null, null) {
     @Override
     public void joinDefaultServer(final User user) {
       // nothing here
