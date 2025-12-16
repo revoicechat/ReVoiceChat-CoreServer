@@ -1,0 +1,1 @@
+update RVC_SERVER_ROLES set defaultRole = false where defaultRole is null;
