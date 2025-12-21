@@ -17,6 +17,7 @@ import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
 import jakarta.ws.rs.core.MediaType;
 
+/** @see fr.revoicechat.core.web.api.EmoteController */
 @QuarkusTest
 @TestProfile(MonoServerProfile.class)
 @CleanDatabase
