@@ -188,6 +188,7 @@ public class MessageService {
         repliedMessage.getId(),
         repliedMessage.getText(),
         !repliedMessage.getMediaDatas().isEmpty(),
+        repliedMessage.getUser().getId(),
         getEmoteRepresentations(repliedMessage)
     );
   }

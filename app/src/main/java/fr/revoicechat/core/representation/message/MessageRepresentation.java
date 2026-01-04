@@ -24,6 +24,7 @@ public record MessageRepresentation(
       UUID id,
       String text,
       boolean hasMedias,
+      UUID userId,
       List<EmoteRepresentation> emotes
   ) {}
 }
