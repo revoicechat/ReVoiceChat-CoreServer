@@ -10,16 +10,16 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class RiskMapper {
+public class RiskCreator {
 
   private final EntityManager entityManager;
 
-  public RiskMapper(EntityManager entityManager) {
+  public RiskCreator(EntityManager entityManager) {
     this.entityManager = entityManager;
   }
 
   @Transactional
-  public void map(final ServerRoles roles, final RiskRepresentation risk) {
+  public void create(final ServerRoles roles, final RiskRepresentation risk) {
     var newRisk = new Risk();
     newRisk.setId(UUID.randomUUID());
     newRisk.setEntity(risk.entity());

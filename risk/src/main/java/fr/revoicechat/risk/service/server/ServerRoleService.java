@@ -16,7 +16,7 @@ import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
 import fr.revoicechat.risk.representation.NotificationServerRole;
 import fr.revoicechat.risk.representation.RiskRepresentation;
 import fr.revoicechat.risk.representation.ServerRoleRepresentation;
-import fr.revoicechat.risk.service.risk.RiskMapper;
+import fr.revoicechat.risk.service.risk.RiskCreator;
 import fr.revoicechat.risk.service.user.UserServerFinder;
 import fr.revoicechat.risk.type.RiskType;
 import fr.revoicechat.web.error.ResourceNotFoundException;
@@ -32,20 +32,20 @@ public class ServerRoleService {
   private final EntityManager entityManager;
   private final ServerRoleCreator serverRoleCreator;
   private final UserServerFinder userServerFinder;
-  private final RiskMapper riskMapper;
+  private final RiskCreator riskCreator;
 
   public ServerRoleService(RiskRepository riskRepository,
                            ServerRolesRepository serverRolesRepository,
                            EntityManager entityManager,
                            ServerRoleCreator serverRoleCreator,
                            UserServerFinder userServerFinder,
-                           RiskMapper riskMapper) {
+                           RiskCreator riskCreator) {
     this.riskRepository = riskRepository;
     this.serverRolesRepository = serverRolesRepository;
     this.entityManager = entityManager;
     this.serverRoleCreator = serverRoleCreator;
     this.userServerFinder = userServerFinder;
-    this.riskMapper = riskMapper;
+    this.riskCreator = riskCreator;
   }
 
   @Transactional
@@ -80,7 +80,7 @@ public class ServerRoleService {
   }
 
   private void mapRisks(final CreatedServerRoleRepresentation representation, final ServerRoles roles) {
-    representation.risks().forEach(risk -> riskMapper.map(roles, risk));
+    representation.risks().forEach(risk -> riskCreator.create(roles, risk));
   }
 
   public ServerRoleRepresentation mapToRepresentation(ServerRoles roles) {
@@ -131,12 +131,14 @@ public class ServerRoleService {
   }
 
   @Transactional
-  public void addRiskOrReplace(final UUID roleId, final RiskType type, final RiskMode mode) {
+  public void addRiskOrReplace(final UUID roleId, UUID entity, final RiskType type, final RiskMode mode) {
     ServerRoles roles = getEntity(roleId);
-    riskRepository.getRisks(roleId).filter(risk -> risk.getType().equals(type))
+    riskRepository.getRisks(roleId)
+                  .filter(risk -> risk.getType().equals(type))
+                  .filter(risk -> Objects.equals(risk.getEntity(), entity))
                   .findFirst()
                   .ifPresentOrElse(risk -> updateMode(risk, mode),
-                      () -> riskMapper.map(roles, new RiskRepresentation(type, null, mode))
+                      () -> riskCreator.create(roles, new RiskRepresentation(type, entity, mode))
                   );
     var roleRepresentation = mapToRepresentation(roles);
     Notification.of(new NotificationServerRole(roleRepresentation, NotificationActionType.MODIFY)).sendTo(userServerFinder.findUserForServer(roles.getServer()));

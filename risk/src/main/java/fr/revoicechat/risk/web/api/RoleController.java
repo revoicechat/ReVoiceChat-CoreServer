@@ -11,6 +11,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
+import fr.revoicechat.risk.representation.RiskUpdateRepresentation;
 import fr.revoicechat.risk.representation.ServerRoleRepresentation;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -125,5 +126,5 @@ public interface RoleController {
   @Path("risk/{type}")
   @PATCH
   void patchOrAddRisk(@PathParam("id") UUID roleId,
-                      @PathParam("type") String type, RiskMode mode);
+                      @PathParam("type") String type, RiskUpdateRepresentation updateRepresentation);
 }
