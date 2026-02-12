@@ -3,6 +3,8 @@ package fr.revoicechat.core.web.tests;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import fr.revoicechat.risk.service.RiskCategoryService;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.ws.rs.core.MediaType;
 
@@ -95,8 +97,8 @@ public class RestTestUtils {
   }
 
   private static List<RiskType> getAllRisks() {
-    return CDI.current().select(RiskService.class).get()
-              .getAllRisks().stream()
+    return CDI.current().select(RiskCategoryService.class).get()
+              .findAll().stream()
               .map(RiskCategoryRepresentation::risks)
               .flatMap(List::stream)
               .map(TranslatedRisk::type)

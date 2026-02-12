@@ -1,10 +1,10 @@
 package fr.revoicechat.live.risk;
 
 import fr.revoicechat.risk.type.RiskCategory;
-import fr.revoicechat.risk.type.RiskType;
+import fr.revoicechat.risk.type.RoomEntityRiskType;
 
 @RiskCategory("LIVE_DISCUSSION_RISK_TYPE")
-public enum LiveDiscussionRiskType implements RiskType {
+public enum LiveDiscussionRiskType implements RoomEntityRiskType {
   JOIN_VOICE_ROOM,
   SEND_IN_VOICE_ROOM,
   RECEIVE_IN_VOICE_ROOM,
