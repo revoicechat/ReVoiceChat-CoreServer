@@ -147,7 +147,11 @@ public class UserService {
   }
 
   public User getUser(final UUID id) {
-    return Optional.ofNullable(entityManager.find(User.class, id)).orElseThrow(() -> new NotFoundException("User not found"));
+    return Optional.ofNullable(getUserOrNull(id)).orElseThrow(() -> new NotFoundException("User not found"));
+  }
+
+  public User getUserOrNull(final UUID id) {
+    return entityManager.find(User.class, id);
   }
 
   @Transactional
