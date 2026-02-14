@@ -2,7 +2,9 @@ package fr.revoicechat.core.repository.impl;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
+import fr.revoicechat.core.model.Room;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -37,6 +39,17 @@ public class MessageRepositoryImpl implements MessageRepository {
                    .getSingleResult();
 
     return new PageResult<>(content, page, size, total);
+  }
+
+  @Override
+  public Stream<Message> findByRoom(Room room) {
+    return em.createQuery("""
+                 SELECT m
+                 FROM Message m
+                 WHERE m.room = :room
+                 ORDER BY m.createdDate DESC""", Message.class)
+             .setParameter("room", room)
+             .getResultStream();
   }
 
   @Override
