@@ -136,7 +136,13 @@ public class ServerControllerImpl implements ServerController {
 
   @Override
   @RolesAllowed(ROLE_USER)
-  public void join(final UUID serverId, final UUID invitationId) {
-    serverJoiner.join(serverId, invitationId);
+  public void joinPublic(final UUID serverId) {
+    serverJoiner.joinPublic(serverId);
+  }
+
+  @Override
+  @RolesAllowed(ROLE_USER)
+  public void joinPrivate(final UUID invitation) {
+    serverJoiner.joinPrivate(invitation);
   }
 }

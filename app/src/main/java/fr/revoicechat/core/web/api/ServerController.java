@@ -16,7 +16,6 @@ import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.representation.user.UserRepresentation;
 import fr.revoicechat.openapi.api.LoggedApi;
-import io.smallrye.common.constraint.Nullable;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -147,12 +146,21 @@ public interface ServerController extends LoggedApi {
   @Path("/{id}/invitation")
   List<InvitationRepresentation> getAllServerInvitations(@PathParam("id") UUID id);
 
-  @Tags(refs = { "Server", "User" })
-  @Operation(summary = "Join a server via an invitation or not")
+  @Tags(refs = { "Server", "Invitation", "User" })
+  @Operation(summary = "Join a public server (no invitation needed)")
   @APIResponse(responseCode = "204", description = "Server successfully joined")
   @APIResponse(responseCode = "403", description = "Insufficient permissions to join this server")
   @APIResponse(responseCode = "404", description = "Server not found")
   @POST
   @Path("/{id}/join")
-  void join(@PathParam("id") UUID serverId, @Nullable UUID invitationId);
+  void joinPublic(@PathParam("id") UUID serverId);
+
+  @Tags(refs = { "Server", "Invitation", "User" })
+  @Operation(summary = "Join a private server via an invitation")
+  @APIResponse(responseCode = "204", description = "Server successfully joined")
+  @APIResponse(responseCode = "403", description = "Insufficient permissions to join this server")
+  @APIResponse(responseCode = "404", description = "Server not found")
+  @POST
+  @Path("/join/{invitation}")
+  void joinPrivate(@PathParam("invitation") UUID invitation);
 }

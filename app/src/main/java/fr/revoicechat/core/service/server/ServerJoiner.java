@@ -1,8 +1,8 @@
 package fr.revoicechat.core.service.server;
 
 import static fr.revoicechat.core.model.InvitationLinkStatus.CREATED;
-import static fr.revoicechat.core.model.InvitationType.APPLICATION_JOIN;
-import static fr.revoicechat.core.nls.UserErrorCode.USER_WITH_NO_VALID_INVITATION;
+import static fr.revoicechat.core.model.InvitationType.SERVER_JOIN;
+import static fr.revoicechat.core.nls.ServerErrorCode.*;
 
 import java.util.UUID;
 
@@ -34,20 +34,31 @@ public class ServerJoiner {
   }
 
   @Transactional
-  public void join(final UUID serverId, final UUID invitationId) {
+  public void joinPublic(final UUID serverId) {
     var server = serverEntityService.getEntity(serverId);
-    var invitationLink = invitationLinkService.getEntity(invitationId);
-    if (!server.isPublic() && !isValideInvitation(serverId, invitationLink)) {
-      throw new BadRequestException(USER_WITH_NO_VALID_INVITATION);
+    if (!server.isPublic()) {
+      throw new BadRequestException(SERVER_NOT_PUBLIC);
     }
+    join(server);
+  }
+
+  @Transactional
+  public void joinPrivate(final UUID invitation) {
+    var invitationLink = invitationLinkService.getEntity(invitation);
+    if (!isValideInvitation(invitationLink)) {
+      throw new BadRequestException(NO_VALID_INVITATION);
+    }
+    join(invitationLink.getTargetedServer());
+  }
+
+  private void join(final Server server) {
     User user = userHolder.get();
     serverUserService.join(server, user);
   }
 
-  private static boolean isValideInvitation(UUID serverId, InvitationLink invitationLink) {
+  private static boolean isValideInvitation(InvitationLink invitationLink) {
     return invitationLink != null
-           && APPLICATION_JOIN.equals(invitationLink.getType())
-           && CREATED.equals(invitationLink.getStatus())
-           && invitationLink.getTargetedServer().getId().equals(serverId);
+           && SERVER_JOIN.equals(invitationLink.getType())
+           && CREATED.equals(invitationLink.getStatus());
   }
 }
