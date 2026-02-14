@@ -14,7 +14,6 @@ import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import fr.revoicechat.core.model.InvitationLink;
-import fr.revoicechat.core.model.InvitationLinkStatus;
 import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
@@ -24,10 +23,7 @@ import fr.revoicechat.core.representation.user.SignupRepresentation;
 import fr.revoicechat.core.representation.user.UpdatableUserData;
 import fr.revoicechat.core.representation.user.UpdatableUserData.PasswordUpdated;
 import fr.revoicechat.core.representation.user.UserRepresentation;
-import fr.revoicechat.core.service.invitation.InvitationLinkService;
 import fr.revoicechat.core.service.invitation.InvitationLinkUsage;
-import fr.revoicechat.core.service.server.ServerJoiner;
-import fr.revoicechat.core.service.server.ServerProviderService;
 import fr.revoicechat.core.service.user.PasswordValidation;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.security.UserHolder;
@@ -44,7 +40,6 @@ public class UserService {
   private final EntityManager entityManager;
   private final UserRepository userRepository;
   private final UserHolder userHolder;
-  private final ServerProviderService serverProviderService;
   private final PasswordValidation passwordValidation;
   private final InvitationLinkUsage invitationLinkUsage;
   private final boolean appOnlyAccessibleByInvitation;
@@ -52,7 +47,6 @@ public class UserService {
   public UserService(EntityManager entityManager,
                      UserRepository userRepository,
                      UserHolder userHolder,
-                     ServerProviderService serverProviderService,
                      PasswordValidation passwordValidation,
                      InvitationLinkUsage invitationLinkUsage,
                      @ConfigProperty(name = "revoicechat.global.app-only-accessible-by-invitation")
@@ -60,7 +54,6 @@ public class UserService {
     this.entityManager = entityManager;
     this.userRepository = userRepository;
     this.userHolder = userHolder;
-    this.serverProviderService = serverProviderService;
     this.passwordValidation = passwordValidation;
     this.invitationLinkUsage = invitationLinkUsage;
     this.appOnlyAccessibleByInvitation = appOnlyAccessibleByInvitation;
@@ -124,7 +117,7 @@ public class UserService {
 
   @Transactional
   public List<UserRepresentation> fetchUserForServer(final UUID id) {
-    return serverProviderService.getUsers(id).map(this::toRepresentation).toList();
+    return userRepository.findByServers(id).map(this::toRepresentation).toList();
   }
 
   @Transactional

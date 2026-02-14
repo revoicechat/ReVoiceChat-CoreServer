@@ -10,13 +10,14 @@ import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.ServerType;
 import fr.revoicechat.core.model.ServerUser;
 import fr.revoicechat.core.model.User;
+import fr.revoicechat.core.repository.ServerRepository;
 import fr.revoicechat.core.repository.UserRepository;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.representation.server.ServerUpdateNotification;
 import fr.revoicechat.core.risk.ServerRiskType;
+import fr.revoicechat.core.service.server.NewServerCreator;
 import fr.revoicechat.core.service.server.ServerEntityService;
-import fr.revoicechat.core.service.server.ServerProviderService;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.risk.service.RiskService;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
@@ -42,41 +43,37 @@ import jakarta.transaction.Transactional;
 public class ServerService {
 
   private final ServerEntityService serverEntityService;
-  private final ServerProviderService serverProviderService;
+  private final ServerRepository serverRepository;
+  private final NewServerCreator newServerCreator;
   private final UserHolder userHolder;
   private final EntityManager entityManager;
   private final UserRepository userRepository;
   private final RiskService riskService;
 
   public ServerService(final ServerEntityService serverEntityService,
-                       final ServerProviderService serverProviderService,
+                       final ServerRepository serverRepository,
+                       final NewServerCreator newServerCreator,
                        final UserHolder userHolder,
                        final EntityManager entityManager,
                        final UserRepository userRepository,
                        final RiskService riskService) {
     this.serverEntityService = serverEntityService;
-    this.serverProviderService = serverProviderService;
+    this.serverRepository = serverRepository;
+    this.newServerCreator = newServerCreator;
     this.userHolder = userHolder;
     this.entityManager = entityManager;
     this.userRepository = userRepository;
     this.riskService = riskService;
   }
 
-  /**
-   * Retrieves all available servers from the external provider.
-   * <p>
-   * This method does <b>not</b> query the database, but uses the
-   * {@link ServerProviderService} to fetch the server list, then logs it.
-   * @return a list of available servers, possibly empty
-   */
+  /** @return a list of available servers, possibly empty */
   public List<ServerRepresentation> getAll() {
-    return serverProviderService.getServers().stream()
-                                .map(this::map)
-                                .toList();
+    return serverRepository.findAll().stream().map(this::map).toList();
   }
 
   /**
    * Retrieves a server from the database by its unique identifier.
+   *
    * @param id the unique server ID
    * @return the server entity
    * @throws java.util.NoSuchElementException if no server with the given ID exists
@@ -87,6 +84,7 @@ public class ServerService {
 
   /**
    * Creates and stores a new server in the database.
+   *
    * @param representation the server entity to persist
    * @return the persisted server entity with its generated ID
    */
@@ -95,7 +93,7 @@ public class ServerService {
     Server server = new Server();
     server.setName(representation.name());
     server.setType(Optional.ofNullable(representation.serverType()).orElse(ServerType.PUBLIC));
-    serverProviderService.create(server);
+    newServerCreator.create(server);
     ServerUser serverUser = new ServerUser();
     serverUser.setServer(server);
     serverUser.setUser(userHolder.get());
@@ -103,16 +101,12 @@ public class ServerService {
     return map(server);
   }
 
-  @Transactional
-  public void delete(final UUID id) {
-    serverProviderService.delete(id);
-  }
-
   /**
    * Updates an existing server in the database.
    * <p>
    * The ID of the provided entity will be overridden with the given {@code id}
    * before persisting.
+   *
    * @param id             the ID of the server to update
    * @param representation the updated server data
    * @return the updated and persisted server entity

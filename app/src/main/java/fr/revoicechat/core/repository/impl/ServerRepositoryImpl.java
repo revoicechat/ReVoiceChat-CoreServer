@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import fr.revoicechat.core.model.Server;
+import fr.revoicechat.core.model.ServerUser;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.repository.ServerRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -35,6 +36,18 @@ public class ServerRepositoryImpl implements ServerRepository {
         .setParameter("user", user)
         .getResultStream();
   }
+
+  @Override
+  public Stream<ServerUser> getServerUser(final Server server) {
+    return entityManager.createQuery("""
+                                  SELECT su
+                                  FROM ServerUser su
+                                  WHERE su.server = :server""", ServerUser.class)
+                        .setParameter("server", server)
+                        .getResultStream();
+  }
+
+
 
   @Override
   public Stream<Server> getPublicServer() {

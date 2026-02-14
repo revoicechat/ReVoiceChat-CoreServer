@@ -8,7 +8,6 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 
-import fr.revoicechat.core.model.server.ServerStructure;
 import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
 import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
@@ -90,24 +89,6 @@ public interface ServerController extends LoggedApi {
   @GET
   @Path("/{id}/room")
   List<RoomRepresentation> getRooms(@PathParam("id") final UUID id);
-
-  @Tags(refs = { "Server" })
-  @Operation(summary = "Get server structure", description = "Retrieve the organizational structure of a server including categories, channels, and their hierarchy.")
-  @APIResponse(responseCode = "200", description = "Server structure retrieved successfully")
-  @APIResponse(responseCode = "403", description = "Insufficient permissions to access this server")
-  @APIResponse(responseCode = "404", description = "Server not found")
-  @GET
-  @Path("/{id}/structure")
-  ServerStructure getStructure(@PathParam("id") final UUID id);
-
-  @Operation(summary = "Update server structure", description = "Update the organizational structure of a server including reordering categories and channels. Requires server administrative permissions.")
-  @APIResponse(responseCode = "200", description = "Server structure updated successfully")
-  @APIResponse(responseCode = "400", description = "Invalid structure data provided")
-  @APIResponse(responseCode = "403", description = "Insufficient permissions to update server structure")
-  @APIResponse(responseCode = "404", description = "Server not found")
-  @PATCH
-  @Path("/{id}/structure")
-  ServerStructure patchStructure(@PathParam("id") final UUID id, ServerStructure structure);
 
   @Tags(refs = { "Server", "Room" })
   @Operation(summary = "Create room in server", description = "Create a new room within a specific server. Requires server administrative permissions.")

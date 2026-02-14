@@ -5,7 +5,6 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.*;
 import java.util.List;
 import java.util.UUID;
 
-import fr.revoicechat.core.model.server.ServerStructure;
 import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
 import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
@@ -16,9 +15,9 @@ import fr.revoicechat.core.service.RoomService;
 import fr.revoicechat.core.service.ServerService;
 import fr.revoicechat.core.service.UserService;
 import fr.revoicechat.core.service.invitation.InvitationLinkService;
+import fr.revoicechat.core.service.server.ServerDeleterService;
 import fr.revoicechat.core.service.server.ServerJoiner;
 import fr.revoicechat.core.service.server.ServerRetriever;
-import fr.revoicechat.core.service.server.ServerStructureService;
 import fr.revoicechat.core.web.api.ServerController;
 import fr.revoicechat.risk.RisksMembershipData;
 import fr.revoicechat.risk.retriever.ServerIdRetriever;
@@ -28,20 +27,20 @@ public class ServerControllerImpl implements ServerController {
 
   private final ServerRetriever serverRetriever;
   private final ServerService serverService;
-  private final ServerStructureService serverStructureService;
   private final RoomService roomService;
   private final UserService userService;
   private final InvitationLinkService invitationLinkService;
   private final ServerJoiner serverJoiner;
+  private final ServerDeleterService serverDeleterService;
 
-  public ServerControllerImpl(final ServerRetriever serverRetriever, ServerService serverService, final ServerStructureService serverStructureService, RoomService roomService, UserService userService, InvitationLinkService invitationLinkService, final ServerJoiner serverJoiner) {
+  public ServerControllerImpl(final ServerRetriever serverRetriever, ServerService serverService, RoomService roomService, UserService userService, InvitationLinkService invitationLinkService, final ServerJoiner serverJoiner, final ServerDeleterService serverDeleterService) {
     this.serverRetriever = serverRetriever;
     this.serverService = serverService;
-    this.serverStructureService = serverStructureService;
     this.roomService = roomService;
     this.userService = userService;
     this.invitationLinkService = invitationLinkService;
     this.serverJoiner = serverJoiner;
+    this.serverDeleterService = serverDeleterService;
   }
 
   @Override
@@ -85,26 +84,13 @@ public class ServerControllerImpl implements ServerController {
   @RolesAllowed(ROLE_USER)
   @RisksMembershipData(risks = "SERVER_DELETE", retriever = ServerIdRetriever.class)
   public void deleteServer(final UUID id) {
-    serverService.delete(id);
+    serverDeleterService.delete(id);
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   public List<RoomRepresentation> getRooms(UUID id) {
     return roomService.findAllForCurrentUser(id);
-  }
-
-  @Override
-  @RolesAllowed(ROLE_USER)
-  public ServerStructure getStructure(final UUID id) {
-    return serverStructureService.getStructure(id);
-  }
-
-  @Override
-  @RolesAllowed(ROLE_USER)
-  @RisksMembershipData(risks = "SERVER_ROOM_UPDATE", retriever = ServerIdRetriever.class)
-  public ServerStructure patchStructure(final UUID id, final ServerStructure structure) {
-    return serverStructureService.updateStructure(id, structure);
   }
 
   @Override
