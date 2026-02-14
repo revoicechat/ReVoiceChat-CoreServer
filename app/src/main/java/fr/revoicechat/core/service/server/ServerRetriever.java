@@ -2,6 +2,7 @@ package fr.revoicechat.core.service.server;
 
 import java.util.List;
 
+import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.repository.ServerRepository;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.service.ServerService;
@@ -32,7 +33,15 @@ public class ServerRetriever {
 
   /** @return all public servers. */
   @Transactional
-  public List<ServerRepresentation> getAllPublicServers() {
-    return serverRepository.getPublicServer().map(serverService::map).toList();
+  public List<ServerRepresentation> getAllPublicServers(final boolean joinedToo) {
+    var servers = serverRepository.getPublicServer();
+    if (joinedToo) {
+      return servers.map(serverService::map).toList();
+    } else {
+      var serverIds = serverRepository.getByUser(userHolder.get()).map(Server::getId).toList();
+      return servers.filter(server -> serverIds.contains(server.getId()))
+                    .map(serverService::map)
+                    .toList();
+    }
   }
 }

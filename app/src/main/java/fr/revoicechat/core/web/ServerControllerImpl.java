@@ -57,8 +57,8 @@ public class ServerControllerImpl implements ServerController {
 
   @Override
   @RolesAllowed(ROLE_USER)
-  public List<ServerRepresentation> getPublicServers() {
-    return serverRetriever.getAllPublicServers();
+  public List<ServerRepresentation> getPublicServers(boolean joinedToo) {
+    return serverRetriever.getAllPublicServers(joinedToo);
   }
 
   @Override

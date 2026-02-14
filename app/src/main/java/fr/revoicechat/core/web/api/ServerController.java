@@ -17,6 +17,7 @@ import fr.revoicechat.core.representation.user.UserRepresentation;
 import fr.revoicechat.openapi.api.LoggedApi;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
@@ -24,6 +25,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("server")
@@ -45,7 +47,8 @@ public interface ServerController extends LoggedApi {
   @APIResponse(responseCode = "200", description = "Server list retrieved successfully")
   @GET
   @Path("/discover")
-  List<ServerRepresentation> getPublicServers();
+  List<ServerRepresentation> getPublicServers(@QueryParam("joinedToo")
+                                              @DefaultValue("false") boolean joinedToo);
 
   @Operation(summary = "Get server by ID", description = "Retrieve detailed information about a specific server. Users must have access to the server to view its details.")
   @APIResponse(responseCode = "200", description = "Server retrieved successfully")
