@@ -8,4 +8,6 @@ import fr.revoicechat.core.model.Room;
 public interface RoomRepository {
   List<Room> findByServerId(UUID serverId);
   List<UUID> findIdThatAreNotInRoom(UUID serverId, List<UUID> ids);
+
+  UUID getServerId(UUID room);
 }

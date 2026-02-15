@@ -4,12 +4,12 @@ import static java.util.function.Predicate.not;
 
 import java.util.List;
 import java.util.UUID;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.repository.RoomRepository;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @ApplicationScoped
 public class RoomRepositoryImpl implements RoomRepository {
@@ -37,5 +37,14 @@ public class RoomRepositoryImpl implements RoomRepository {
                              .setParameter("serverId", serverId)
                              .getResultList();
     return ids.stream().filter(not(idsIn::contains)).toList();
+  }
+
+  @Override
+  public UUID getServerId(final UUID room) {
+    return entityManager
+        .createQuery("SELECT r.server.id FROM Room r where r.id = :room", UUID.class)
+        .setParameter("room", room)
+        .getResultList()
+        .getFirst();
   }
 }
