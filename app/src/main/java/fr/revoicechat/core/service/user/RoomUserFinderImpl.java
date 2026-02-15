@@ -18,6 +18,6 @@ public class RoomUserFinderImpl implements RoomUserFinder, VoiceRoomUserFinder {
 
   @Override
   public Stream<NotificationRegistrable> find(UUID room) {
-    return userRepository.findAll().stream().map(NotificationRegistrable.class::cast);
+    return userRepository.findByRoom(room).map(NotificationRegistrable.class::cast);
   }
 }

@@ -33,9 +33,9 @@ public class UserRepositoryImpl implements UserRepository {
   public Stream<User> findByServers(UUID serverID) {
     return entityManager
         .createQuery("""
-                         select su.user
-                         from ServerUser su
-                         where su.server.id = :serverID""", User.class)
+            select su.user
+            from ServerUser su
+            where su.server.id = :serverID""", User.class)
         .setParameter("serverID", serverID)
         .getResultStream();
   }
@@ -48,5 +48,17 @@ public class UserRepositoryImpl implements UserRepository {
   @Override
   public Stream<User> everyone() {
     return entityManager.createQuery("SELECT u FROM User u", User.class).getResultStream();
+  }
+
+  @Override
+  public Stream<User> findByRoom(final UUID room) {
+    return entityManager
+        .createQuery("""
+            select su.user
+            from ServerUser su
+            join Room room on su.server = room.server
+            where room.id = :room""", User.class)
+        .setParameter("room", room)
+        .getResultStream();
   }
 }

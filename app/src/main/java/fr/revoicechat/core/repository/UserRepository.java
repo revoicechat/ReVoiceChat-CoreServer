@@ -15,4 +15,6 @@ public interface UserRepository {
   default List<User> findAll() {
     return everyone().toList();
   }
+
+  Stream<User> findByRoom(UUID room);
 }
