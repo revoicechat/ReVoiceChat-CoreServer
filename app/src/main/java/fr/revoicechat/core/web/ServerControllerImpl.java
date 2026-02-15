@@ -5,6 +5,7 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.*;
 import java.util.List;
 import java.util.UUID;
 
+import fr.revoicechat.core.representation.invitation.InvitationCategory;
 import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
 import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
@@ -109,8 +110,8 @@ public class ServerControllerImpl implements ServerController {
   @Override
   @RolesAllowed(ROLE_USER)
   @RisksMembershipData(risks = "SERVER_INVITATION_ADD", retriever = ServerIdRetriever.class)
-  public InvitationRepresentation generateServerInvitation(final UUID id) {
-    return invitationLinkService.generateServerInvitation(id);
+  public InvitationRepresentation generateServerInvitation(final UUID id, final String category) {
+    return invitationLinkService.generateServerInvitation(id, InvitationCategory.of(category));
   }
 
   @Override

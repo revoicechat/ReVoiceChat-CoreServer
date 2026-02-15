@@ -1,5 +1,8 @@
 package fr.revoicechat.core.model;
 
+import static fr.revoicechat.core.model.InvitationLinkStatus.*;
+
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -76,6 +79,10 @@ public class InvitationLink {
 
   public void setStatus(final InvitationLinkStatus status) {
     this.status = status;
+  }
+
+  public boolean isValid() {
+    return List.of(CREATED, PERMANENT).contains(getStatus());
   }
 
   @Override

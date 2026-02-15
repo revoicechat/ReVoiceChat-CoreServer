@@ -119,7 +119,8 @@ public interface ServerController extends LoggedApi {
   @APIResponse(responseCode = "404", description = "Server not found")
   @POST
   @Path("/{id}/invitation")
-  InvitationRepresentation generateServerInvitation(@PathParam("id") UUID id);
+  InvitationRepresentation generateServerInvitation(@PathParam("id") UUID id,
+                                                    @QueryParam("category") @DefaultValue("UNIQUE") String category);
 
   @Tags(refs = { "Server", "Invitation" })
   @Operation(summary = "Get server invitations", description = "Retrieve all active invitation links for a specific server. Requires appropriate server permissions.")

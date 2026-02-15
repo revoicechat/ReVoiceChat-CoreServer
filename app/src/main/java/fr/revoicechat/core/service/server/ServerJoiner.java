@@ -58,6 +58,6 @@ public class ServerJoiner {
   private static boolean isValideInvitation(InvitationLink invitationLink) {
     return invitationLink != null
            && SERVER_JOIN.equals(invitationLink.getType())
-           && CREATED.equals(invitationLink.getStatus());
+           && invitationLink.isValid();
   }
 }

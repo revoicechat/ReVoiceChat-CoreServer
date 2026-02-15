@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import fr.revoicechat.openapi.api.LoggedApi;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -16,6 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 
 import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
+import jakarta.ws.rs.QueryParam;
 
 @Path("invitation")
 @Tag(name = "Invitation", description = "Manage invitations for application and server access")
@@ -29,7 +31,7 @@ public interface InvitationLinkController extends LoggedApi {
   @APIResponse(responseCode = "403", description = "Insufficient permissions to generate application invitations")
   @POST
   @Path("/application")
-  InvitationRepresentation generateApplicationInvitation();
+  InvitationRepresentation generateApplicationInvitation(@QueryParam("category") @DefaultValue("UNIQUE") String category);
 
   @Tags(refs = { "Server", "Invitation" })
   @Operation(
@@ -41,7 +43,8 @@ public interface InvitationLinkController extends LoggedApi {
   @APIResponse(responseCode = "404", description = "Server not found")
   @POST
   @Path("/server/{serverId}")
-  InvitationRepresentation generateServerInvitation(@PathParam("serverId") UUID serverId);
+  InvitationRepresentation generateServerInvitation(@PathParam("serverId") UUID serverId,
+                                                    @QueryParam("category") @DefaultValue("UNIQUE") String category);
 
   @Tags(refs = { "Server", "Invitation" })
   @Operation(

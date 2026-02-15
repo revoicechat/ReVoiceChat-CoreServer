@@ -1,6 +1,9 @@
 package fr.revoicechat.core.service.invitation;
 
+import static fr.revoicechat.core.model.InvitationLinkStatus.*;
+
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -10,6 +13,7 @@ import fr.revoicechat.core.model.InvitationType;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.repository.InvitationLinkRepository;
+import fr.revoicechat.core.representation.invitation.InvitationCategory;
 import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
 import fr.revoicechat.core.service.server.ServerEntityService;
 import fr.revoicechat.security.UserHolder;
@@ -37,11 +41,11 @@ public class InvitationLinkService implements InvitationLinkEntityRetriever, Inv
   }
 
   @Transactional
-  public InvitationRepresentation generateApplicationInvitation() {
+  public InvitationRepresentation generateApplicationInvitation(final InvitationCategory invitationCategory) {
     User user = userHolder.get();
     var invitation = new InvitationLink();
     invitation.setId(UUID.randomUUID());
-    invitation.setStatus(InvitationLinkStatus.CREATED);
+    invitation.setStatus(invitationCategory.getInitialStatus());
     invitation.setType(InvitationType.APPLICATION_JOIN);
     invitation.setSender(user);
     entityManager.persist(invitation);
@@ -49,12 +53,12 @@ public class InvitationLinkService implements InvitationLinkEntityRetriever, Inv
   }
 
   @Transactional
-  public InvitationRepresentation generateServerInvitation(final UUID serverId) {
+  public InvitationRepresentation generateServerInvitation(final UUID serverId, final InvitationCategory invitationCategory) {
     var server = serverService.getEntity(serverId);
     User user = userHolder.get();
     var invitation = new InvitationLink();
     invitation.setId(UUID.randomUUID());
-    invitation.setStatus(InvitationLinkStatus.CREATED);
+    invitation.setStatus(invitationCategory.getInitialStatus());
     invitation.setType(InvitationType.SERVER_JOIN);
     invitation.setTargetedServer(server);
     invitation.setSender(user);
@@ -81,7 +85,7 @@ public class InvitationLinkService implements InvitationLinkEntityRetriever, Inv
   public void revoke(final UUID id) {
     var link = entityManager.find(InvitationLink.class, id);
     if (link != null) {
-      link.setStatus(InvitationLinkStatus.REVOKED);
+      link.setStatus(REVOKED);
       entityManager.persist(link);
     }
   }
@@ -113,8 +117,8 @@ public class InvitationLinkService implements InvitationLinkEntityRetriever, Inv
   @Override
   @Transactional
   public void use(final InvitationLink invitationLink, final User user) {
-    if (invitationLink != null) {
-      invitationLink.setStatus(InvitationLinkStatus.USED);
+    if (invitationLink != null && Objects.equals(invitationLink.getStatus(), CREATED)) {
+      invitationLink.setStatus(USED);
       invitationLink.setApplier(user);
       entityManager.persist(invitationLink);
     }

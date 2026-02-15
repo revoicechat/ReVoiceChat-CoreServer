@@ -98,7 +98,7 @@ public class UserService {
   private static boolean isValideInvitation(final InvitationLink invitationLink) {
     return invitationLink != null
            && APPLICATION_JOIN.equals(invitationLink.getType())
-           && CREATED.equals(invitationLink.getStatus());
+           && invitationLink.isValid();
   }
 
   public UserRepresentation findCurrentUser() {
