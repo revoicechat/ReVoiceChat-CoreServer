@@ -6,6 +6,7 @@ import fr.revoicechat.openapi.api.LoggedApi;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -87,14 +88,7 @@ public interface MessageController extends LoggedApi {
   @APIResponse(responseCode = "200", description = "Message reaction added successfully")
   @APIResponse(responseCode = "400", description = "Invalid message data provided")
   @APIResponse(responseCode = "404", description = "Message not found")
-  @PUT
+  @POST
   @Path("reaction/{emoji}")
   MessageRepresentation addReaction(@PathParam("id") UUID id, @PathParam("emoji") String emoji);
-
-  @APIResponse(responseCode = "200", description = "Message reaction deleted successfully")
-  @APIResponse(responseCode = "403", description = "Insufficient permissions to delete this message")
-  @APIResponse(responseCode = "404", description = "Message not found")
-  @DELETE
-  @Path("reaction/{emoji}")
-  MessageRepresentation deleteReaction(@PathParam("id") UUID id, @PathParam("emoji") String emoji);
 }

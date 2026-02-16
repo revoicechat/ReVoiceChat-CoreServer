@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -15,25 +16,30 @@ import java.util.UUID;
  */
 public record MessageReactions(List<MessageReaction> reactions) {
 
-  public MessageReactions add(final String emoji, final UUID user) {
+  public MessageReactions toggle(final String emoji, final UUID user) {
+    return getReaction(emoji).map(MessageReaction::users)
+                             .filter(users -> users.contains(user))
+                             .isPresent()
+           ? remove(emoji, user)
+           : add(emoji, user);
+  }
+
+  private MessageReactions add(final String emoji, final UUID user) {
     var reactions = new ArrayList<>(reactions());
-    var reaction = getReaction(emoji);
-    if (reaction == null) {
-      var users = new HashSet<UUID>();
-      users.add(user);
-      reactions.add(new MessageReaction(emoji, users));
-    } else {
-      reaction.users.add(user);
-    }
+    getReaction(emoji).ifPresentOrElse(
+        reaction -> reaction.users.add(user),
+        () -> {
+          var users = new HashSet<UUID>();
+          users.add(user);
+          reactions.add(new MessageReaction(emoji, users));
+        }
+    );
     return new MessageReactions(reactions);
   }
 
-  public MessageReactions remove(final String emoji, final UUID user) {
+  private MessageReactions remove(final String emoji, final UUID user) {
     var reactions = new ArrayList<>(reactions());
-    var reaction = getReaction(emoji);
-    if (reaction == null) {
-      return this;
-    }
+    var reaction = getReaction(emoji).orElseThrow();
     reaction.users.remove(user);
     if (reaction.users.isEmpty()) {
       reactions.remove(reaction);
@@ -41,11 +47,10 @@ public record MessageReactions(List<MessageReaction> reactions) {
     return new MessageReactions(reactions);
   }
 
-  private MessageReaction getReaction(final String emoji) {
+  private Optional<MessageReaction> getReaction(final String emoji) {
     return reactions().stream()
                       .filter(react -> Objects.equals(react.emoji, emoji))
-                      .findFirst()
-                      .orElse(null);
+                      .findFirst();
   }
 
   /**

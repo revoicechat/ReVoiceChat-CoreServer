@@ -39,11 +39,4 @@ public class MessageControllerImpl implements MessageController {
   public MessageRepresentation addReaction(final UUID id, final String emoji) {
     return messageService.addReaction(id, emoji);
   }
-
-  @Override
-  public MessageRepresentation deleteReaction(final UUID id, final String emoji) {
-    return messageService.deleteReaction(id, emoji);
-  }
-
-
 }

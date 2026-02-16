@@ -14,7 +14,7 @@ class TestMessageReactions {
   @Test
   void testAddReaction() {
     var noReactions = new MessageReactions(List.of());
-    var result = noReactions.add("👽", UUID.randomUUID());
+    var result = noReactions.toggle("👽", UUID.randomUUID());
     Assertions.assertThat(result.reactions()).hasSize(1);
     Assertions.assertThat(result.reactions().getFirst().emoji()).isEqualTo("👽");
     Assertions.assertThat(result.reactions().getFirst().users()).hasSize(1);
@@ -23,9 +23,9 @@ class TestMessageReactions {
   @Test
   void testAddSameReaction() {
     var noReactions = new MessageReactions(List.of());
-    var result = noReactions.add("👽", UUID.randomUUID())
-                            .add("👽", UUID.randomUUID())
-                            .add("😀", UUID.randomUUID());
+    var result = noReactions.toggle("👽", UUID.randomUUID())
+                            .toggle("👽", UUID.randomUUID())
+                            .toggle("😀", UUID.randomUUID());
     Assertions.assertThat(result.reactions()).hasSize(2);
     var reaction1 = result.reactions().getFirst();
     Assertions.assertThat(reaction1.emoji()).isEqualTo("👽");
@@ -36,17 +36,10 @@ class TestMessageReactions {
   }
 
   @Test
-  void testRemoveEmptyReaction() {
-    var noReactions = new MessageReactions(List.of());
-    var result = noReactions.remove("👽", UUID.randomUUID());
-    Assertions.assertThat(result.reactions()).isEmpty();
-  }
-
-  @Test
   void testRemoveAllReaction() {
     var noReactions = new MessageReactions(List.of());
     var user1 = UUID.randomUUID();
-    var result = noReactions.add("👽", user1).remove("👽", user1);
+    var result = noReactions.toggle("👽", user1).toggle("👽", user1);
     Assertions.assertThat(result.reactions()).isEmpty();
   }
 
@@ -54,9 +47,9 @@ class TestMessageReactions {
   void testRemoveReaction() {
     var noReactions = new MessageReactions(List.of());
     var user1 = UUID.randomUUID();
-    var result = noReactions.add("👽", user1)
-                            .add("👽", UUID.randomUUID())
-                            .remove("👽", user1);
+    var result = noReactions.toggle("👽", user1)
+                            .toggle("👽", UUID.randomUUID())
+                            .toggle("👽", user1);
     Assertions.assertThat(result.reactions()).hasSize(1);
     var reaction1 = result.reactions().getFirst();
     Assertions.assertThat(reaction1.emoji()).isEqualTo("👽");

@@ -167,18 +167,7 @@ public class MessageService {
   public MessageRepresentation addReaction(final UUID id, final String emoji) {
     var message = getMessage(id);
     var user = userHolder.get().getId();
-    message.setReactions(message.getReactions().add(emoji, user));
-    entityManager.persist(message);
-    var representation = toRepresentation(message);
-    notifyUpdate(new MessageNotification(representation, MODIFY));
-    return representation;
-  }
-
-  @Transactional
-  public MessageRepresentation deleteReaction(final UUID id, final String emoji) {
-    var message = getMessage(id);
-    var user = userHolder.get().getId();
-    message.setReactions(message.getReactions().remove(emoji, user));
+    message.setReactions(message.getReactions().toggle(emoji, user));
     entityManager.persist(message);
     var representation = toRepresentation(message);
     notifyUpdate(new MessageNotification(representation, MODIFY));

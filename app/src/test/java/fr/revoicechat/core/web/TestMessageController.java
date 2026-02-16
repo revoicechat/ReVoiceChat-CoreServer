@@ -112,7 +112,7 @@ class TestMessageController {
                .when()
                .pathParam("id", message.id())
                .pathParam("emoji", "👽")
-               .put("/message/{id}/reaction/{emoji}")
+               .post("/message/{id}/reaction/{emoji}")
                .then()
                .statusCode(200);
     PageResult<MessageRepresentation> page2 = getPage(token, room);
@@ -128,7 +128,7 @@ class TestMessageController {
                .when()
                .pathParam("id", message.id())
                .pathParam("emoji", "👽")
-               .delete("/message/{id}/reaction/{emoji}")
+               .post("/message/{id}/reaction/{emoji}")
                .then()
                .statusCode(200);
     PageResult<MessageRepresentation> page3 = getPage(token, room);
