@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import fr.revoicechat.core.model.InvitationLink;
-import fr.revoicechat.core.model.InvitationLinkStatus;
 import fr.revoicechat.core.model.InvitationType;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.User;

@@ -1,7 +1,6 @@
 package fr.revoicechat.core.risk;
 
 import fr.revoicechat.risk.type.RiskCategory;
-import fr.revoicechat.risk.type.RiskType;
 import fr.revoicechat.risk.type.ServerEntityRiskType;
 
 @RiskCategory("SERVER_RISK_TYPE")

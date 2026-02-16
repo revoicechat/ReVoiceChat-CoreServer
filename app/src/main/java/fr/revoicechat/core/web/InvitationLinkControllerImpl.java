@@ -6,13 +6,10 @@ import java.util.List;
 import java.util.UUID;
 
 import fr.revoicechat.core.representation.invitation.InvitationCategory;
-import jakarta.annotation.security.RolesAllowed;
-
 import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
 import fr.revoicechat.core.service.invitation.InvitationLinkService;
 import fr.revoicechat.core.web.api.InvitationLinkController;
-import fr.revoicechat.risk.RisksMembershipData;
-import fr.revoicechat.risk.retriever.ServerIdRetriever;
+import jakarta.annotation.security.RolesAllowed;
 
 @RolesAllowed(ROLE_USER)
 public class InvitationLinkControllerImpl implements InvitationLinkController {

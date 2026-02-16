@@ -1,6 +1,5 @@
 package fr.revoicechat.core.service.server;
 
-import static fr.revoicechat.core.model.InvitationLinkStatus.CREATED;
 import static fr.revoicechat.core.model.InvitationType.SERVER_JOIN;
 import static fr.revoicechat.core.nls.ServerErrorCode.*;
 

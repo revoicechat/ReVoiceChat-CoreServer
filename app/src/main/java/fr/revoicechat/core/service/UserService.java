@@ -1,6 +1,5 @@
 package fr.revoicechat.core.service;
 
-import static fr.revoicechat.core.model.InvitationLinkStatus.CREATED;
 import static fr.revoicechat.core.model.InvitationType.APPLICATION_JOIN;
 import static fr.revoicechat.core.nls.UserErrorCode.*;
 import static java.util.function.Predicate.not;

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import fr.revoicechat.risk.RisksMembershipData;
-import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
 import fr.revoicechat.risk.representation.RiskUpdateRepresentation;
 import fr.revoicechat.risk.representation.ServerRoleRepresentation;
