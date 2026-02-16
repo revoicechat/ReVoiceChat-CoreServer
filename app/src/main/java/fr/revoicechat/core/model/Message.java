@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import fr.revoicechat.core.repository.jpa.MessageReactionsConverter;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -40,6 +42,9 @@ public class Message {
   @ManyToOne
   @JoinColumn(name="MESSAGE_ID")
   private Message answerTo;
+  @Convert(converter = MessageReactionsConverter.class)
+  @Column(columnDefinition = "TEXT")
+  private MessageReactions reactions;
 
   public Message() {
     super();
@@ -114,6 +119,14 @@ public class Message {
 
   public void setAnswerTo(final Message answerTo) {
     this.answerTo = answerTo;
+  }
+
+  public MessageReactions getReactions() {
+    return reactions;
+  }
+
+  public void setReactions(final MessageReactions reactions) {
+    this.reactions = reactions;
   }
 
   @Override
