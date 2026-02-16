@@ -1,11 +1,9 @@
 package fr.revoicechat.core.model;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -27,9 +25,14 @@ public record MessageReactions(List<MessageReaction> reactions) {
   private MessageReactions add(final String emoji, final UUID user) {
     var reactions = new ArrayList<>(reactions());
     getReaction(emoji).ifPresentOrElse(
-        reaction -> reaction.users.add(user),
+        reaction -> {
+          reactions.remove(reaction);
+          var updatedUsers = new ArrayList<>(reaction.users);
+          updatedUsers.add(user);
+          reactions.add(new MessageReaction(emoji, updatedUsers));
+        },
         () -> {
-          var users = new HashSet<UUID>();
+          List<UUID> users = new ArrayList<>();
           users.add(user);
           reactions.add(new MessageReaction(emoji, users));
         }
@@ -40,9 +43,11 @@ public record MessageReactions(List<MessageReaction> reactions) {
   private MessageReactions remove(final String emoji, final UUID user) {
     var reactions = new ArrayList<>(reactions());
     var reaction = getReaction(emoji).orElseThrow();
-    reaction.users.remove(user);
-    if (reaction.users.isEmpty()) {
-      reactions.remove(reaction);
+    reactions.remove(reaction);
+    var updatedUsers = new ArrayList<>(reaction.users);
+    updatedUsers.remove(user);
+    if (!updatedUsers.isEmpty()) {
+      reactions.add(new MessageReaction(emoji, updatedUsers));
     }
     return new MessageReactions(reactions);
   }
@@ -59,6 +64,6 @@ public record MessageReactions(List<MessageReaction> reactions) {
    */
   public record MessageReaction(
       String emoji,
-      Set<UUID> users
+      List<UUID> users
   ) {}
 }

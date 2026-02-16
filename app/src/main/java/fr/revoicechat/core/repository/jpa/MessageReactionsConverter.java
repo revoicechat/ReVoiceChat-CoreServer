@@ -4,7 +4,6 @@ import java.io.IOError;
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.revoicechat.core.model.MessageReactions;
 import jakarta.persistence.AttributeConverter;
@@ -36,7 +35,7 @@ public class MessageReactionsConverter implements AttributeConverter<MessageReac
       return new MessageReactions(new ArrayList<>());
     }
     try {
-      return mapper.readValue(value, new TypeReference<>() {});
+      return mapper.readValue(value, MessageReactions.class);
     } catch (JsonProcessingException e) {
       throw new IOError(e);
     }
