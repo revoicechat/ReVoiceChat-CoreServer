@@ -97,6 +97,46 @@ class TestMessageController {
     assertThat(page3.content()).isEmpty();
   }
 
+  @Test
+  void testWithReactions() {
+    String token = RestTestUtils.logNewUser();
+    var server = createServer(token);
+    var room = createRoom(token, server);
+    var message = createMessage(token, room);
+    PageResult<MessageRepresentation> page1 = getPage(token, room);
+    assertThat(page1.content()).hasSize(1).map(MessageRepresentation::text).containsExactly("message 1");
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + token)
+               .body(new CreatedMessageRepresentation("message 2", null, List.of()))
+               .when()
+               .pathParam("id", message.id())
+               .pathParam("emoji", "👽")
+               .put("/message/{id}/reaction/{emoji}")
+               .then()
+               .statusCode(200);
+    PageResult<MessageRepresentation> page2 = getPage(token, room);
+    assertThat(page2.content()).hasSize(1);
+    message = page2.content().getFirst();
+    assertThat(message.reactions()).hasSize(1);
+    assertThat(message.reactions().getFirst().emoji()).isEqualTo("👽");
+    assertThat(message.reactions().getFirst().users()).hasSize(1);
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + token)
+               .body(new CreatedMessageRepresentation("message 2", null, List.of()))
+               .when()
+               .pathParam("id", message.id())
+               .pathParam("emoji", "👽")
+               .delete("/message/{id}/reaction/{emoji}")
+               .then()
+               .statusCode(200);
+    PageResult<MessageRepresentation> page3 = getPage(token, room);
+    assertThat(page3.content()).hasSize(1);
+    message = page3.content().getFirst();
+    assertThat(message.reactions()).isEmpty();
+  }
+
   private static PageResult<MessageRepresentation> getPage(final String token, final RoomRepresentation room) {
     var body = RestAssured.given()
                           .contentType(MediaType.APPLICATION_JSON)
