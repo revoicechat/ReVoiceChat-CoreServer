@@ -97,6 +97,59 @@ class TestMessageController {
     assertThat(page3.content()).isEmpty();
   }
 
+  @Test
+  void testWithReactions() {
+    var token = RestTestUtils.logNewUser();
+    RestTestUtils.signup("user2", "psw");
+    var tokenUser2 = RestTestUtils.login("user2", "psw");
+    var server = createServer(token);
+    join(tokenUser2, server);
+    RestTestUtils.addAllRiskToAllUser(token);
+    var room = createRoom(token, server);
+    var message = createMessage(token, room);
+    addReaction(token, message, "👽");
+    message = getPage(token, room).content().getFirst();
+    assertThat(message.reactions()).hasSize(1);
+    assertThat(message.reactions().getFirst().emoji()).isEqualTo("👽");
+    assertThat(message.reactions().getFirst().users()).hasSize(1);
+
+    addReaction(token, message, "😀");
+    message = getPage(token, room).content().getFirst();
+    assertThat(message.reactions()).hasSize(2);
+    addReaction(token, message, "😀");
+    message = getPage(token, room).content().getFirst();
+    assertThat(message.reactions()).hasSize(1);
+
+    addReaction(tokenUser2, message, "👽");
+    message = getPage(token, room).content().getFirst();
+    assertThat(message.reactions()).hasSize(1);
+    assertThat(message.reactions().getFirst().emoji()).isEqualTo("👽");
+    assertThat(message.reactions().getFirst().users()).hasSize(2);
+
+    addReaction(token, message, "👽");
+    message = getPage(token, room).content().getFirst();
+    assertThat(message.reactions()).hasSize(1);
+    assertThat(message.reactions().getFirst().emoji()).isEqualTo("👽");
+    assertThat(message.reactions().getFirst().users()).hasSize(1);
+
+    addReaction(tokenUser2, message, "👽");
+    message = getPage(token, room).content().getFirst();
+    assertThat(message.reactions()).isEmpty();
+  }
+
+  private static void addReaction(final String token, final MessageRepresentation message, String emoji) {
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + token)
+               .body(new CreatedMessageRepresentation("message 2", null, List.of()))
+               .when()
+               .pathParam("id", message.id())
+               .pathParam("emoji", emoji)
+               .post("/message/{id}/reaction/{emoji}")
+               .then()
+               .statusCode(200);
+  }
+
   private static PageResult<MessageRepresentation> getPage(final String token, final RoomRepresentation room) {
     var body = RestAssured.given()
                           .contentType(MediaType.APPLICATION_JSON)
@@ -141,5 +194,13 @@ class TestMessageController {
                       .when().put("/server")
                       .then().statusCode(200)
                       .extract().as(ServerRepresentation.class);
+  }
+
+  private static void join(String token, ServerRepresentation server) {
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + token)
+               .when().pathParam("id", server.id()).post("/server/{id}/join")
+               .then().statusCode(204);
   }
 }
