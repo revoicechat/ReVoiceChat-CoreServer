@@ -30,7 +30,7 @@ import jakarta.ws.rs.core.MediaType;
 @QuarkusTest
 @TestProfile(BasicIntegrationTestProfile.class)
 @CleanDatabase
-class TestMultiServerController {
+class TestServerController {
 
   @Test
   void creationPossible() {
@@ -80,14 +80,73 @@ class TestMultiServerController {
   }
 
   @Test
-  void testGetServer() {
-    RestTestUtils.signup("user", "psw");
-    String token = RestTestUtils.login("user", "psw");
-    assertThat(getServers(token)).isEmpty();
-    createServer(token, "test1");
-    createServer(token, "test2");
-    var servers = getServers(token);
-    assertThat(servers).hasSize(2);
+  void testGetServerWithNoServerForOneUser() {
+    RestTestUtils.signup("user1", "psw");
+    String tokenUser1 = RestTestUtils.login("user1", "psw");
+    RestTestUtils.signup("user2", "psw");
+    String tokenUser2 = RestTestUtils.login("user2", "psw");
+    createServer(tokenUser1, "test1", ServerType.PUBLIC);
+    createServer(tokenUser1, "test2", ServerType.PRIVATE);
+    assertThat(getServers(tokenUser1)).hasSize(2);
+    assertThat(getServers(tokenUser2)).isEmpty();
+  }
+
+  @Test
+  void testDiscoverServer() {
+    // Given
+    RestTestUtils.signup("user1", "psw");
+    String tokenUser1 = RestTestUtils.login("user1", "psw");
+    var user2 = RestTestUtils.signup("user2", "psw");
+    RestTestUtils.updateToAdmin(tokenUser1, user2);
+    String tokenUser2 = RestTestUtils.login("user2", "psw");
+    // When
+    var serv1 = createServer(tokenUser1, "test1", ServerType.PUBLIC).id();
+    createServer(tokenUser1, "test2", ServerType.PRIVATE);
+    var serv3 = createServer(tokenUser2, "test3", ServerType.PUBLIC).id();
+    createServer(tokenUser2, "test4", ServerType.PRIVATE);
+    // Then
+    assertThat(discoverServers(tokenUser1, false)).map(ServerRepresentation::id).containsExactlyInAnyOrder(serv3);
+    assertThat(discoverServers(tokenUser2, false)).map(ServerRepresentation::id).containsExactlyInAnyOrder(serv1);
+    assertThat(discoverServers(tokenUser1, true)).map(ServerRepresentation::id).containsExactlyInAnyOrder(serv1, serv3);
+    assertThat(discoverServers(tokenUser2, true)).map(ServerRepresentation::id).containsExactlyInAnyOrder(serv1, serv3);
+  }
+
+  @Test
+  void testJoinPublicServer() {
+    // Given
+    RestTestUtils.signup("user1", "psw");
+    String tokenUser1 = RestTestUtils.login("user1", "psw");
+    RestTestUtils.signup("user2", "psw");
+    String tokenUser2 = RestTestUtils.login("user2", "psw");
+    // When
+    var serv1 = createServer(tokenUser1, "test1", ServerType.PUBLIC).id();
+    var serv2 = createServer(tokenUser1, "test2", ServerType.PRIVATE).id();
+    // Then
+    assertThat(discoverServers(tokenUser2, false)).map(ServerRepresentation::id).contains(serv1).doesNotContain(serv2);
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + tokenUser2)
+               .when().pathParam("id", serv1).post("/server/{id}/join")
+               .then().statusCode(204);
+    assertThat(discoverServers(tokenUser2, false)).map(ServerRepresentation::id).isEmpty();
+  }
+
+  @Test
+  void testJoinPublicServerButItsAPrivateServer() {
+    // Given
+    RestTestUtils.signup("user1", "psw");
+    String tokenUser1 = RestTestUtils.login("user1", "psw");
+    RestTestUtils.signup("user2", "psw");
+    String tokenUser2 = RestTestUtils.login("user2", "psw");
+    // When
+    var serv2 = createServer(tokenUser1, "test2", ServerType.PRIVATE).id();
+    // Then
+    assertThat(discoverServers(tokenUser2, false)).map(ServerRepresentation::id).doesNotContain(serv2);
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + tokenUser2)
+               .when().pathParam("id", serv2).delete("/server/{id}/join")
+               .then().statusCode(405);
   }
 
   @Test
@@ -279,7 +338,11 @@ class TestMultiServerController {
   }
 
   private static ServerRepresentation createServer(String token, String name) {
-    var representation = new ServerCreationRepresentation(name, ServerType.PUBLIC);
+    return createServer(token, name, ServerType.PUBLIC);
+  }
+
+  private static ServerRepresentation createServer(String token, String name, ServerType type) {
+    var representation = new ServerCreationRepresentation(name, type);
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
@@ -294,6 +357,16 @@ class TestMultiServerController {
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
                       .when().get("/server")
+                      .then().statusCode(200)
+                      .extract()
+                      .body().jsonPath().getList(".", ServerRepresentation.class);
+  }
+
+  private static List<ServerRepresentation> discoverServers(String token, boolean joinedToo) {
+    return RestAssured.given()
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .header("Authorization", "Bearer " + token)
+                      .when().queryParam("joinedToo", joinedToo).get("/server/discover")
                       .then().statusCode(200)
                       .extract()
                       .body().jsonPath().getList(".", ServerRepresentation.class);

@@ -39,7 +39,7 @@ public class ServerRetriever {
       return servers.map(serverService::map).toList();
     } else {
       var serverIds = serverRepository.getByUser(userHolder.get()).map(Server::getId).toList();
-      return servers.filter(server -> serverIds.contains(server.getId()))
+      return servers.filter(server -> !serverIds.contains(server.getId()))
                     .map(serverService::map)
                     .toList();
     }
