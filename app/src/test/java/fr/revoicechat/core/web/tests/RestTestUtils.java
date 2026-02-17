@@ -5,9 +5,11 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.revoicechat.core.model.ServerType;
+import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.representation.login.UserPassword;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
+import fr.revoicechat.core.representation.user.AdminUpdatableUserData;
 import fr.revoicechat.core.representation.user.SignupRepresentation;
 import fr.revoicechat.core.representation.user.UserRepresentation;
 import fr.revoicechat.risk.model.RiskMode;
@@ -47,6 +49,15 @@ public class RestTestUtils {
                       .extract().body().as(UserRepresentation.class);
   }
 
+  public static void updateToAdmin(String admin, UserRepresentation userToUpdate) {
+    RestAssured.given()
+               .contentType(MediaType.APPLICATION_JSON)
+               .header("Authorization", "Bearer " + admin)
+               .body(new AdminUpdatableUserData(userToUpdate.displayName(), UserType.ADMIN))
+               .when().pathParam("id", userToUpdate.id()).patch("/user/{id}")
+               .then().statusCode(200);
+  }
+
   public static String login(String user, String password) {
     var login = new UserPassword(user, password);
     return RestAssured.given()
@@ -67,11 +78,11 @@ public class RestTestUtils {
     if (servers.isEmpty()) {
       var representation = new ServerCreationRepresentation("test", ServerType.PUBLIC);
       RestAssured.given()
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .header("Authorization", "Bearer " + token)
-                            .body(representation)
-                            .when().put("/server")
-                            .then().statusCode(200);
+                 .contentType(MediaType.APPLICATION_JSON)
+                 .header("Authorization", "Bearer " + token)
+                 .body(representation)
+                 .when().put("/server")
+                 .then().statusCode(200);
     } else {
       RestAssured.given()
                  .contentType(MediaType.APPLICATION_JSON)
