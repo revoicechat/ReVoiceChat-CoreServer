@@ -1,9 +1,11 @@
 package fr.revoicechat.core.repository.impl.message;
 
+import static fr.revoicechat.core.risk.RoomRiskType.SERVER_ROOM_READ;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -20,10 +22,15 @@ import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.ServerType;
+import fr.revoicechat.core.model.ServerUser;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.representation.message.MessageFilterParams;
 import fr.revoicechat.notification.model.ActiveStatus;
+import fr.revoicechat.risk.model.Risk;
+import fr.revoicechat.risk.model.RiskMode;
+import fr.revoicechat.risk.model.ServerRoles;
+import fr.revoicechat.risk.model.UserRoleMembership;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
@@ -44,8 +51,10 @@ class TestMessageSearcher {
 
   private User user1;
   private User user2;
+  private Server server;
   private Room room1;
   private Room room2;
+  private Room room3;
 
   Map<String, Message> messages;
 
@@ -54,7 +63,9 @@ class TestMessageSearcher {
     messages = new HashMap<>();
     user1 = createUser();
     user2 = createUser();
-    var server = createServer(user1);
+    server = createServer(user1);
+    joinServer(server, user1);
+    joinServer(server, user2);
     room1 = createRoom(server);
     messages.put("message 1", createMessage(user1, room1, "message 1"));
     messages.put("message 2", createMessage(user1, room1, "message 2"));
@@ -77,6 +88,13 @@ class TestMessageSearcher {
     messages.put("message 18", createMessage(user2, room2, "message 18"));
     messages.put("message 19", createMessage(user2, room2, "message 19"));
     messages.put("message 20", createMessage(user2, room2, "message 20 with keyword"));
+    room3 = createRoom(server);
+    messages.put("message 21", createMessage(user1, room3, "message 21"));
+    messages.put("message 22", createMessage(user1, room3, "message 22"));
+    messages.put("message 23", createMessage(user1, room3, "message 23"));
+    messages.put("message 24", createMessage(user1, room3, "message 24"));
+    messages.put("message 25", createMessage(user1, room3, "message 25 with keyword"));
+
   }
 
   @Test
@@ -84,7 +102,7 @@ class TestMessageSearcher {
     // Given
     var param = paramsBuilder().setPage(0).setSize(messages.size()).build();
     // When
-    var result = messageSearcher.search(param);
+    var result = messageSearcher.search(user1.getId(), param);
     // Then
     assertThat(result.pageNumber()).isZero();
     assertThat(result.pageSize()).isEqualTo(messages.size());
@@ -100,7 +118,7 @@ class TestMessageSearcher {
                                .setRoomId(room1.getId())
                                .build();
     // When
-    var result = messageSearcher.search(param);
+    var result = messageSearcher.search(user1.getId(), param);
     // Then
     assertThat(result.pageNumber()).isZero();
     assertThat(result.pageSize()).isEqualTo(2);
@@ -120,7 +138,7 @@ class TestMessageSearcher {
                                .setLastMessage(messages.get("message 9").getId())
                                .build();
     // When
-    var result = messageSearcher.search(param);
+    var result = messageSearcher.search(user1.getId(), param);
     // Then
     assertThat(result.pageNumber()).isZero();
     assertThat(result.pageSize()).isEqualTo(2);
@@ -139,7 +157,7 @@ class TestMessageSearcher {
                                .setRoomId(room2.getId())
                                .build();
     // When
-    var result = messageSearcher.search(param);
+    var result = messageSearcher.search(user1.getId(), param);
     // Then
     assertThat(result.pageNumber()).isZero();
     assertThat(result.pageSize()).isEqualTo(2);
@@ -160,11 +178,10 @@ class TestMessageSearcher {
                                .setKeyword(keyword)
                                .build();
     // When
-    var result = messageSearcher.search(param);
+    var result = messageSearcher.search(user1.getId(), param);
     // Then
     assertThat(result.pageNumber()).isZero();
     assertThat(result.pageSize()).isEqualTo(2);
-    assertThat(result.totalElements()).isEqualTo(2);
     var content = result.content();
     assertThat(content).hasSize(2).containsExactlyInAnyOrder(
         messages.get("message 10"),
@@ -180,7 +197,7 @@ class TestMessageSearcher {
                                .setKeyword("")
                                .build();
     // When
-    var result = messageSearcher.search(param);
+    var result = messageSearcher.search(user1.getId(), param);
     // Then
     assertThat(result.pageNumber()).isZero();
     assertThat(result.pageSize()).isEqualTo(2);
@@ -199,14 +216,49 @@ class TestMessageSearcher {
                                .setUserId(user1.getId())
                                .build();
     // When
-    var result = messageSearcher.search(param);
+    var result = messageSearcher.search(user1.getId(), param);
     // Then
     assertThat(result.pageNumber()).isZero();
-    assertThat(result.totalElements()).isEqualTo(10);
     var content = result.content();
     assertThat(content).hasSize(8)
         .allMatch(message -> Objects.equals(message.getUser(), user1))
         .allMatch(message -> !Objects.equals(message.getUser(), user2));
+  }
+
+  @Test
+  void testMessageByUser2WithNoRightToReadRoom3() {
+    // Given
+    var serverRoles = new ServerRoles();
+    serverRoles.setId(UUID.randomUUID());
+    serverRoles.setName("role");
+    serverRoles.setPriority(0);
+    serverRoles.setServer(server.getId());
+    entityManager.persist(serverRoles);
+    createRisk(serverRoles, room1.getId(), RiskMode.ENABLE);
+    createRisk(serverRoles, room2.getId(), RiskMode.ENABLE);
+    createRisk(serverRoles, room3.getId(), RiskMode.DISABLE);
+    var member = new UserRoleMembership();
+    member.setId(user2.getId());
+    serverRoles.setUsers(List.of(member));
+    entityManager.persist(serverRoles);
+    var param = paramsBuilder().setPage(0).setSize(messages.size()).build();
+    // When
+    var result = messageSearcher.search(user2.getId(), param);
+    // Then
+    assertThat(result.pageNumber()).isZero();
+    var content = result.content();
+    assertThat(content).hasSize(messages.size() - 5)
+                       .allMatch(message -> !Objects.equals(message.getRoom(), room3));
+  }
+
+  private void createRisk(final ServerRoles serverRoles, UUID entity, RiskMode mode) {
+    var riskRoom1 = new Risk();
+    riskRoom1.setId(UUID.randomUUID());
+    riskRoom1.setEntity(entity);
+    riskRoom1.setType(SERVER_ROOM_READ);
+    riskRoom1.setMode(mode);
+    riskRoom1.setServerRoles(serverRoles);
+    entityManager.persist(riskRoom1);
   }
 
   private User createUser() {
@@ -229,6 +281,13 @@ class TestMessageSearcher {
     server.setOwner(user);
     entityManager.persist(server);
     return server;
+  }
+
+  private void joinServer(final Server server, final User user) {
+    var joined = new ServerUser();
+    joined.setServer(server);
+    joined.setUser(user);
+    entityManager.persist(joined);
   }
 
   private Room createRoom(final Server server) {

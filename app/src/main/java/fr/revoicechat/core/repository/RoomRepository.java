@@ -2,6 +2,7 @@ package fr.revoicechat.core.repository;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import fr.revoicechat.core.model.Room;
 
@@ -10,4 +11,6 @@ public interface RoomRepository {
   List<UUID> findIdThatAreNotInRoom(UUID serverId, List<UUID> ids);
 
   UUID getServerId(UUID room);
+
+  Stream<Room> findRoomsByUserServers(UUID userId);
 }

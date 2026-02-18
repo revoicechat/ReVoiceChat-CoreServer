@@ -4,6 +4,7 @@ import static java.util.function.Predicate.not;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.repository.RoomRepository;
@@ -28,11 +29,11 @@ public class RoomRepositoryImpl implements RoomRepository {
   @Override
   public List<UUID> findIdThatAreNotInRoom(UUID serverId, List<UUID> ids) {
     var idsIn = entityManager.createQuery("""
-                                                  SELECT r.id
-                                                  FROM Room r
-                                                  WHERE r.id IN :ids
-                                                  and r.server.id = :serverId
-                                              """, UUID.class)
+                                     SELECT r.id
+                                     FROM Room r
+                                     WHERE r.id IN :ids
+                                     and r.server.id = :serverId
+                                 """, UUID.class)
                              .setParameter("ids", ids)
                              .setParameter("serverId", serverId)
                              .getResultList();
@@ -47,5 +48,17 @@ public class RoomRepositoryImpl implements RoomRepository {
         .getResultStream()
         .findFirst()
         .orElse(null);
+  }
+
+  @Override
+  public Stream<Room> findRoomsByUserServers(final UUID userId) {
+    return entityManager.createQuery("""
+                                SELECT r
+                                FROM Room r
+                                JOIN ServerUser su on su.server = r.server
+                                WHERE su.user.id = :id
+                            """, Room.class)
+                        .setParameter("id", userId)
+                        .getResultStream();
   }
 }
