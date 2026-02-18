@@ -9,7 +9,6 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import fr.revoicechat.core.model.MessageReactions;
@@ -29,7 +28,7 @@ class TestMessageReactionsConverter {
           "users" : [ "b22e3986-3015-4fd8-bb00-183131850ab2" ]
         }, {
           "emoji" : "🍟",
-          "users" : [ "b22e3986-3015-4fd8-bb00-183131850ab2", "cafcb646-dc66-4376-bc81-2a9e2ea9fbe6" ]
+          "users" : [ "cafcb646-dc66-4376-bc81-2a9e2ea9fbe6", "b22e3986-3015-4fd8-bb00-183131850ab2" ]
         } ]
       }""";
 
@@ -81,7 +80,7 @@ class TestMessageReactionsConverter {
   void testConvertToEntityAttributeWithError() {
     var mapper = new ObjectMapper() {
       @Override
-      public <T> T readValue(String content, TypeReference<T> valueTypeRef) throws JsonProcessingException {
+      public <T> T readValue(String content, Class<T> classes) throws JsonProcessingException {
         throw new JsonProcessingException("") {};
       }
     };

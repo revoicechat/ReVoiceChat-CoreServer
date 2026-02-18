@@ -4,11 +4,9 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.ROLE_USER;
 
 import java.util.UUID;
 
-import fr.revoicechat.core.service.message.MessagePageResult;
-import jakarta.annotation.security.RolesAllowed;
-
 import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
+import fr.revoicechat.core.representation.message.MessageFilterParams;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
 import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
 import fr.revoicechat.core.representation.room.RoomPresence;
@@ -16,9 +14,11 @@ import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.retriever.EntityByRoomIdRetriever;
 import fr.revoicechat.core.service.MessageService;
 import fr.revoicechat.core.service.RoomService;
+import fr.revoicechat.core.service.message.MessagePageResult;
 import fr.revoicechat.core.service.room.RoomPresenceService;
 import fr.revoicechat.core.web.api.RoomController;
 import fr.revoicechat.risk.RisksMembershipData;
+import jakarta.annotation.security.RolesAllowed;
 
 @RolesAllowed(ROLE_USER)
 public class RoomControllerImpl implements RoomController {
@@ -59,9 +59,8 @@ public class RoomControllerImpl implements RoomController {
 
   @Override
   @RisksMembershipData(risks = "SERVER_ROOM_READ_MESSAGE", retriever = EntityByRoomIdRetriever.class)
-  public PageResult<MessageRepresentation> messages(UUID roomId, int page, int size) {
-    var sizeParam = size == 0 ? 50 : size;
-    return messagePageResult.getMessagesByRoom(roomId, page, sizeParam);
+  public PageResult<MessageRepresentation> messages(UUID roomId, MessageFilterParams params) {
+    return messagePageResult.getMessagesByRoom(roomId, params);
   }
 
   @Override

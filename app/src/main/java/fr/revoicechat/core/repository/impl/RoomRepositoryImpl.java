@@ -44,7 +44,8 @@ public class RoomRepositoryImpl implements RoomRepository {
     return entityManager
         .createQuery("SELECT r.server.id FROM Room r where r.id = :room", UUID.class)
         .setParameter("room", room)
-        .getResultList()
-        .getFirst();
+        .getResultStream()
+        .findFirst()
+        .orElse(null);
   }
 }

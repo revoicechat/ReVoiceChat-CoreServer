@@ -140,4 +140,9 @@ public class Message {
   public int hashCode() {
     return Objects.hashCode(getId());
   }
+
+  @Override
+  public String toString() {
+    return "Message [%s] %s : %s".formatted(getId(), getCreatedDate(), getText());
+  }
 }

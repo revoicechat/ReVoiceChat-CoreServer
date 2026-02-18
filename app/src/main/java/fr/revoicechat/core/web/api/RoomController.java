@@ -2,7 +2,9 @@ package fr.revoicechat.core.web.api;
 
 import java.util.UUID;
 
+import fr.revoicechat.core.representation.message.MessageFilterParams;
 import fr.revoicechat.openapi.api.LoggedApi;
+import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
@@ -91,29 +93,15 @@ public interface RoomController extends LoggedApi {
   UUID delete(@PathParam("id") UUID roomId);
 
   @Tags(refs = { "Room", "Message" })
-  @Operation(
-      summary = "Get room messages",
-      description = "Retrieve a paginated list of messages from a specific room, ordered by timestamp (newest first)."
-  )
+  @Operation(summary = "Get room messages", description = "Retrieve a paginated list of messages from a specific room, ordered by timestamp (newest first).")
   @APIResponse(responseCode = "200", description = "Messages retrieved successfully")
-  @APIResponse(
-      responseCode = "403",
-      description = "Insufficient permissions to access messages in this room"
-  )
-  @APIResponse(
-      responseCode = "404",
-      description = "Room not found",
-      content = @Content(
-          mediaType = "text/plain",
-          schema = @Schema(implementation = String.class, examples = "Room not found")
-      )
-  )
+  @APIResponse(responseCode = "403", description = "Insufficient permissions to access messages in this room")
+  @APIResponse(responseCode = "404", description = "Room not found")
   @GET
   @Path("/message")
   PageResult<MessageRepresentation> messages(
       @PathParam("id") UUID roomId,
-      @QueryParam("page") int page,
-      @QueryParam("size") int size
+      @BeanParam MessageFilterParams params
   );
 
   @Tags(refs = { "Room", "Message" })

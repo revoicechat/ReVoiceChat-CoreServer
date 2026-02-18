@@ -73,8 +73,25 @@ class TestUserServiceNeedInvitation {
     assertThat(reloadedInvitation.getApplier()).isEqualTo(user);
   }
 
+  @Test
+  @Transactional
+  void testWithPermanentInvitationLink() {
+    var adminRep = userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
+    var admin = entityManager.find(User.class, adminRep.id());
+    var invitation = generateInvitationLink(admin, PERMANENT, APPLICATION_JOIN);
+    SignupRepresentation signer = new SignupRepresentation("user", "test", "user@revoicechat.fr", invitation.getId());
+    var resultRepresentation = userService.create(signer);
+    assertThat(resultRepresentation).isNotNull();
+    assertUser(resultRepresentation);
+    entityManager.flush();
+    entityManager.clear();
+    var reloadedInvitation = entityManager.find(InvitationLink.class, invitation.getId());
+    assertThat(reloadedInvitation.getStatus()).isEqualTo(PERMANENT);
+    assertThat(reloadedInvitation.getApplier()).isNull();
+  }
+
   @ParameterizedTest
-  @EnumSource(value = InvitationLinkStatus.class, names = "CREATED", mode = Mode.EXCLUDE)
+  @EnumSource(value = InvitationLinkStatus.class, names = { "CREATED", "PERMANENT" }, mode = Mode.EXCLUDE)
   @Transactional
   void testWithInvalidStatusInvitationLink(InvitationLinkStatus status) {
     var adminRep = userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));

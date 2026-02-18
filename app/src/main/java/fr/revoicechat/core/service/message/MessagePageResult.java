@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import fr.revoicechat.core.repository.impl.MessageRepositoryImpl;
 import fr.revoicechat.core.repository.page.PageResult;
+import fr.revoicechat.core.representation.message.MessageFilterParams;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
 import fr.revoicechat.core.service.MessageService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -27,8 +28,8 @@ public class MessagePageResult {
    * @return list of messages in the room, possibly empty if no messages exist
    */
   @Transactional
-  public PageResult<MessageRepresentation> getMessagesByRoom(UUID roomId, int page, int size) {
-    var pageResult = messageRepositoryImpl.findByRoomId(roomId, page, size);
+  public PageResult<MessageRepresentation> getMessagesByRoom(UUID roomId, MessageFilterParams params) {
+    var pageResult = messageRepositoryImpl.findByRoomId(roomId, params);
     return new PageResult<>(pageResult.content()
                                       .stream()
                                       .map(messageService::toRepresentation)
