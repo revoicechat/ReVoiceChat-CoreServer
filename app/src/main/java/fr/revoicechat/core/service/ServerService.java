@@ -9,18 +9,15 @@ import java.util.UUID;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.ServerType;
 import fr.revoicechat.core.model.ServerUser;
-import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.repository.ServerRepository;
 import fr.revoicechat.core.repository.UserRepository;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.representation.server.ServerUpdateNotification;
-import fr.revoicechat.core.risk.ServerRiskType;
 import fr.revoicechat.core.service.server.NewServerCreator;
 import fr.revoicechat.core.service.server.ServerEntityService;
+import fr.revoicechat.core.service.server.ServerMapper;
 import fr.revoicechat.notification.Notification;
-import fr.revoicechat.risk.service.RiskService;
-import fr.revoicechat.risk.technicaldata.RiskEntity;
 import fr.revoicechat.security.UserHolder;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
@@ -48,7 +45,8 @@ public class ServerService {
   private final UserHolder userHolder;
   private final EntityManager entityManager;
   private final UserRepository userRepository;
-  private final RiskService riskService;
+  private final ServerMapper serverMapper;
+
 
   public ServerService(final ServerEntityService serverEntityService,
                        final ServerRepository serverRepository,
@@ -56,19 +54,19 @@ public class ServerService {
                        final UserHolder userHolder,
                        final EntityManager entityManager,
                        final UserRepository userRepository,
-                       final RiskService riskService) {
+                       final ServerMapper serverMapper) {
     this.serverEntityService = serverEntityService;
     this.serverRepository = serverRepository;
     this.newServerCreator = newServerCreator;
     this.userHolder = userHolder;
     this.entityManager = entityManager;
     this.userRepository = userRepository;
-    this.riskService = riskService;
+    this.serverMapper = serverMapper;
   }
 
   /** @return a list of available servers, possibly empty */
   public List<ServerRepresentation> getAll() {
-    return serverRepository.findAll().stream().map(this::map).toList();
+    return serverRepository.findAll().stream().map(serverMapper::map).toList();
   }
 
   /**
@@ -79,7 +77,7 @@ public class ServerService {
    * @throws java.util.NoSuchElementException if no server with the given ID exists
    */
   public ServerRepresentation get(final UUID id) {
-    return map(serverEntityService.getEntity(id));
+    return serverMapper.map(serverEntityService.getEntity(id));
   }
 
   /**
@@ -98,7 +96,7 @@ public class ServerService {
     serverUser.setServer(server);
     serverUser.setUser(userHolder.get());
     entityManager.persist(serverUser);
-    return map(server);
+    return serverMapper.map(server);
   }
 
   /**
@@ -116,17 +114,7 @@ public class ServerService {
     var server = serverEntityService.getEntity(id);
     server.setName(representation.name());
     entityManager.persist(server);
-    var updatedServer = map(server);
-    Notification.of(new ServerUpdateNotification(updatedServer, MODIFY)).sendTo(userRepository.findByServers(id));
-    return updatedServer;
-  }
-
-  public ServerRepresentation map(final Server server) {
-    return new ServerRepresentation(
-        server.getId(),
-        server.getName(),
-        Optional.ofNullable(server.getOwner()).map(User::getId).orElse(null),
-        riskService.hasRisk(new RiskEntity(server.getId(), null), ServerRiskType.SERVER_UPDATE)
-    );
+    Notification.of(new ServerUpdateNotification(serverMapper.mapLight(server), MODIFY)).sendTo(userRepository.findByServers(id));
+    return serverMapper.map(server);
   }
 }

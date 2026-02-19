@@ -29,7 +29,8 @@ public class MessagePageResult {
    */
   @Transactional
   public PageResult<MessageRepresentation> getMessagesByRoom(UUID roomId, MessageFilterParams params) {
-    var pageResult = messageRepositoryImpl.findByRoomId(roomId, params);
+    params.setRoomId(roomId);
+    var pageResult = messageRepositoryImpl.search(params);
     return new PageResult<>(pageResult.content()
                                       .stream()
                                       .map(messageService::toRepresentation)

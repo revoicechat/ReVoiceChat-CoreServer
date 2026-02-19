@@ -27,8 +27,7 @@ public class MessageRepositoryImpl implements MessageRepository {
   }
 
   @Override
-  public PageResult<Message> findByRoomId(UUID roomId, MessageFilterParams params) {
-    params.setRoomId(roomId);
+  public PageResult<Message> search(MessageFilterParams params) {
     return messageSearcher.search(userHolder.getId(), params);
   }
 
