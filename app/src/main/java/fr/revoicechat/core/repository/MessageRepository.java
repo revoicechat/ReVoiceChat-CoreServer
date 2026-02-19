@@ -9,7 +9,7 @@ import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.MessageFilterParams;
 
 public interface MessageRepository {
-  PageResult<Message> findByRoomId(UUID roomId, MessageFilterParams params);
+  PageResult<Message> search(MessageFilterParams params);
 
   Stream<Message> findByRoom(Room room);
 

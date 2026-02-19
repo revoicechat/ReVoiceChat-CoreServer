@@ -17,6 +17,7 @@ import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
 import fr.revoicechat.core.representation.room.RoomNotification;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.risk.RoomRiskType;
+import fr.revoicechat.core.service.room.RoomMapper;
 import fr.revoicechat.core.service.server.ServerEntityService;
 import fr.revoicechat.core.service.user.RoomUserFinder;
 import fr.revoicechat.notification.Notification;
@@ -49,17 +50,20 @@ public class RoomService {
   private final ServerEntityService serverEntityService;
   private final RoomUserFinder roomUserFinder;
   private final RiskService riskService;
+  private final RoomMapper roomMapper;
 
   public RoomService(EntityManager entityManager,
                      RoomRepository repository,
                      ServerEntityService serverEntityService,
                      RoomUserFinder roomUserFinder,
-                     RiskService riskService) {
+                     RiskService riskService,
+                     RoomMapper roomMapper) {
     this.entityManager = entityManager;
     this.repository = repository;
     this.serverEntityService = serverEntityService;
     this.roomUserFinder = roomUserFinder;
     this.riskService = riskService;
+    this.roomMapper = roomMapper;
   }
 
   /**
@@ -67,7 +71,7 @@ public class RoomService {
    * @return a list of available rooms, possibly empty
    */
   public List<RoomRepresentation> findAll(final UUID id) {
-    return repository.findByServerId(id).stream().map(this::toReprsentation).toList();
+    return repository.findByServerId(id).stream().map(roomMapper::map).toList();
   }
 
   /**
@@ -77,7 +81,7 @@ public class RoomService {
   public List<RoomRepresentation> findAllForCurrentUser(final UUID id) {
     return repository.findByServerId(id).stream()
                      .filter(room -> riskService.hasRisk(new RiskEntity(id, room.getId()), RoomRiskType.SERVER_ROOM_READ))
-                     .map(this::toReprsentation)
+                     .map(roomMapper::map)
                      .toList();
   }
 
@@ -100,9 +104,8 @@ public class RoomService {
     var structure = new ServerStructure(new ArrayList<>());
     structure.items().addAll(server.getStructure().items());
     structure.items().add(new ServerRoom(room.getId()));
-    var representation = toReprsentation(room);
-    Notification.of(new RoomNotification(representation, NotificationActionType.ADD)).sendTo(roomUserFinder.find(room.getId()));
-    return representation;
+    Notification.of(new RoomNotification(roomMapper.mapLight(room), NotificationActionType.ADD)).sendTo(roomUserFinder.find(room.getId()));
+    return roomMapper.map(room);
   }
 
   /**
@@ -112,7 +115,7 @@ public class RoomService {
    * @throws ResourceNotFoundException if no room with the given ID exists
    */
   public RoomRepresentation read(final UUID roomId) {
-    return toReprsentation(getRoom(roomId));
+    return roomMapper.map(getRoom(roomId));
   }
 
   /**
@@ -130,9 +133,8 @@ public class RoomService {
     }
     room.setName(creation.name());
     entityManager.persist(room);
-    var representation = toReprsentation(room);
-    Notification.of(new RoomNotification(representation, NotificationActionType.MODIFY)).sendTo(roomUserFinder.find(id));
-    return representation;
+    Notification.of(new RoomNotification(roomMapper.mapLight(room), NotificationActionType.MODIFY)).sendTo(roomUserFinder.find(id));
+    return roomMapper.map(room);
   }
 
   /**
@@ -148,21 +150,12 @@ public class RoomService {
     server.setStructure(removeFromStructure(server.getStructure(), room));
     entityManager.persist(server);
     Optional.ofNullable(entityManager.find(Room.class, id)).ifPresent(entityManager::remove);
-    Notification.of(new RoomNotification(new RoomRepresentation(id, null, null, null), NotificationActionType.REMOVE)).sendTo(roomUserFinder.find(id));
+    Notification.of(new RoomNotification(new RoomRepresentation(id, null, null, null, null), NotificationActionType.REMOVE)).sendTo(roomUserFinder.find(id));
     return id;
   }
 
   public Room getRoom(final UUID roomId) {
     return Optional.ofNullable(entityManager.find(Room.class, roomId)).orElseThrow(() -> new ResourceNotFoundException(Room.class, roomId));
-  }
-
-  private RoomRepresentation toReprsentation(final Room room) {
-    return new RoomRepresentation(
-        room.getId(),
-        room.getName(),
-        room.getType(),
-        room.getServer().getId()
-    );
   }
 
   private ServerStructure removeFromStructure(ServerStructure structure, Room room) {

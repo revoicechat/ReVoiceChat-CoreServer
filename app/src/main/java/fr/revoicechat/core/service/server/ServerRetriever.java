@@ -15,19 +15,19 @@ public class ServerRetriever {
 
   private final UserHolder userHolder;
   private final ServerRepository serverRepository;
-  private final ServerService serverService;
+  private final ServerMapper serverMapper;
 
-  public ServerRetriever(final UserHolder userHolder, final ServerRepository serverRepository, final ServerService serverService) {
+  public ServerRetriever(final UserHolder userHolder, final ServerRepository serverRepository, final ServerMapper serverMapper) {
     this.userHolder = userHolder;
     this.serverRepository = serverRepository;
-    this.serverService = serverService;
+    this.serverMapper = serverMapper;
   }
 
   /** @return all servers for the connected user. */
   @Transactional
   public List<ServerRepresentation> getAllMyServers() {
     return serverRepository.getByUser(userHolder.get())
-                                .map(serverService::map)
+                                .map(serverMapper::map)
                                 .toList();
   }
 
@@ -36,11 +36,11 @@ public class ServerRetriever {
   public List<ServerRepresentation> getAllPublicServers(final boolean joinedToo) {
     var servers = serverRepository.getPublicServer();
     if (joinedToo) {
-      return servers.map(serverService::map).toList();
+      return servers.map(serverMapper::map).toList();
     } else {
       var serverIds = serverRepository.getByUser(userHolder.get()).map(Server::getId).toList();
       return servers.filter(server -> !serverIds.contains(server.getId()))
-                    .map(serverService::map)
+                    .map(serverMapper::map)
                     .toList();
     }
   }

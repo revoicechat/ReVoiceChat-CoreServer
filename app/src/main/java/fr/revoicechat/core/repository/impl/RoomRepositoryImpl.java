@@ -7,7 +7,9 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import fr.revoicechat.core.model.Room;
+import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.repository.RoomRepository;
+import fr.revoicechat.core.repository.impl.room.RoomUnreadSummary;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -61,4 +63,35 @@ public class RoomRepositoryImpl implements RoomRepository {
                         .setParameter("id", userId)
                         .getResultStream();
   }
+
+  @Override
+  public RoomUnreadSummary findUnreadSummary(final Room room, final User currentUser) {
+    Object[] row = (Object[]) entityManager.createQuery("""
+                                               SELECT
+                                                   (SELECT m2.id FROM Message m2
+                                                    WHERE m2.room = :room
+                                                      AND m2.user != :currentUser
+                                                      AND (rrs.lastReadAt IS NULL OR m2.createdDate > rrs.lastReadAt)
+                                                    ORDER BY m2.createdDate ASC
+                                                    LIMIT 1),
+                                                   COUNT(m.id),
+                                                   SUM(CASE WHEN m.answerTo.user = :currentUser THEN 1 ELSE 0 END),
+                                                   SUM(CASE WHEN m.text LIKE CONCAT('%@', :username, '%') THEN 1 ELSE 0 END)
+                                               FROM Message m
+                                               LEFT JOIN RoomReadStatus rrs
+                                                   ON rrs.room = :room AND rrs.user = :currentUser
+                                               WHERE m.room = :room
+                                                 AND (rrs.lastReadAt IS NULL OR m.createdDate > rrs.lastReadAt)
+                                                 AND m.user != :currentUser""")
+                                .setParameter("room", room)
+                                .setParameter("currentUser", currentUser)
+                                .setParameter("username", currentUser.getDisplayName())
+                                .getSingleResult();
+
+    return new RoomUnreadSummary(
+        (UUID)    row[0],
+        (Long)    row[1],
+        row[2] != null ? (Long) row[2] : 0L,
+        row[3] != null ? (Long) row[3] : 0L
+    );  }
 }

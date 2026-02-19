@@ -1,8 +1,10 @@
 package fr.revoicechat.core.repository.impl;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 
+import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.ServerUser;
 import fr.revoicechat.core.model.User;
@@ -15,11 +17,6 @@ import jakarta.persistence.PersistenceContext;
 public class ServerRepositoryImpl implements ServerRepository {
   @PersistenceContext
   private EntityManager entityManager;
-
-  @Override
-  public long count() {
-    return entityManager.createQuery("SELECT COUNT(s) FROM Server s", Long.class).getSingleResult();
-  }
 
   @Override
   public List<Server> findAll() {
@@ -56,5 +53,4 @@ public class ServerRepositoryImpl implements ServerRepository {
         .getResultStream()
         .filter(Server::isPublic);
   }
-
 }

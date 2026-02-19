@@ -17,7 +17,6 @@ import fr.revoicechat.core.repository.UserRepository;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerUpdateNotification;
 import fr.revoicechat.core.service.RoomService;
-import fr.revoicechat.core.service.ServerService;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.web.error.BadRequestException;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -32,19 +31,19 @@ public class ServerStructureService {
   private final RoomRepository roomRepository;
   private final RoomService roomService;
   private final UserRepository userRepository;
-  private final ServerService serverService;
+  private final ServerMapper serverMapper;
 
   public ServerStructureService(final ServerEntityService serverEntityService,
                                 final EntityManager entityManager,
                                 final RoomRepository roomRepository,
                                 final RoomService roomService,
-                                final UserRepository userRepository, final ServerService serverService) {
+                                final UserRepository userRepository, final ServerMapper serverMapper) {
     this.serverEntityService = serverEntityService;
     this.entityManager = entityManager;
     this.roomRepository = roomRepository;
     this.roomService = roomService;
     this.userRepository = userRepository;
-    this.serverService = serverService;
+    this.serverMapper = serverMapper;
   }
 
   @Transactional
@@ -57,7 +56,7 @@ public class ServerStructureService {
     server.setStructure(structure);
     entityManager.persist(server);
     var newStructure = getStructure(id);
-    Notification.of(new ServerUpdateNotification(serverService.map(server), MODIFY)).sendTo(userRepository.findByServers(id));
+    Notification.of(new ServerUpdateNotification(serverMapper.mapLight(server), MODIFY)).sendTo(userRepository.findByServers(id));
     return newStructure;
   }
 
