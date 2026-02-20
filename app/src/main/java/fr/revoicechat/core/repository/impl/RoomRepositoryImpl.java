@@ -76,11 +76,11 @@ public class RoomRepositoryImpl implements RoomRepository {
                                                     ORDER BY m2.createdDate ASC
                                                     LIMIT 1),
                                                    COUNT(m.id),
-                                                   SUM(CASE WHEN m.answerTo.user = :currentUser THEN 1 ELSE 0 END),
+                                                   SUM(CASE WHEN answer.user = :currentUser THEN 1 ELSE 0 END),
                                                    SUM(CASE WHEN m.text LIKE CONCAT('%@', :username, '%') THEN 1 ELSE 0 END)
                                                FROM Message m
-                                               LEFT JOIN RoomReadStatus rrs
-                                                   ON rrs.room = :room AND rrs.user = :currentUser
+                                               LEFT JOIN m.answerTo answer
+                                               LEFT JOIN RoomReadStatus rrs ON rrs.room = :room AND rrs.user = :currentUser
                                                WHERE m.room = :room
                                                  AND (rrs.lastReadAt IS NULL OR m.createdDate > rrs.lastReadAt)
                                                  AND m.user != :currentUser""")
