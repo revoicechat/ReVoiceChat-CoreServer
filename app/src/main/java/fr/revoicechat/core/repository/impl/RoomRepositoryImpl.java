@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import fr.revoicechat.core.model.room.Room;
 import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.repository.RoomRepository;
@@ -65,7 +66,7 @@ public class RoomRepositoryImpl implements RoomRepository {
   }
 
   @Override
-  public RoomUnreadSummary findUnreadSummary(final ServerRoom room, final User currentUser) {
+  public RoomUnreadSummary findUnreadSummary(final Room room, final User currentUser) {
     Object[] row = (Object[]) entityManager.createQuery("""
                                                SELECT
                                                    (SELECT m2.id FROM Message m2

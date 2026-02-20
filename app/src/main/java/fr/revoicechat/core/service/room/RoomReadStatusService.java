@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import fr.revoicechat.core.model.room.Room;
 import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.room.RoomReadStatus;
@@ -43,7 +44,7 @@ public class RoomReadStatusService {
                          .reduce(UnreadMessageStatus.none(), UnreadMessageStatus::merge);
   }
 
-  public UnreadMessageStatus getUnreadMessagesStatus(final ServerRoom room) {
+  public UnreadMessageStatus getUnreadMessagesStatus(final Room room) {
     return room.isVoiceRoom() ? UnreadMessageStatus.none()
                               : roomRepository.findUnreadSummary(room, userHolder.get())
                                               .toUnreadMessageStatus();

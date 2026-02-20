@@ -26,7 +26,7 @@ public class RoomReadStatus {
   @Id
   @ManyToOne
   @JoinColumn(name = "ROOM_ID", nullable = false)
-  private ServerRoom room;
+  private Room room;
   /** We do not point at {@link Message} because it could be deleted */
   @Column(name = "LAST_READ_MESSAGE_ID")
   private UUID lastMessageId;
@@ -42,11 +42,11 @@ public class RoomReadStatus {
     return this;
   }
 
-  public ServerRoom getRoom() {
+  public Room getRoom() {
     return room;
   }
 
-  public RoomReadStatus setRoom(final ServerRoom room) {
+  public RoomReadStatus setRoom(final Room room) {
     this.room = room;
     return this;
   }
