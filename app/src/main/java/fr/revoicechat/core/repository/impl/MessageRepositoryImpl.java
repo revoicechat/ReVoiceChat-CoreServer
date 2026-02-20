@@ -4,7 +4,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import fr.revoicechat.core.model.Message;
-import fr.revoicechat.core.model.Room;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.repository.MessageRepository;
 import fr.revoicechat.core.repository.impl.message.MessageSearcher;
 import fr.revoicechat.core.repository.page.PageResult;
@@ -32,7 +32,7 @@ public class MessageRepositoryImpl implements MessageRepository {
   }
 
   @Override
-  public Stream<Message> findByRoom(Room room) {
+  public Stream<Message> findByRoom(ServerRoom room) {
     return entityManager.createQuery("""
                  SELECT m
                  FROM Message m

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import fr.revoicechat.core.model.Room;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.repository.RoomRepository;
 import fr.revoicechat.core.repository.impl.room.RoomUnreadSummary;
@@ -21,9 +21,9 @@ public class RoomRepositoryImpl implements RoomRepository {
   private EntityManager entityManager;
 
   @Override
-  public List<Room> findByServerId(UUID serverId) {
+  public List<ServerRoom> findByServerId(UUID serverId) {
     return entityManager
-        .createQuery("SELECT r FROM Room r where r.server.id = :serverId", Room.class)
+        .createQuery("SELECT r FROM ServerRoom r where r.server.id = :serverId", ServerRoom.class)
         .setParameter("serverId", serverId)
         .getResultList();
   }
@@ -32,7 +32,7 @@ public class RoomRepositoryImpl implements RoomRepository {
   public List<UUID> findIdThatAreNotInRoom(UUID serverId, List<UUID> ids) {
     var idsIn = entityManager.createQuery("""
                                      SELECT r.id
-                                     FROM Room r
+                                     FROM ServerRoom r
                                      WHERE r.id IN :ids
                                      and r.server.id = :serverId
                                  """, UUID.class)
@@ -45,7 +45,7 @@ public class RoomRepositoryImpl implements RoomRepository {
   @Override
   public UUID getServerId(final UUID room) {
     return entityManager
-        .createQuery("SELECT r.server.id FROM Room r where r.id = :room", UUID.class)
+        .createQuery("SELECT r.server.id FROM ServerRoom r where r.id = :room", UUID.class)
         .setParameter("room", room)
         .getResultStream()
         .findFirst()
@@ -53,19 +53,19 @@ public class RoomRepositoryImpl implements RoomRepository {
   }
 
   @Override
-  public Stream<Room> findRoomsByUserServers(final UUID userId) {
+  public Stream<ServerRoom> findRoomsByUserServers(final UUID userId) {
     return entityManager.createQuery("""
                                 SELECT r
-                                FROM Room r
+                                FROM ServerRoom r
                                 JOIN ServerUser su on su.server = r.server
                                 WHERE su.user.id = :id
-                            """, Room.class)
+                            """, ServerRoom.class)
                         .setParameter("id", userId)
                         .getResultStream();
   }
 
   @Override
-  public RoomUnreadSummary findUnreadSummary(final Room room, final User currentUser) {
+  public RoomUnreadSummary findUnreadSummary(final ServerRoom room, final User currentUser) {
     Object[] row = (Object[]) entityManager.createQuery("""
                                                SELECT
                                                    (SELECT m2.id FROM Message m2

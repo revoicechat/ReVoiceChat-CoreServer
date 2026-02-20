@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.repository.jpa.MessageReactionsConverter;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
@@ -30,7 +31,7 @@ public class Message {
   private OffsetDateTime updatedDate;
   @ManyToOne
   @JoinColumn(name="ROOM_ID", nullable=false)
-  private Room room;
+  private ServerRoom room;
   @ManyToOne
   @JoinColumn(name="USER_ID", nullable=false)
   private User user;
@@ -83,11 +84,11 @@ public class Message {
     this.updatedDate = updatedDate;
   }
 
-  public Room getRoom() {
+  public ServerRoom getRoom() {
     return room;
   }
 
-  public void setRoom(final Room room) {
+  public void setRoom(final ServerRoom room) {
     this.room = room;
   }
 

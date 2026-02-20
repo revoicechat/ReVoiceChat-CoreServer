@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import fr.revoicechat.core.model.Room;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.service.room.RoomAccessVerifier;
 import fr.revoicechat.core.repository.RoomRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -32,14 +32,14 @@ public class AccessibleRoomsResolver {
   }
 
   public Set<UUID> resolveForSpecificRoom(final UUID currentUserId, final UUID roomId) {
-    var room = entityManager.find(Room.class, roomId);
+    var room = entityManager.find(ServerRoom.class, roomId);
     return roomAccessVerifier.verify(currentUserId, room) ? Set.of(roomId) : Set.of();
   }
 
   public Set<UUID> resolve(UUID currentUserId) {
     return roomRepository.findRoomsByUserServers(currentUserId)
                          .filter(room -> roomAccessVerifier.verify(currentUserId, room))
-                         .map(Room::getId)
+                         .map(ServerRoom::getId)
                          .collect(Collectors.toSet());
   }
 }

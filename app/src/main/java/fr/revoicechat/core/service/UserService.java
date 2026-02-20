@@ -13,7 +13,7 @@ import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import fr.revoicechat.core.model.InvitationLink;
-import fr.revoicechat.core.model.Room;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.repository.UserRepository;
@@ -121,7 +121,7 @@ public class UserService {
 
   @Transactional
   public List<UserRepresentation> fetchUserForRoom(final UUID id) {
-    var server = entityManager.find(Room.class, id).getServer();
+    var server = entityManager.find(ServerRoom.class, id).getServer();
     return fetchUserForServer(server.getId());
   }
 

@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 import fr.revoicechat.core.model.Message;
-import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,7 +26,7 @@ public class RoomReadStatus {
   @Id
   @ManyToOne
   @JoinColumn(name = "ROOM_ID", nullable = false)
-  private Room room;
+  private ServerRoom room;
   /** We do not point at {@link Message} because it could be deleted */
   @Column(name = "LAST_READ_MESSAGE_ID")
   private UUID lastMessageId;
@@ -43,11 +42,11 @@ public class RoomReadStatus {
     return this;
   }
 
-  public Room getRoom() {
+  public ServerRoom getRoom() {
     return room;
   }
 
-  public RoomReadStatus setRoom(final Room room) {
+  public RoomReadStatus setRoom(final ServerRoom room) {
     this.room = room;
     return this;
   }

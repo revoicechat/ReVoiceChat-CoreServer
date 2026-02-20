@@ -6,10 +6,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import fr.revoicechat.core.model.Room;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.model.server.ServerCategory;
 import fr.revoicechat.core.model.server.ServerItem;
-import fr.revoicechat.core.model.server.ServerRoom;
 import fr.revoicechat.core.model.server.ServerStructure;
 import fr.revoicechat.core.nls.RoomErrorCode;
 import fr.revoicechat.core.repository.RoomRepository;
@@ -31,7 +30,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 /**
- * Service responsible for managing {@link Room} entities.
+ * Service responsible for managing {@link ServerRoom} entities.
  * <p>
  * This service acts as a bridge between the application layer and the persistence layer,
  * providing methods to:
@@ -94,7 +93,7 @@ public class RoomService {
    */
   @Transactional
   public RoomRepresentation create(final UUID id, final CreationRoomRepresentation creation) {
-    var room = new Room();
+    var room = new ServerRoom();
     room.setId(UUID.randomUUID());
     room.setType(creation.type());
     room.setName(creation.name());
@@ -103,7 +102,7 @@ public class RoomService {
     entityManager.persist(room);
     var structure = new ServerStructure(new ArrayList<>());
     structure.items().addAll(server.getStructure().items());
-    structure.items().add(new ServerRoom(room.getId()));
+    structure.items().add(new fr.revoicechat.core.model.server.ServerRoom(room.getId()));
     Notification.of(new RoomNotification(roomMapper.mapLight(room), NotificationActionType.ADD)).sendTo(roomUserFinder.find(room.getId()));
     return roomMapper.map(room);
   }
@@ -149,16 +148,16 @@ public class RoomService {
     var server = room.getServer();
     server.setStructure(removeFromStructure(server.getStructure(), room));
     entityManager.persist(server);
-    Optional.ofNullable(entityManager.find(Room.class, id)).ifPresent(entityManager::remove);
+    Optional.ofNullable(entityManager.find(ServerRoom.class, id)).ifPresent(entityManager::remove);
     Notification.of(new RoomNotification(new RoomRepresentation(id, null, null, null, null), NotificationActionType.REMOVE)).sendTo(roomUserFinder.find(id));
     return id;
   }
 
-  public Room getRoom(final UUID roomId) {
-    return Optional.ofNullable(entityManager.find(Room.class, roomId)).orElseThrow(() -> new ResourceNotFoundException(Room.class, roomId));
+  public ServerRoom getRoom(final UUID roomId) {
+    return Optional.ofNullable(entityManager.find(ServerRoom.class, roomId)).orElseThrow(() -> new ResourceNotFoundException(ServerRoom.class, roomId));
   }
 
-  private ServerStructure removeFromStructure(ServerStructure structure, Room room) {
+  private ServerStructure removeFromStructure(ServerStructure structure, ServerRoom room) {
     return new ServerStructure(
         structure.items().stream()
                  .map(i -> removeFromStructure(i, room.getId()))
@@ -168,7 +167,7 @@ public class RoomService {
 
   private ServerItem removeFromStructure(ServerItem item, UUID roomId) {
     return switch (item) {
-      case ServerRoom room when room.id().equals(roomId) -> null;
+      case fr.revoicechat.core.model.server.ServerRoom room when room.id().equals(roomId) -> null;
       case ServerCategory(String name, List<ServerItem> items) -> new ServerCategory(name, items.stream()
                                                                                                 .map(i -> removeFromStructure(i, roomId))
                                                                                                 .filter(Objects::nonNull)

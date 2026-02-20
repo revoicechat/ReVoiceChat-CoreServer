@@ -31,7 +31,7 @@ import jakarta.ws.rs.core.MediaType;
 @QuarkusTest
 @TestProfile(BasicIntegrationTestProfile.class)
 @CleanDatabase
-class TestRoomController {
+class TestServerRoomController {
 
   @Test
   void testUpdate() {

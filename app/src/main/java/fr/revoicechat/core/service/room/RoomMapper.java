@@ -1,6 +1,6 @@
 package fr.revoicechat.core.service.room;
 
-import fr.revoicechat.core.model.Room;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -13,7 +13,7 @@ public class RoomMapper {
     this.roomReadStatusService = roomReadStatusService;
   }
 
-  public RoomRepresentation map(final Room room) {
+  public RoomRepresentation map(final ServerRoom room) {
     return new RoomRepresentation(
         room.getId(),
         room.getName(),
@@ -23,7 +23,7 @@ public class RoomMapper {
     );
   }
 
-  public RoomRepresentation mapLight(final Room room) {
+  public RoomRepresentation mapLight(final ServerRoom room) {
     return new RoomRepresentation(
         room.getId(),
         room.getName(),
