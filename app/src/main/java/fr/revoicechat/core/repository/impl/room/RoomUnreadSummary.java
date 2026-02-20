@@ -13,7 +13,7 @@ public record RoomUnreadSummary(
   public UnreadMessageStatus toUnreadMessageStatus() {
     return new UnreadMessageStatus(
         this.numberOfUnreadMessage != 0,
-        this.numberOfUnreadMessage
+        this.numberOfUnreadAnswerToMe + this.numberOfUnreadAnswerMention
     );
   }
 }
