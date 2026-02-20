@@ -4,15 +4,20 @@ import java.util.UUID;
 
 import fr.revoicechat.core.model.RoomType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
 
-@MappedSuperclass
+@Entity
+@Table(name = "RVC_ROOM")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Room {
 
   @Id
   private UUID id;
-  @Column(nullable = false)
+  @Column
   private String name;
 
   protected Room() {

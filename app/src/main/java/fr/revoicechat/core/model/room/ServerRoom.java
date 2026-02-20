@@ -10,10 +10,12 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "RVC_SERVER_ROOM")
+@PrimaryKeyJoinColumn(name = "ID")
 public class ServerRoom extends Room {
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
