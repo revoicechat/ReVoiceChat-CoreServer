@@ -7,6 +7,9 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
+import fr.revoicechat.core.representation.message.MessageRepresentation;
+import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.user.AdminUpdatableUserData;
 import fr.revoicechat.core.representation.user.UpdatableUserData;
 import fr.revoicechat.core.representation.user.UserRepresentation;
@@ -14,6 +17,7 @@ import fr.revoicechat.openapi.api.LoggedApi;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.MediaType;
@@ -45,6 +49,14 @@ public interface UserController extends LoggedApi {
   @GET
   @Path("/{id}")
   UserRepresentation get(@PathParam("id") UUID id);
+
+  @GET
+  @Path("/{id}/private-message")
+  RoomRepresentation getPrivateMessage(@PathParam("id") UUID id);
+
+  @POST
+  @Path("/{id}/private-message")
+  MessageRepresentation sendPrivateMessage(@PathParam("id") UUID id, CreatedMessageRepresentation representation);
 
   @Operation(summary = "Update user (admin)", description = "Update specific properties of any user profile. This endpoint is restricted to administrators and allows updating display name and user type (USER/BOT/ADMIN).")
   @APIResponse(responseCode = "200", description = "User profile updated successfully")

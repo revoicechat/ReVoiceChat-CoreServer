@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import fr.revoicechat.core.model.Message;
-import fr.revoicechat.core.model.Room;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.stub.EntityManagerMock;
@@ -83,7 +83,7 @@ class TestMessageValidation {
   void testAnswerNotInSameRoom() {
     CreatedMessageRepresentation creation = new CreatedMessageRepresentation("test", UUID.randomUUID(), List.of());
     entityManager.message = new Message();
-    entityManager.message.setRoom(new Room());
+    entityManager.message.setRoom(new ServerRoom());
     entityManager.message.getRoom().setId(UUID.randomUUID());
     var ex = Assertions.catchException(() -> validation.isValid(UUID.randomUUID(), creation));
     Assertions.assertThat(ex).isInstanceOf(BadRequestException.class).hasMessage(ANSWER_MUST_BE_IN_THE_SAME_ROOM.translate());
@@ -94,7 +94,7 @@ class TestMessageValidation {
     var roomId = UUID.randomUUID();
     CreatedMessageRepresentation creation = new CreatedMessageRepresentation("test", UUID.randomUUID(), List.of());
     entityManager.message = new Message();
-    entityManager.message.setRoom(new Room());
+    entityManager.message.setRoom(new ServerRoom());
     entityManager.message.getRoom().setId(roomId);
     var ex = Assertions.catchException(() -> validation.isValid(roomId, creation));
     Assertions.assertThat(ex).isNull();

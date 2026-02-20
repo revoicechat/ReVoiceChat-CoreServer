@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import fr.revoicechat.core.model.room.Room;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.repository.jpa.MessageReactionsConverter;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;

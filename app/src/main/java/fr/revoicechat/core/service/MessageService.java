@@ -14,6 +14,8 @@ import java.util.UUID;
 
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.model.MessageReactions;
+import fr.revoicechat.core.model.Server;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.repository.MessageRepository;
 import fr.revoicechat.core.representation.emote.EmoteRepresentation;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
@@ -159,7 +161,10 @@ public class MessageService {
     var message = getMessage(id);
     entityManager.remove(message);
     var deletedMessage = new MessageNotification(
-        new MessageRepresentation(id, message.getRoom().getServer().getId(),message.getRoom().getId()),
+        new MessageRepresentation(id,
+            getServerId(message),
+            message.getRoom().getId()
+        ),
         REMOVE
     );
     notifyUpdate(deletedMessage);
@@ -186,7 +191,7 @@ public class MessageService {
     return new MessageRepresentation(
         message.getId(),
         message.getText(),
-        message.getRoom().getServer().getId(),
+        getServerId(message),
         message.getRoom().getId(),
         toAnswerRepresentation(message.getAnswerTo()),
         new UserNotificationRepresentation(message.getUser().getId(), message.getUser().getDisplayName()),
@@ -213,9 +218,12 @@ public class MessageService {
 
   private List<EmoteRepresentation> getEmoteRepresentations(final Message message) {
     Set<String> name = new HashSet<>();
-    List<EmoteRepresentation> emotes = new ArrayList<>();
-    emotes.addAll(distinctEmotes(name, emoteService.getGlobal()));
-    emotes.addAll(distinctEmotes(name, emoteService.getAll(message.getRoom().getServer().getId())));
+    List<EmoteRepresentation> emotes = new ArrayList<>(
+        distinctEmotes(name, emoteService.getGlobal())
+    );
+    if (message.getRoom() instanceof ServerRoom serverRoom) {
+      emotes.addAll(distinctEmotes(name, emoteService.getAll(serverRoom.getServer().getId())));
+    }
     emotes.addAll(distinctEmotes(name, emoteService.getAll(message.getUser().getId())));
     return emotes;
   }
@@ -229,6 +237,15 @@ public class MessageService {
       }
     }
     return result;
+  }
+
+  private static UUID getServerId(final Message message) {
+    return Optional.ofNullable(message.getRoom())
+                   .filter(ServerRoom.class::isInstance)
+                   .map(ServerRoom.class::cast)
+                   .map(ServerRoom::getServer)
+                   .map(Server::getId)
+                   .orElse(null);
   }
 
   private void notifyUpdate(final MessageNotification message) {

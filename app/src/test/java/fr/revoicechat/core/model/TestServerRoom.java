@@ -6,20 +6,21 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import fr.revoicechat.core.model.room.ServerRoom;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-class TestRoom {
+class TestServerRoom {
 
   @Test
   @SuppressWarnings({ "java:S5838", "java:S5863", "EqualsWithItself" })
   void test() {
     var id1 = UUID.randomUUID();
-    var room1 = new Room();
+    var room1 = new ServerRoom();
     room1.setId(id1);
-    var room2 = new Room();
+    var room2 = new ServerRoom();
     room2.setId(id1);
-    var room3 = new Room();
+    var room3 = new ServerRoom();
     room3.setId(UUID.randomUUID());
 
     assertThat(room1).isEqualTo(room1)

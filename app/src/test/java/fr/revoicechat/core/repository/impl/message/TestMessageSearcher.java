@@ -18,7 +18,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.Message;
-import fr.revoicechat.core.model.Room;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.ServerType;
@@ -52,9 +52,9 @@ class TestMessageSearcher {
   private User user1;
   private User user2;
   private Server server;
-  private Room room1;
-  private Room room2;
-  private Room room3;
+  private ServerRoom room1;
+  private ServerRoom room2;
+  private ServerRoom room3;
 
   Map<String, Message> messages;
 
@@ -290,8 +290,8 @@ class TestMessageSearcher {
     entityManager.persist(joined);
   }
 
-  private Room createRoom(final Server server) {
-    var room = new Room();
+  private ServerRoom createRoom(final Server server) {
+    var room = new ServerRoom();
     room.setId(UUID.randomUUID());
     room.setName("room_" + id.getAndIncrement());
     room.setType(RoomType.TEXT);
@@ -300,7 +300,7 @@ class TestMessageSearcher {
     return room;
   }
 
-  private Message createMessage(User user, Room room, String content) {
+  private Message createMessage(User user, ServerRoom room, String content) {
     var message = new Message();
     message.setId(UUID.randomUUID());
     message.setRoom(room);

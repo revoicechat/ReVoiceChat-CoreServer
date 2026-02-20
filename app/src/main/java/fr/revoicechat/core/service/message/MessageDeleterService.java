@@ -1,6 +1,6 @@
 package fr.revoicechat.core.service.message;
 
-import fr.revoicechat.core.model.Room;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.repository.MessageRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
@@ -18,7 +18,7 @@ public class MessageDeleterService {
     this.messageRepository = messageRepository;
   }
 
-  public void deleteAllFrom(final Room room) {
+  public void deleteAllFrom(final ServerRoom room) {
     messageRepository.findByRoom(room).forEach(entityManager::remove);
   }
 }

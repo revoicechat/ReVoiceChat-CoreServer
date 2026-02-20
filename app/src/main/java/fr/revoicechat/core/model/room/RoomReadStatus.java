@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 import fr.revoicechat.core.model.Message;
-import fr.revoicechat.core.model.Room;
 import fr.revoicechat.core.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

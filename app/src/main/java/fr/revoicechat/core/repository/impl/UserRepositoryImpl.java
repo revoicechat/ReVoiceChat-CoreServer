@@ -56,8 +56,13 @@ public class UserRepositoryImpl implements UserRepository {
         .createQuery("""
             select su.user
             from ServerUser su
-            join Room room on su.server = room.server
-            where room.id = :room""", User.class)
+            join ServerRoom room on su.server = room.server
+            where room.id = :room
+            union
+            select u
+            from PrivateMessageRoom pm
+            join pm.users u
+            where pm.id = :room""", User.class)
         .setParameter("room", room)
         .getResultStream();
   }

@@ -1,23 +1,22 @@
-package fr.revoicechat.core.model;
+package fr.revoicechat.core.model.room;
 
 import java.util.Objects;
-import java.util.UUID;
+
+import fr.revoicechat.core.model.RoomType;
+import fr.revoicechat.core.model.Server;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "RVC_ROOM")
-public class Room {
-  @Id
-  private UUID id;
-  @Column(nullable = false)
-  private String name;
+@Table(name = "RVC_SERVER_ROOM")
+@PrimaryKeyJoinColumn(name = "ID")
+public class ServerRoom extends Room {
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private RoomType type;
@@ -25,24 +24,8 @@ public class Room {
   @JoinColumn(name="SERVER_ID", nullable=false)
   private Server server;
 
-  public Room() {
+  public ServerRoom() {
     super();
-  }
-
-  public UUID getId() {
-    return id;
-  }
-
-  public void setId(final UUID id) {
-    this.id = id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(final String name) {
-    this.name = name;
   }
 
   public RoomType getType() {
@@ -64,16 +47,12 @@ public class Room {
   @Override
   public boolean equals(final Object o) {
     if (this == o) { return true; }
-    if (!(o instanceof Room room)) { return false; }
+    if (!(o instanceof ServerRoom room)) { return false; }
     return Objects.equals(getId(), room.getId());
   }
 
   @Override
   public int hashCode() {
     return Objects.hashCode(getId());
-  }
-
-  public boolean isVoiceRoom() {
-    return getType().equals(RoomType.VOICE);
   }
 }

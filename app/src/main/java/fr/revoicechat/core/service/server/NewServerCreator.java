@@ -3,11 +3,10 @@ package fr.revoicechat.core.service.server;
 import java.util.List;
 import java.util.UUID;
 
-import fr.revoicechat.core.model.Room;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.server.ServerCategory;
-import fr.revoicechat.core.model.server.ServerRoom;
 import fr.revoicechat.core.model.server.ServerStructure;
 import fr.revoicechat.risk.service.server.ServerRoleDefaultCreator;
 import fr.revoicechat.security.UserHolder;
@@ -40,18 +39,18 @@ public class NewServerCreator {
     var vocal = createRoom(server, "Vocal", RoomType.VOICE);
     server.setStructure(new ServerStructure(List.of(
         new ServerCategory("text", List.of(
-            new ServerRoom(general.getId()),
-            new ServerRoom(random.getId())
+            new fr.revoicechat.core.model.server.ServerRoom(general.getId()),
+            new fr.revoicechat.core.model.server.ServerRoom(random.getId())
         )),
-        new ServerCategory("vocal", List.of(new ServerRoom(vocal.getId())))
+        new ServerCategory("vocal", List.of(new fr.revoicechat.core.model.server.ServerRoom(vocal.getId())))
     )));
     entityManager.persist(server);
     serverRoleCreator.createDefault(server.getId());
     return server;
   }
 
-  private Room createRoom(final Server server, final String name, RoomType type) {
-    Room room = new Room();
+  private ServerRoom createRoom(final Server server, final String name, RoomType type) {
+    ServerRoom room = new ServerRoom();
     room.setId(UUID.randomUUID());
     room.setName(name);
     room.setServer(server);

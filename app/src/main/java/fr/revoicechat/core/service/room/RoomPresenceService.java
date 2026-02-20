@@ -34,7 +34,7 @@ public class RoomPresenceService {
   public RoomPresence get(final UUID roomId) {
     var room = roomService.getRoom(roomId);
     List<UserRepresentation> allUser = userService.fetchUserForRoom(roomId);
-    if (room.getType().equals(RoomType.TEXT)) {
+    if (room.getType().isTextual()) {
       return new RoomPresence(roomId, room.getName(), allUser, List.of());
     }
     return new RoomPresence(roomId, room.getName(), allUser, getConnectedUser(roomId));

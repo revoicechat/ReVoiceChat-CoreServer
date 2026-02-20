@@ -1,6 +1,12 @@
 package fr.revoicechat.core.service.room;
 
-import fr.revoicechat.core.model.Room;
+import java.util.Optional;
+import java.util.UUID;
+
+import fr.revoicechat.core.model.Message;
+import fr.revoicechat.core.model.Server;
+import fr.revoicechat.core.model.room.Room;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -18,7 +24,7 @@ public class RoomMapper {
         room.getId(),
         room.getName(),
         room.getType(),
-        room.getServer().getId(),
+        getServerId(room),
         roomReadStatusService.getUnreadMessagesStatus(room)
     );
   }
@@ -28,8 +34,17 @@ public class RoomMapper {
         room.getId(),
         room.getName(),
         room.getType(),
-        room.getServer().getId(),
+        getServerId(room),
         null
     );
+  }
+
+  private static UUID getServerId(final Room room) {
+    return Optional.ofNullable(room)
+                   .filter(ServerRoom.class::isInstance)
+                   .map(ServerRoom.class::cast)
+                   .map(ServerRoom::getServer)
+                   .map(Server::getId)
+                   .orElse(null);
   }
 }

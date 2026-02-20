@@ -5,7 +5,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import fr.revoicechat.core.model.Room;
+import fr.revoicechat.core.model.room.Room;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.room.RoomReadStatus;
 import fr.revoicechat.core.model.room.RoomUserId;
@@ -69,8 +70,8 @@ public class RoomReadStatusService {
     return entityManager.find(RoomReadStatus.class, roomUserId);
   }
 
-  public Room getRoom(final UUID roomId) {
-    return Optional.ofNullable(entityManager.find(Room.class, roomId))
-                   .orElseThrow(() -> new ResourceNotFoundException(Room.class, roomId));
+  public ServerRoom getRoom(final UUID roomId) {
+    return Optional.ofNullable(entityManager.find(ServerRoom.class, roomId))
+                   .orElseThrow(() -> new ResourceNotFoundException(ServerRoom.class, roomId));
   }
 }
