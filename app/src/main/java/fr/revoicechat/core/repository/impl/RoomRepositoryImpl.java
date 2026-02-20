@@ -69,9 +69,10 @@ public class RoomRepositoryImpl implements RoomRepository {
     Object[] row = (Object[]) entityManager.createQuery("""
                                                SELECT
                                                    (SELECT m2.id FROM Message m2
+                                                    LEFT JOIN RoomReadStatus rrs2 ON rrs2.room = :room AND rrs2.user = :currentUser
                                                     WHERE m2.room = :room
                                                       AND m2.user != :currentUser
-                                                      AND (rrs.lastReadAt IS NULL OR m2.createdDate > rrs.lastReadAt)
+                                                      AND (rrs2.lastReadAt IS NULL OR m2.createdDate > rrs2.lastReadAt)
                                                     ORDER BY m2.createdDate ASC
                                                     LIMIT 1),
                                                    COUNT(m.id),
