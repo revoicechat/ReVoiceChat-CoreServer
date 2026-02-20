@@ -12,6 +12,7 @@ import fr.revoicechat.notification.representation.UserNotificationRepresentation
 public record MessageRepresentation(
     UUID id,
     String text,
+    UUID serverId,
     UUID roomId,
     MessageAnsweredRepresentation answeredTo,
     UserNotificationRepresentation user,
@@ -22,8 +23,8 @@ public record MessageRepresentation(
     List<MessageReaction> reactions
 ) {
 
-  public MessageRepresentation(UUID id, UUID roomId) {
-    this(id, null, roomId, null, null, null, null, null, null, null);
+  public MessageRepresentation(UUID id, UUID serverId, UUID roomId) {
+    this(id, null, serverId, roomId, null, null, null, null, null, null, null);
   }
 
   public record MessageAnsweredRepresentation(

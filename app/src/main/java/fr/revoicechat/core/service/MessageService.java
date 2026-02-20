@@ -158,7 +158,10 @@ public class MessageService {
   public UUID delete(UUID id) {
     var message = getMessage(id);
     entityManager.remove(message);
-    var deletedMessage = new MessageNotification(new MessageRepresentation(id, message.getRoom().getId()), REMOVE);
+    var deletedMessage = new MessageNotification(
+        new MessageRepresentation(id, message.getRoom().getServer().getId(),message.getRoom().getId()),
+        REMOVE
+    );
     notifyUpdate(deletedMessage);
     return id;
   }
@@ -183,6 +186,7 @@ public class MessageService {
     return new MessageRepresentation(
         message.getId(),
         message.getText(),
+        message.getRoom().getServer().getId(),
         message.getRoom().getId(),
         toAnswerRepresentation(message.getAnswerTo()),
         new UserNotificationRepresentation(message.getUser().getId(), message.getUser().getDisplayName()),
