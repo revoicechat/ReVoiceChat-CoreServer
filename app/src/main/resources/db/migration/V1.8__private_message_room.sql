@@ -12,6 +12,11 @@ create table RVC_PRIVATE_MESSAGE_ROOM
     constraint FKPRIVATE_PRIVATE_MESSAGE_ROOM_ROOM foreign key (ID) references RVC_ROOM DEFERRABLE
 );
 
+insert into RVC_ROOM (id, name)
+select r.id, r.name from RVC_SERVER_ROOM r;
+
+alter table RVC_SERVER_ROOM drop column name;
+
 alter table RVC_SERVER_ROOM
     add constraint FKPRIVATE_SERVER_ROOM_ROOM foreign key (ID) references RVC_ROOM DEFERRABLE;
 
