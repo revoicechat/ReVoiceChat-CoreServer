@@ -3,7 +3,6 @@ package fr.revoicechat.core.service.room;
 import java.util.List;
 import java.util.UUID;
 
-import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.representation.room.ConnectedUserRepresentation;
 import fr.revoicechat.core.representation.room.RoomPresence;
 import fr.revoicechat.core.representation.user.UserRepresentation;

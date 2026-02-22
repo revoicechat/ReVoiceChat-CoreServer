@@ -19,7 +19,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.model.room.ServerRoom;
-import fr.revoicechat.core.model.RoomType;
+import fr.revoicechat.core.model.room.RoomType;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.ServerType;
 import fr.revoicechat.core.model.ServerUser;

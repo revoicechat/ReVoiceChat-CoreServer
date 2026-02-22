@@ -1,4 +1,4 @@
-package fr.revoicechat.core.model;
+package fr.revoicechat.core.model.room;
 
 public enum RoomType {
   TEXT(true, false),

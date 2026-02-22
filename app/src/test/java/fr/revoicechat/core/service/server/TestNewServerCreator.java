@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import fr.revoicechat.core.model.room.ServerRoom;
-import fr.revoicechat.core.model.RoomType;
+import fr.revoicechat.core.model.room.RoomType;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.stub.EntityManagerMock;

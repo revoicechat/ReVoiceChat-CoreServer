@@ -2,7 +2,6 @@ package fr.revoicechat.core.model.room;
 
 import java.util.Objects;
 
-import fr.revoicechat.core.model.RoomType;
 import fr.revoicechat.core.model.Server;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
