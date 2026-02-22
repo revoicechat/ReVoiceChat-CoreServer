@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import fr.revoicechat.core.model.room.Room;
 import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.model.server.ServerCategory;
 import fr.revoicechat.core.model.server.ServerItem;
@@ -145,16 +146,18 @@ public class RoomService {
   @Transactional
   public UUID delete(final UUID id) {
     var room = getRoom(id);
-    var server = room.getServer();
-    server.setStructure(removeFromStructure(server.getStructure(), room));
-    entityManager.persist(server);
-    Optional.ofNullable(entityManager.find(ServerRoom.class, id)).ifPresent(entityManager::remove);
+    if (room instanceof ServerRoom serverRoom) {
+      var server = serverRoom.getServer();
+      server.setStructure(removeFromStructure(server.getStructure(), serverRoom));
+      entityManager.persist(server);
+    }
+    Optional.ofNullable(entityManager.find(Room.class, id)).ifPresent(entityManager::remove);
     Notification.of(new RoomNotification(new RoomRepresentation(id, null, null, null, null), NotificationActionType.REMOVE)).sendTo(roomUserFinder.find(id));
     return id;
   }
 
-  public ServerRoom getRoom(final UUID roomId) {
-    return Optional.ofNullable(entityManager.find(ServerRoom.class, roomId)).orElseThrow(() -> new ResourceNotFoundException(ServerRoom.class, roomId));
+  public Room getRoom(final UUID roomId) {
+    return Optional.ofNullable(entityManager.find(Room.class, roomId)).orElseThrow(() -> new ResourceNotFoundException(Room.class, roomId));
   }
 
   private ServerStructure removeFromStructure(ServerStructure structure, ServerRoom room) {
