@@ -3,6 +3,7 @@ package fr.revoicechat.core.service.room;
 import java.util.List;
 import java.util.UUID;
 
+import fr.revoicechat.core.model.room.PrivateMessageMode;
 import fr.revoicechat.core.model.room.PrivateMessageRoom;
 import fr.revoicechat.core.repository.PrivateMessageRoomRepository;
 import fr.revoicechat.core.service.UserService;
@@ -35,6 +36,7 @@ public class PrivateMessageEntityService {
     if (room == null) {
       room = new PrivateMessageRoom();
       room.setId(UUID.randomUUID());
+      room.setMode(PrivateMessageMode.DIRECT_MESSAGE);
       room.setUsers(List.of(userHolder.get(), userService.getUser(userId)));
       entityManager.persist(room);
     }
