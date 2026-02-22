@@ -2,7 +2,6 @@ package fr.revoicechat.core.model.room;
 
 import java.util.UUID;
 
-import fr.revoicechat.core.model.RoomType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

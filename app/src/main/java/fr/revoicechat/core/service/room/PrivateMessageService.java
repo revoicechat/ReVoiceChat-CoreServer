@@ -10,7 +10,6 @@ import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.service.MessageService;
-import fr.revoicechat.core.service.UserService;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.web.error.ResourceNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -22,15 +21,15 @@ public class PrivateMessageService {
 
   private final EntityManager entityManager;
   private final UserHolder userHolder;
-  private final UserService userService;
+  private final PrivateMessageEntityService privateMessageEntityService;
   private final PrivateMessageRoomRepository privateMessageRoomRepository;
   private final RoomMapper roomMapper;
   private final MessageService messageService;
 
-  public PrivateMessageService(final EntityManager entityManager, final UserHolder userHolder, final UserService userService, final PrivateMessageRoomRepository privateMessageRoomRepository, final RoomMapper roomMapper, final MessageService messageService) {
+  public PrivateMessageService(final EntityManager entityManager, final UserHolder userHolder, final PrivateMessageEntityService privateMessageEntityService, final PrivateMessageRoomRepository privateMessageRoomRepository, final RoomMapper roomMapper, final MessageService messageService) {
     this.entityManager = entityManager;
     this.userHolder = userHolder;
-    this.userService = userService;
+    this.privateMessageEntityService = privateMessageEntityService;
     this.privateMessageRoomRepository = privateMessageRoomRepository;
     this.roomMapper = roomMapper;
     this.messageService = messageService;
@@ -56,13 +55,7 @@ public class PrivateMessageService {
 
   @Transactional
   public MessageRepresentation sendPrivateMessageTo(final UUID userId, final CreatedMessageRepresentation representation) {
-    var room = getDirectDiscussion(userId, userHolder.getId());
-    if (room == null) {
-      room = new PrivateMessageRoom();
-      room.setId(UUID.randomUUID());
-      room.setUsers(List.of(userHolder.get(), userService.getUser(userId)));
-      entityManager.persist(room);
-    }
+    var room = privateMessageEntityService.getOrCreate(userId);
     return messageService.create(room.getId(), representation);
   }
 
