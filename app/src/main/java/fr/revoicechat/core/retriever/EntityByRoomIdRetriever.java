@@ -4,14 +4,14 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import fr.revoicechat.core.model.room.ServerRoom;
+import fr.revoicechat.live.common.service.RoomRisksEntityRetriever;
+import fr.revoicechat.risk.RisksEntityRetriever;
+import fr.revoicechat.risk.technicaldata.RiskEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.persistence.EntityManager;
-
-import fr.revoicechat.core.model.room.ServerRoom;
-import fr.revoicechat.risk.RisksEntityRetriever;
-import fr.revoicechat.risk.technicaldata.RiskEntity;
-import fr.revoicechat.live.common.service.RoomRisksEntityRetriever;
 
 @ApplicationScoped
 public class EntityByRoomIdRetriever implements RisksEntityRetriever, RoomRisksEntityRetriever {

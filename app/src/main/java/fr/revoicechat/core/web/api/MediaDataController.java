@@ -3,14 +3,6 @@ package fr.revoicechat.core.web.api;
 import java.util.List;
 import java.util.UUID;
 
-import fr.revoicechat.openapi.api.LoggedApi;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PATCH;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.QueryParam;
-
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -18,8 +10,15 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import fr.revoicechat.core.model.MediaDataStatus;
-import fr.revoicechat.core.technicaldata.media.UpdatableMediaDataStatus;
 import fr.revoicechat.core.representation.MediaDataRepresentation;
+import fr.revoicechat.core.technicaldata.media.UpdatableMediaDataStatus;
+import fr.revoicechat.openapi.api.LoggedApi;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
 
 @Path("/media")
 @Tag(name = "Media", description = "Manage media files including images, videos, and attachments")

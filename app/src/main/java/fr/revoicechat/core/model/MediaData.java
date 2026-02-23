@@ -2,6 +2,7 @@ package fr.revoicechat.core.model;
 
 import java.util.Objects;
 import java.util.UUID;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

@@ -4,7 +4,6 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.ROLE_USER;
 
 import java.util.UUID;
 
-import fr.revoicechat.core.notification.MessageNotification;
 import fr.revoicechat.core.notification.service.message.MessageNotifier;
 import fr.revoicechat.core.representation.MessageRepresentation;
 import fr.revoicechat.core.service.message.MessageService;

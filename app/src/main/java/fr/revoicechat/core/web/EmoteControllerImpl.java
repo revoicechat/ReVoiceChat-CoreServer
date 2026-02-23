@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.UUID;
 
 import fr.revoicechat.core.notification.service.EmoteMediaNotifier;
-import fr.revoicechat.core.technicaldata.emote.NewEmote;
 import fr.revoicechat.core.representation.EmoteRepresentation;
 import fr.revoicechat.core.service.emote.EmoteRetrieverService;
 import fr.revoicechat.core.service.emote.EmoteUpdaterService;
 import fr.revoicechat.core.service.server.ServerEntityService;
+import fr.revoicechat.core.technicaldata.emote.NewEmote;
 import fr.revoicechat.core.web.api.EmoteController;
 import fr.revoicechat.risk.RisksMembershipData;
 import fr.revoicechat.risk.retriever.ServerIdRetriever;

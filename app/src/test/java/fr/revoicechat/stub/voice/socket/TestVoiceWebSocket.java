@@ -16,7 +16,7 @@ import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.technicaldata.room.NewRoom;
-import fr.revoicechat.core.representation.RoomRepresentation;
+import fr.revoicechat.core.representation.ServerRoomRepresentation;
 import fr.revoicechat.core.representation.ServerRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import fr.revoicechat.live.voice.socket.VoiceWebSocket;
@@ -232,7 +232,7 @@ class TestVoiceWebSocket {
                       .when().pathParam("id", server.id()).put("/server/{id}/room")
                       .then().statusCode(200)
                       .extract().body()
-                      .as(RoomRepresentation.class).id();
+                      .as(ServerRoomRepresentation.class).id();
   }
 
   private static List<ServerRepresentation> getServers(String token) {

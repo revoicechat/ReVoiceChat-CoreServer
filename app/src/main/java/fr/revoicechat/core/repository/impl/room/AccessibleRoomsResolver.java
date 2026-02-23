@@ -5,8 +5,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import fr.revoicechat.core.model.room.ServerRoom;
-import fr.revoicechat.core.service.room.RoomAccessVerifier;
 import fr.revoicechat.core.repository.RoomRepository;
+import fr.revoicechat.core.service.room.RoomAccessVerifier;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 

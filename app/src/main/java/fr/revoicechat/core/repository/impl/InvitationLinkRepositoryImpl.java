@@ -2,13 +2,13 @@ package fr.revoicechat.core.repository.impl;
 
 import java.util.UUID;
 import java.util.stream.Stream;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.InvitationType;
 import fr.revoicechat.core.repository.InvitationLinkRepository;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @ApplicationScoped
 public class InvitationLinkRepositoryImpl implements InvitationLinkRepository {

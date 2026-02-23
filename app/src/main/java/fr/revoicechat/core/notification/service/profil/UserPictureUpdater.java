@@ -5,8 +5,8 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.ROLE_ADMIN;
 import java.util.UUID;
 
 import fr.revoicechat.core.model.User;
-import fr.revoicechat.core.repository.UserRepository;
 import fr.revoicechat.core.notification.ProfilPictureUpdate;
+import fr.revoicechat.core.repository.UserRepository;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.security.UserHolder;
 import jakarta.enterprise.context.ApplicationScoped;

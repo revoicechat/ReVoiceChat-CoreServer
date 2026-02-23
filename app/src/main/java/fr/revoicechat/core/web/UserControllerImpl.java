@@ -5,21 +5,19 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.*;
 import java.util.List;
 import java.util.UUID;
 
-import fr.revoicechat.core.notification.MessageNotification;
 import fr.revoicechat.core.notification.service.message.MessageNotifier;
-import fr.revoicechat.core.technicaldata.message.NewMessage;
 import fr.revoicechat.core.representation.MessageRepresentation;
 import fr.revoicechat.core.representation.RoomRepresentation;
-import fr.revoicechat.core.technicaldata.user.AdminUpdatableUserData;
+import fr.revoicechat.core.representation.UserRepresentation;
 import fr.revoicechat.core.service.room.PrivateMessageService;
+import fr.revoicechat.core.service.user.UserService;
+import fr.revoicechat.core.technicaldata.message.NewMessage;
+import fr.revoicechat.core.technicaldata.user.AdminUpdatableUserData;
+import fr.revoicechat.core.technicaldata.user.UpdatableUserData;
+import fr.revoicechat.core.web.api.UserController;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.web.mapper.Mapper;
 import jakarta.annotation.security.RolesAllowed;
-
-import fr.revoicechat.core.technicaldata.user.UpdatableUserData;
-import fr.revoicechat.core.representation.UserRepresentation;
-import fr.revoicechat.core.service.user.UserService;
-import fr.revoicechat.core.web.api.UserController;
 
 public class UserControllerImpl implements UserController {
   private final UserService userService;

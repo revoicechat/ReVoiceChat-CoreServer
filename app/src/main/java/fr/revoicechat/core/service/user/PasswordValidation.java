@@ -2,11 +2,10 @@ package fr.revoicechat.core.service.user;
 
 import static fr.revoicechat.core.nls.UserErrorCode.USER_PASSWORD_INVALID;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-
 import fr.revoicechat.core.config.UserPasswordConfig;
 import fr.revoicechat.web.error.BadRequestException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class PasswordValidation {

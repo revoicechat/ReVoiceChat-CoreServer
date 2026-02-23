@@ -9,10 +9,10 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 
 import fr.revoicechat.core.repository.page.PageResult;
-import fr.revoicechat.core.technicaldata.message.NewMessage;
-import fr.revoicechat.core.technicaldata.message.MessageFilterParams;
 import fr.revoicechat.core.representation.MessageRepresentation;
 import fr.revoicechat.core.representation.RoomRepresentation;
+import fr.revoicechat.core.technicaldata.message.MessageFilterParams;
+import fr.revoicechat.core.technicaldata.message.NewMessage;
 import fr.revoicechat.openapi.api.LoggedApi;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.GET;

@@ -3,10 +3,11 @@ package fr.revoicechat.core.service.settings;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.StreamSupport;
-import jakarta.enterprise.context.ApplicationScoped;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
+
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class SettingsService {

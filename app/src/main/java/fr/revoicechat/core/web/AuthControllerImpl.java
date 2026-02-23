@@ -2,10 +2,10 @@ package fr.revoicechat.core.web;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
-import fr.revoicechat.core.technicaldata.login.UserPassword;
-import fr.revoicechat.core.technicaldata.user.NewUserSignup;
 import fr.revoicechat.core.representation.UserRepresentation;
 import fr.revoicechat.core.service.user.UserService;
+import fr.revoicechat.core.technicaldata.login.UserPassword;
+import fr.revoicechat.core.technicaldata.user.NewUserSignup;
 import fr.revoicechat.core.web.api.AuthController;
 import fr.revoicechat.security.service.SecurityTokenService;
 import fr.revoicechat.security.utils.PasswordUtils;
