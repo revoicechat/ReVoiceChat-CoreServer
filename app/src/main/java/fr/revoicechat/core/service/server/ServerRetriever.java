@@ -1,11 +1,10 @@
 package fr.revoicechat.core.service.server;
 
 import java.util.List;
+import java.util.UUID;
 
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.repository.ServerRepository;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
-import fr.revoicechat.core.service.ServerService;
 import fr.revoicechat.security.UserHolder;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -15,33 +14,34 @@ public class ServerRetriever {
 
   private final UserHolder userHolder;
   private final ServerRepository serverRepository;
-  private final ServerMapper serverMapper;
+  private final ServerEntityRetriever serverEntityRetriever;
 
-  public ServerRetriever(final UserHolder userHolder, final ServerRepository serverRepository, final ServerMapper serverMapper) {
+  public ServerRetriever(UserHolder userHolder, ServerRepository serverRepository, ServerEntityRetriever serverEntityRetriever) {
     this.userHolder = userHolder;
     this.serverRepository = serverRepository;
-    this.serverMapper = serverMapper;
+    this.serverEntityRetriever = serverEntityRetriever;
+  }
+
+  /** Retrieves a server from the database by its unique identifier. */
+  public Server getEntity(final UUID id) {
+    return serverEntityRetriever.getEntity(id);
   }
 
   /** @return all servers for the connected user. */
   @Transactional
-  public List<ServerRepresentation> getAllMyServers() {
-    return serverRepository.getByUser(userHolder.get())
-                                .map(serverMapper::map)
-                                .toList();
+  public List<Server> getAllMyServers() {
+    return serverRepository.getByUser(userHolder.get()).toList();
   }
 
   /** @return all public servers. */
   @Transactional
-  public List<ServerRepresentation> getAllPublicServers(final boolean joinedToo) {
+  public List<Server> getAllPublicServers(final boolean joinedToo) {
     var servers = serverRepository.getPublicServer();
     if (joinedToo) {
-      return servers.map(serverMapper::map).toList();
+      return servers.toList();
     } else {
       var serverIds = serverRepository.getByUser(userHolder.get()).map(Server::getId).toList();
-      return servers.filter(server -> !serverIds.contains(server.getId()))
-                    .map(serverMapper::map)
-                    .toList();
+      return servers.filter(server -> !serverIds.contains(server.getId())).toList();
     }
   }
 }

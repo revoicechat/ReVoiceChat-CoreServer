@@ -18,7 +18,7 @@ import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
 import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
-import fr.revoicechat.core.representation.room.RoomPresence;
+import fr.revoicechat.core.representation.room.RoomPresenceRepresentation;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
@@ -69,7 +69,7 @@ class TestServerRoomController {
                               .when().pathParam("id", room.id()).get("/room/{id}/user")
                               .then().statusCode(200)
                               .extract().body()
-                              .as(RoomPresence.class);
+                              .as(RoomPresenceRepresentation.class);
     Assertions.assertThat(presence.id()).isEqualTo(room.id());
     Assertions.assertThat(presence.name()).isEqualTo(room.name());
     Assertions.assertThat(presence.allUser()).hasSize(1);

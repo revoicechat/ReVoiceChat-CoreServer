@@ -9,11 +9,9 @@ import java.util.UUID;
 
 import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.InvitationType;
-import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.repository.InvitationLinkRepository;
 import fr.revoicechat.core.representation.invitation.InvitationCategory;
-import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
 import fr.revoicechat.core.service.server.ServerEntityService;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.web.error.ResourceNotFoundException;
@@ -40,7 +38,7 @@ public class InvitationLinkService implements InvitationLinkEntityRetriever, Inv
   }
 
   @Transactional
-  public InvitationRepresentation generateApplicationInvitation(final InvitationCategory invitationCategory) {
+  public InvitationLink generateApplicationInvitation(final InvitationCategory invitationCategory) {
     User user = userHolder.get();
     var invitation = new InvitationLink();
     invitation.setId(UUID.randomUUID());
@@ -48,11 +46,11 @@ public class InvitationLinkService implements InvitationLinkEntityRetriever, Inv
     invitation.setType(InvitationType.APPLICATION_JOIN);
     invitation.setSender(user);
     entityManager.persist(invitation);
-    return new InvitationRepresentation(invitation.getId(), invitation.getStatus(), invitation.getType(), null);
+    return invitation;
   }
 
   @Transactional
-  public InvitationRepresentation generateServerInvitation(final UUID serverId, final InvitationCategory invitationCategory) {
+  public InvitationLink generateServerInvitation(final UUID serverId, final InvitationCategory invitationCategory) {
     var server = serverService.getEntity(serverId);
     User user = userHolder.get();
     var invitation = new InvitationLink();
@@ -62,7 +60,7 @@ public class InvitationLinkService implements InvitationLinkEntityRetriever, Inv
     invitation.setTargetedServer(server);
     invitation.setSender(user);
     entityManager.persist(invitation);
-    return new InvitationRepresentation(invitation.getId(), invitation.getStatus(), invitation.getType(), serverId);
+    return invitation;
   }
 
   @Override
@@ -72,12 +70,12 @@ public class InvitationLinkService implements InvitationLinkEntityRetriever, Inv
                    .orElse(null);
   }
 
-  public InvitationRepresentation get(final UUID id) {
+  public InvitationLink get(final UUID id) {
     var link = getEntity(id);
     if (link == null) {
       throw new ResourceNotFoundException(InvitationLink.class, id);
     }
-    return toRepresentation(link);
+    return link;
   }
 
   @Transactional
@@ -89,22 +87,16 @@ public class InvitationLinkService implements InvitationLinkEntityRetriever, Inv
     }
   }
 
-  public List<InvitationRepresentation> getAllServerInvitations(final UUID id) {
-    return invitationLinkRepository.getAllFromServer(id)
-                                   .map(this::toRepresentation)
-                                   .toList();
+  public List<InvitationLink> getAllServerInvitations(final UUID id) {
+    return invitationLinkRepository.getAllFromServer(id).toList();
   }
 
-  public List<InvitationRepresentation> getAllFromUser() {
-    return invitationLinkRepository.getAllFromUser(userHolder.get().getId())
-                                   .map(this::toRepresentation)
-                                   .toList();
+  public List<InvitationLink> getAllFromUser() {
+    return invitationLinkRepository.getAllFromUser(userHolder.get().getId()).toList();
   }
 
-  public List<InvitationRepresentation> getAllApplicationInvitations() {
-    return invitationLinkRepository.allApplicationInvitations()
-                                   .map(this::toRepresentation)
-                                   .toList();
+  public List<InvitationLink> getAllApplicationInvitations() {
+    return invitationLinkRepository.allApplicationInvitations().toList();
   }
 
   @Override
@@ -121,12 +113,5 @@ public class InvitationLinkService implements InvitationLinkEntityRetriever, Inv
       invitationLink.setApplier(user);
       entityManager.persist(invitationLink);
     }
-  }
-
-  private InvitationRepresentation toRepresentation(final InvitationLink link) {
-    return new InvitationRepresentation(link.getId(),
-                                        link.getStatus(),
-                                        link.getType(),
-                                        Optional.ofNullable(link.getTargetedServer()).map(Server::getId).orElse(null));
   }
 }

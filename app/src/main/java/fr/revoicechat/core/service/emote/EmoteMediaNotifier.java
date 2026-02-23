@@ -7,9 +7,10 @@ import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.repository.UserRepository;
 import fr.revoicechat.core.representation.emote.EmoteNotification;
-import fr.revoicechat.notification.representation.NotificationActionType;
 import fr.revoicechat.core.service.media.MediaNotifier;
 import fr.revoicechat.notification.Notification;
+import fr.revoicechat.notification.representation.NotificationActionType;
+import fr.revoicechat.web.mapper.Mapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -34,7 +35,7 @@ public class EmoteMediaNotifier implements MediaNotifier {
   public void notify(MediaData mediaData, NotificationActionType actionType) {
     Emote emote = emoteRetrieverService.getEntity(mediaData.getId());
     var notification = Notification.of(new EmoteNotification(
-        emoteRetrieverService.toRepresentation(emote),
+        Mapper.map(emote),
         emote.getEntity(),
         actionType
     ));
@@ -44,7 +45,7 @@ public class EmoteMediaNotifier implements MediaNotifier {
 
   public void notify(Emote emote, NotificationActionType actionType) {
     var notification = Notification.of(new EmoteNotification(
-        emoteRetrieverService.toRepresentation(emote),
+        Mapper.map(emote),
         emote.getEntity(),
         actionType
     ));

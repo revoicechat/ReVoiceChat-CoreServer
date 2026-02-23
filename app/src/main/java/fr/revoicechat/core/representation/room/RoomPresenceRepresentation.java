@@ -10,7 +10,7 @@ import fr.revoicechat.core.representation.user.UserRepresentation;
  * @param connectedUser Represent all the users that are currently connected to a room.
  *                      If the room is a text room, this list is empty
  */
-public record RoomPresence(
+public record RoomPresenceRepresentation(
     UUID id,
     String name,
     List<UserRepresentation> allUser,

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
-    @Type(value = ServerRoom.class, name = "ROOM"),
+    @Type(value = ServerRoomItem.class, name = "ROOM"),
     @Type(value = ServerCategory.class, name = "CATEGORY")
 })
-public sealed interface ServerItem permits ServerRoom, ServerCategory {}
+public sealed interface ServerItem permits ServerRoomItem, ServerCategory {}

@@ -12,13 +12,12 @@ import fr.revoicechat.core.model.ServerUser;
 import fr.revoicechat.core.repository.ServerRepository;
 import fr.revoicechat.core.repository.UserRepository;
 import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.representation.server.ServerUpdateNotification;
 import fr.revoicechat.core.service.server.NewServerCreator;
 import fr.revoicechat.core.service.server.ServerEntityService;
-import fr.revoicechat.core.service.server.ServerMapper;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.web.mapper.Mapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -45,39 +44,24 @@ public class ServerService {
   private final UserHolder userHolder;
   private final EntityManager entityManager;
   private final UserRepository userRepository;
-  private final ServerMapper serverMapper;
-
 
   public ServerService(final ServerEntityService serverEntityService,
                        final ServerRepository serverRepository,
                        final NewServerCreator newServerCreator,
                        final UserHolder userHolder,
                        final EntityManager entityManager,
-                       final UserRepository userRepository,
-                       final ServerMapper serverMapper) {
+                       final UserRepository userRepository) {
     this.serverEntityService = serverEntityService;
     this.serverRepository = serverRepository;
     this.newServerCreator = newServerCreator;
     this.userHolder = userHolder;
     this.entityManager = entityManager;
     this.userRepository = userRepository;
-    this.serverMapper = serverMapper;
   }
 
   /** @return a list of available servers, possibly empty */
-  public List<ServerRepresentation> getAll() {
-    return serverRepository.findAll().stream().map(serverMapper::map).toList();
-  }
-
-  /**
-   * Retrieves a server from the database by its unique identifier.
-   *
-   * @param id the unique server ID
-   * @return the server entity
-   * @throws java.util.NoSuchElementException if no server with the given ID exists
-   */
-  public ServerRepresentation get(final UUID id) {
-    return serverMapper.map(serverEntityService.getEntity(id));
+  public List<Server> getAll() {
+    return serverRepository.findAll();
   }
 
   /**
@@ -87,7 +71,7 @@ public class ServerService {
    * @return the persisted server entity with its generated ID
    */
   @Transactional
-  public ServerRepresentation create(final ServerCreationRepresentation representation) {
+  public Server create(final ServerCreationRepresentation representation) {
     Server server = new Server();
     server.setName(representation.name());
     server.setType(Optional.ofNullable(representation.serverType()).orElse(ServerType.PUBLIC));
@@ -96,7 +80,7 @@ public class ServerService {
     serverUser.setServer(server);
     serverUser.setUser(userHolder.get());
     entityManager.persist(serverUser);
-    return serverMapper.map(server);
+    return server;
   }
 
   /**
@@ -110,11 +94,11 @@ public class ServerService {
    * @return the updated and persisted server entity
    */
   @Transactional
-  public ServerRepresentation update(final UUID id, final ServerCreationRepresentation representation) {
+  public Server update(final UUID id, final ServerCreationRepresentation representation) {
     var server = serverEntityService.getEntity(id);
     server.setName(representation.name());
     entityManager.persist(server);
-    Notification.of(new ServerUpdateNotification(serverMapper.mapLight(server), MODIFY)).sendTo(userRepository.findByServers(id));
-    return serverMapper.map(server);
+    Notification.of(new ServerUpdateNotification(Mapper.mapLight(server), MODIFY)).sendTo(userRepository.findByServers(id));
+    return server;
   }
 }

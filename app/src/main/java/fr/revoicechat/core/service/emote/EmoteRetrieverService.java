@@ -1,17 +1,15 @@
 package fr.revoicechat.core.service.emote;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import fr.revoicechat.core.model.Emote;
+import fr.revoicechat.core.repository.EmoteRepository;
+import fr.revoicechat.web.error.ResourceNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-
-import fr.revoicechat.core.model.Emote;
-import fr.revoicechat.core.repository.EmoteRepository;
-import fr.revoicechat.core.representation.emote.EmoteRepresentation;
-import fr.revoicechat.web.error.ResourceNotFoundException;
 
 @ApplicationScoped
 public class EmoteRetrieverService {
@@ -33,25 +31,13 @@ public class EmoteRetrieverService {
     return emote;
   }
 
-  public EmoteRepresentation get(final UUID id) {
-    return toRepresentation(getEntity(id));
-  }
-
-  public EmoteRepresentation toRepresentation(Emote emote) {
-    return new EmoteRepresentation(
-        emote.getId(),
-        emote.getContent(),
-        new ArrayList<>(emote.getKeywords())
-    );
+  @Transactional
+  public List<Emote> getAll(final UUID id) {
+    return emoteRepository.findByEntity(id).toList();
   }
 
   @Transactional
-  public List<EmoteRepresentation> getAll(final UUID id) {
-    return emoteRepository.findByEntity(id).map(this::toRepresentation).toList();
-  }
-
-  @Transactional
-  public List<EmoteRepresentation> getGlobal() {
-    return emoteRepository.findGlobal().map(this::toRepresentation).toList();
+  public List<Emote> getGlobal() {
+    return emoteRepository.findGlobal().toList();
   }
 }

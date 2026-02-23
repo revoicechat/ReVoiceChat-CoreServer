@@ -13,7 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import fr.revoicechat.core.model.server.ServerCategory;
-import fr.revoicechat.core.model.server.ServerRoom;
+import fr.revoicechat.core.model.server.ServerRoomItem;
 import fr.revoicechat.core.model.server.ServerStructure;
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -118,18 +118,18 @@ class TestServerStructureConverter {
 
   private static ServerStructure getStructure() {
     return new ServerStructure(List.of(
-        new ServerRoom(UUID.fromString("cafcb646-dc66-4376-bc81-2a9e2ea9fbe6")),
+        new ServerRoomItem(UUID.fromString("cafcb646-dc66-4376-bc81-2a9e2ea9fbe6")),
         new ServerCategory("text", List.of(
-            new ServerRoom(UUID.fromString("b22e3986-3015-4fd8-bb00-183131850ab2")),
-            new ServerRoom(UUID.fromString("8bf41da2-0e73-472b-b312-f3967a6a3d6c"))
+            new ServerRoomItem(UUID.fromString("b22e3986-3015-4fd8-bb00-183131850ab2")),
+            new ServerRoomItem(UUID.fromString("8bf41da2-0e73-472b-b312-f3967a6a3d6c"))
         )),
         new ServerCategory("vocal", List.of(
             new ServerCategory("sub 1", List.of(
-                new ServerRoom(UUID.fromString("d37f8f96-64cd-4ae5-8553-024fae4eb99a"))
+                new ServerRoomItem(UUID.fromString("d37f8f96-64cd-4ae5-8553-024fae4eb99a"))
             )),
             new ServerCategory("sub 2", List.of(
-                new ServerRoom(UUID.fromString("c309e057-66da-4f5b-b451-c35feaafe133")),
-                new ServerRoom(UUID.fromString("21e053fa-f070-4974-b9de-a2121b8a6421"))
+                new ServerRoomItem(UUID.fromString("c309e057-66da-4f5b-b451-c35feaafe133")),
+                new ServerRoomItem(UUID.fromString("21e053fa-f070-4974-b9de-a2121b8a6421"))
             ))
         ))
     ));

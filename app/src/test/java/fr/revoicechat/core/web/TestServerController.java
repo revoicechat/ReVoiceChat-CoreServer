@@ -13,7 +13,7 @@ import fr.revoicechat.core.model.InvitationLinkStatus;
 import fr.revoicechat.core.model.InvitationType;
 import fr.revoicechat.core.model.ServerType;
 import fr.revoicechat.core.model.server.ServerCategory;
-import fr.revoicechat.core.model.server.ServerRoom;
+import fr.revoicechat.core.model.server.ServerRoomItem;
 import fr.revoicechat.core.model.server.ServerStructure;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
@@ -195,15 +195,15 @@ class TestServerController {
     var item1 = (ServerCategory) structure.items().getFirst();
     assertThat(item1.name()).isEqualTo("text");
     assertThat(item1.items()).hasSize(2);
-    var room1 = (ServerRoom) item1.items().getFirst();
+    var room1 = (ServerRoomItem) item1.items().getFirst();
     assertThat(getRoom(token, room1.id()).name()).isEqualTo("General");
-    var room2 = (ServerRoom) item1.items().getLast();
+    var room2 = (ServerRoomItem) item1.items().getLast();
     assertThat(getRoom(token, room2.id()).name()).isEqualTo("Random");
     assertThat(item1.items()).hasSize(2);
     var item2 = (ServerCategory) structure.items().getLast();
     assertThat(item2.name()).isEqualTo("vocal");
     assertThat(item2.items()).hasSize(1);
-    var room3 = (ServerRoom) item2.items().getFirst();
+    var room3 = (ServerRoomItem) item2.items().getFirst();
     assertThat(getRoom(token, room3.id()).name()).isEqualTo("Vocal");
   }
 
@@ -261,7 +261,7 @@ class TestServerController {
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)
                .header("Authorization", "Bearer " + token)
-               .body(new ServerStructure(List.of(new ServerRoom(UUID.randomUUID()))))
+               .body(new ServerStructure(List.of(new ServerRoomItem(UUID.randomUUID()))))
                .when().pathParam("id", server.id()).patch("/server/{id}/structure")
                .then().statusCode(400);
   }
@@ -282,7 +282,7 @@ class TestServerController {
                                .then().statusCode(200)
                                .extract()
                                .body().as(ServerStructure.class);
-    assertThat(structure.items()).hasSize(3).allMatch(ServerRoom.class::isInstance);
+    assertThat(structure.items()).hasSize(3).allMatch(ServerRoomItem.class::isInstance);
   }
 
   @Test

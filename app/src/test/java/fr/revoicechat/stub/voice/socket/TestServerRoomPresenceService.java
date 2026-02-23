@@ -13,7 +13,7 @@ import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.room.RoomType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
-import fr.revoicechat.core.representation.room.RoomPresence;
+import fr.revoicechat.core.representation.room.RoomPresenceRepresentation;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
@@ -42,7 +42,7 @@ class TestServerRoomPresenceService {
                                          .when().pathParam("id", room).get("/room/{id}/user")
                                          .then().statusCode(200)
                                          .extract().body()
-                                         .as(RoomPresence.class);
+                                         .as(RoomPresenceRepresentation.class);
                Assertions.assertThat(presence.allUser()).hasSize(2)
                    .anyMatch(user -> user.login().equals("user1"))
                    .anyMatch(user -> user.login().equals("user2"));
@@ -67,7 +67,7 @@ class TestServerRoomPresenceService {
                                          .when().pathParam("id", room).get("/room/{id}/user")
                                          .then().statusCode(200)
                                          .extract().body()
-                                         .as(RoomPresence.class);
+                                         .as(RoomPresenceRepresentation.class);
                Assertions.assertThat(presence.allUser()).hasSize(2)
                          .anyMatch(user -> user.login().equals("user1"))
                          .anyMatch(user -> user.login().equals("user2"));

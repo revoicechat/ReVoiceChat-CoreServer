@@ -13,6 +13,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -36,7 +37,7 @@ public class Message {
   @ManyToOne
   @JoinColumn(name="USER_ID", nullable=false)
   private User user;
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "RVC_MEASSAGE_MEDIA",
       joinColumns = @JoinColumn(name = "MEASSAGE_ID", referencedColumnName = "ID"),
       inverseJoinColumns = @JoinColumn(name = "MEDIA_ID", referencedColumnName = "ID"))
