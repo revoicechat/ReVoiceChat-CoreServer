@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
-import fr.revoicechat.core.representation.emote.CreationEmoteRepresentation;
-import fr.revoicechat.core.representation.emote.EmoteRepresentation;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
+import fr.revoicechat.core.technicaldata.emote.NewEmote;
+import fr.revoicechat.core.representation.EmoteRepresentation;
+import fr.revoicechat.core.representation.ServerRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -37,7 +37,7 @@ class TestEmoteControllerImpl {
                .contentType(MediaType.APPLICATION_JSON)
                .header("Authorization", "Bearer " + token)
                .when()
-               .body(new CreationEmoteRepresentation("emote.png", "emote", List.of("keyword")))
+               .body(new NewEmote("emote.png", "emote", List.of("keyword")))
                .put("/emote/me")
                .then().statusCode(200);
     var result = getMyEmotes(token);
@@ -50,7 +50,7 @@ class TestEmoteControllerImpl {
                .header("Authorization", "Bearer " + token)
                .when()
                .pathParam("id", emote.id())
-               .body(new CreationEmoteRepresentation("emote.jpg", "emoote", List.of("keyword")))
+               .body(new NewEmote("emote.jpg", "emoote", List.of("keyword")))
                .patch("/emote/{id}")
                .then().statusCode(200);
     var resultUpdate = getMyEmotes(token);
@@ -95,7 +95,7 @@ class TestEmoteControllerImpl {
                .header("Authorization", "Bearer " + token)
                .when()
                .pathParam("id", server.id())
-               .body(new CreationEmoteRepresentation("emote.png", "emote", List.of("keyword")))
+               .body(new NewEmote("emote.png", "emote", List.of("keyword")))
                .put("/emote/server/{id}")
                .then().statusCode(200);
     var result = getServerEmotes(token, server);
@@ -128,7 +128,7 @@ class TestEmoteControllerImpl {
                .contentType(MediaType.APPLICATION_JSON)
                .header("Authorization", "Bearer " + token)
                .when()
-               .body(new CreationEmoteRepresentation("emote.png", "emote", List.of("keyword")))
+               .body(new NewEmote("emote.png", "emote", List.of("keyword")))
                .put("/emote/global")
                .then().statusCode(200);
     var result = getGlobalEmotes(token);

@@ -7,12 +7,10 @@ import java.util.UUID;
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.model.room.PrivateMessageRoom;
 import fr.revoicechat.core.repository.PrivateMessageRoomRepository;
-import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
-import fr.revoicechat.core.representation.message.MessageRepresentation;
-import fr.revoicechat.core.service.MessageService;
+import fr.revoicechat.core.service.message.MessageService;
+import fr.revoicechat.core.technicaldata.message.NewMessage;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.web.error.ResourceNotFoundException;
-import fr.revoicechat.web.mapper.Mapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -49,9 +47,9 @@ public class PrivateMessageService {
   }
 
   @Transactional
-  public Message sendPrivateMessageTo(final UUID userId, final CreatedMessageRepresentation representation) {
+  public Message sendPrivateMessageTo(final UUID userId, final NewMessage newMessage) {
     var room = privateMessageEntityService.getOrCreate(userId);
-    return Mapper.map(messageService.create(room.getId(), representation));
+    return messageService.create(room.getId(), newMessage);
   }
 
   private PrivateMessageRoom getDirectDiscussion(UUID user1, UUID user2) {

@@ -8,8 +8,8 @@ import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import fr.revoicechat.core.model.Message;
-import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
-import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
+import fr.revoicechat.core.technicaldata.media.NewMediaData;
+import fr.revoicechat.core.technicaldata.message.NewMessage;
 import fr.revoicechat.web.error.BadRequestException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
@@ -26,7 +26,7 @@ public class MessageValidation {
     this.entityManager = entityManager;
   }
 
-  public void isValid(final UUID roomId, final CreatedMessageRepresentation creation) {
+  public void isValid(final UUID roomId, final NewMessage creation) {
     messageNotEmpty(creation);
     messageNotTooLong(creation);
     mediaMustHaveNames(creation);
@@ -38,20 +38,20 @@ public class MessageValidation {
     repliedMessageMustBeInTheSameRoom(repliedMessage, roomId);
   }
 
-  private void messageNotEmpty(CreatedMessageRepresentation creation) {
+  private void messageNotEmpty(NewMessage creation) {
     if (creation.text().isBlank() && creation.medias().isEmpty()) {
       throw new BadRequestException(MESSAGE_CANNOT_BE_EMPTY);
     }
   }
 
-  private void messageNotTooLong(CreatedMessageRepresentation creation) {
+  private void messageNotTooLong(NewMessage creation) {
     if (creation.text().length() > messageSize) {
       throw new BadRequestException(MESSAGE_TOO_LONG, messageSize);
     }
   }
 
-  private void mediaMustHaveNames(CreatedMessageRepresentation creation) {
-    if (creation.medias().stream().map(CreatedMediaDataRepresentation::name).anyMatch(String::isBlank)) {
+  private void mediaMustHaveNames(NewMessage creation) {
+    if (creation.medias().stream().map(NewMediaData::name).anyMatch(String::isBlank)) {
       throw new BadRequestException(MEDIA_DATA_SHOULD_HAVE_A_NAME);
     }
   }

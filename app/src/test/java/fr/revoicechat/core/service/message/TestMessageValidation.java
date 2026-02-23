@@ -15,8 +15,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.model.room.ServerRoom;
-import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
-import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
+import fr.revoicechat.core.technicaldata.media.NewMediaData;
+import fr.revoicechat.core.technicaldata.message.NewMessage;
 import fr.revoicechat.core.stub.EntityManagerMock;
 import fr.revoicechat.web.error.BadRequestException;
 import io.quarkus.test.junit.QuarkusTest;
@@ -43,7 +43,7 @@ class TestMessageValidation {
   @ParameterizedTest
   @MethodSource("messageTest")
   void testMessage(String message, String errorMessage) {
-    CreatedMessageRepresentation creation = new CreatedMessageRepresentation(message, null, List.of());
+    NewMessage creation = new NewMessage(message, null, List.of());
     var ex = Assertions.catchException(() -> validation.isValid(null, creation));
     if (errorMessage != null) {
       Assertions.assertThat(ex).isInstanceOf(BadRequestException.class).hasMessage(errorMessage);
@@ -62,7 +62,7 @@ class TestMessageValidation {
   @ParameterizedTest
   @MethodSource("mediaTest")
   void testMedia(String mediaName, String errorMessage) {
-    CreatedMessageRepresentation creation = new CreatedMessageRepresentation("", null, List.of(new CreatedMediaDataRepresentation("test"), new CreatedMediaDataRepresentation(mediaName)));
+    NewMessage creation = new NewMessage("", null, List.of(new NewMediaData("test"), new NewMediaData(mediaName)));
     var ex = Assertions.catchException(() -> validation.isValid(null, creation));
     if (errorMessage != null) {
       Assertions.assertThat(ex).isInstanceOf(BadRequestException.class).hasMessage(errorMessage);
@@ -73,7 +73,7 @@ class TestMessageValidation {
 
   @Test
   void testAnswerDoesNotExist() {
-    CreatedMessageRepresentation creation = new CreatedMessageRepresentation("test", UUID.randomUUID(), List.of());
+    NewMessage creation = new NewMessage("test", UUID.randomUUID(), List.of());
     entityManager.message = null;
     var ex = Assertions.catchException(() -> validation.isValid(null, creation));
     Assertions.assertThat(ex).isInstanceOf(BadRequestException.class).hasMessage(MESSAGE_ANSWERED_DOES_NOT_EXIST.translate());
@@ -81,7 +81,7 @@ class TestMessageValidation {
 
   @Test
   void testAnswerNotInSameRoom() {
-    CreatedMessageRepresentation creation = new CreatedMessageRepresentation("test", UUID.randomUUID(), List.of());
+    NewMessage creation = new NewMessage("test", UUID.randomUUID(), List.of());
     entityManager.message = new Message();
     entityManager.message.setRoom(new ServerRoom());
     entityManager.message.getRoom().setId(UUID.randomUUID());
@@ -92,7 +92,7 @@ class TestMessageValidation {
   @Test
   void testAnswerNoError() {
     var roomId = UUID.randomUUID();
-    CreatedMessageRepresentation creation = new CreatedMessageRepresentation("test", UUID.randomUUID(), List.of());
+    NewMessage creation = new NewMessage("test", UUID.randomUUID(), List.of());
     entityManager.message = new Message();
     entityManager.message.setRoom(new ServerRoom());
     entityManager.message.getRoom().setId(roomId);

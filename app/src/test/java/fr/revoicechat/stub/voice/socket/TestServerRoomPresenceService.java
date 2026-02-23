@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test;
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.room.RoomType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
-import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
-import fr.revoicechat.core.representation.room.RoomPresenceRepresentation;
-import fr.revoicechat.core.representation.room.RoomRepresentation;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
+import fr.revoicechat.core.technicaldata.room.NewRoom;
+import fr.revoicechat.core.representation.RoomPresenceRepresentation;
+import fr.revoicechat.core.representation.RoomRepresentation;
+import fr.revoicechat.core.representation.ServerRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -83,7 +83,7 @@ class TestServerRoomPresenceService {
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
-                      .body(new CreationRoomRepresentation("voice 1", RoomType.VOICE))
+                      .body(new NewRoom("voice 1", RoomType.VOICE))
                       .when().pathParam("id", server.id()).put("/server/{id}/room")
                       .then().statusCode(200)
                       .extract().body()

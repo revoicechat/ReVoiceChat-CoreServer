@@ -23,7 +23,7 @@ import fr.revoicechat.live.voice.notification.VoiceLeavingNotification;
 import fr.revoicechat.live.voice.service.VoiceRoomPredicate;
 import fr.revoicechat.live.voice.service.VoiceRoomUserFinder;
 import fr.revoicechat.notification.Notification;
-import fr.revoicechat.notification.representation.UserNotificationRepresentation;
+import fr.revoicechat.notification.data.UserNotificationRepresentation;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.security.model.AuthenticatedUser;
 

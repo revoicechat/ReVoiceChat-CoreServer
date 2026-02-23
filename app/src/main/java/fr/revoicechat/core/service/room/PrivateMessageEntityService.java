@@ -6,7 +6,7 @@ import java.util.UUID;
 import fr.revoicechat.core.model.room.PrivateMessageMode;
 import fr.revoicechat.core.model.room.PrivateMessageRoom;
 import fr.revoicechat.core.repository.PrivateMessageRoomRepository;
-import fr.revoicechat.core.service.UserService;
+import fr.revoicechat.core.service.user.UserService;
 import fr.revoicechat.security.UserHolder;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;

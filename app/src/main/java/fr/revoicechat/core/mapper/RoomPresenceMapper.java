@@ -4,10 +4,9 @@ import java.util.List;
 import java.util.UUID;
 
 import fr.revoicechat.core.model.User;
-import fr.revoicechat.core.representation.room.ConnectedUserRepresentation;
-import fr.revoicechat.core.representation.room.RoomPresenceRepresentation;
-import fr.revoicechat.core.service.UserService;
-import fr.revoicechat.core.technicaldata.RoomPresence;
+import fr.revoicechat.core.representation.RoomPresenceRepresentation;
+import fr.revoicechat.core.service.user.UserService;
+import fr.revoicechat.core.technicaldata.room.RoomPresence;
 import fr.revoicechat.live.stream.service.StreamRetriever;
 import fr.revoicechat.live.voice.service.ConnectedUserRetriever;
 import fr.revoicechat.web.mapper.Mapper;

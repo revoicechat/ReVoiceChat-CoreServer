@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.Server;
+import fr.revoicechat.core.model.ServerUser;
 import fr.revoicechat.core.service.invitation.InvitationLinkEntityRetriever;
 import fr.revoicechat.core.service.invitation.InvitationLinkUsage;
 import fr.revoicechat.core.service.serveruser.ServerUserService;
@@ -36,22 +37,23 @@ public class ServerJoiner {
   }
 
   @Transactional
-  public void joinPublic(final UUID serverId) {
+  public ServerUser joinPublic(final UUID serverId) {
     var server = serverEntityRetriever.getEntity(serverId);
     if (!server.isPublic()) {
       throw new BadRequestException(SERVER_NOT_PUBLIC);
     }
-    serverUserService.join(server);
+    return serverUserService.join(server);
   }
 
   @Transactional
-  public void joinPrivate(final UUID invitation) {
+  public ServerUser joinPrivate(final UUID invitation) {
     var invitationLink = invitationLinkService.getEntity(invitation);
     if (!isValideInvitation(invitationLink)) {
       throw new BadRequestException(NO_VALID_INVITATION);
     }
-    serverUserService.join(invitationLink.getTargetedServer());
+    var serverUser = serverUserService.join(invitationLink.getTargetedServer());
     invitationLinkUsage.use(invitationLink);
+    return serverUser;
   }
 
   private static boolean isValideInvitation(InvitationLink invitationLink) {

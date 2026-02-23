@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
-import fr.revoicechat.core.representation.login.UserPassword;
-import fr.revoicechat.core.representation.user.SignupRepresentation;
-import fr.revoicechat.core.representation.user.UserRepresentation;
+import fr.revoicechat.core.technicaldata.login.UserPassword;
+import fr.revoicechat.core.technicaldata.user.NewUserSignup;
+import fr.revoicechat.core.representation.UserRepresentation;
 import fr.revoicechat.notification.model.ActiveStatus;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -90,7 +90,7 @@ class TestAuthController {
   }
 
   private static Response signup() {
-    var signup = new SignupRepresentation("testUser", "psw", "email@email.fr", UUID.randomUUID());
+    var signup = new NewUserSignup("testUser", "psw", "email@email.fr", UUID.randomUUID());
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .body(signup)

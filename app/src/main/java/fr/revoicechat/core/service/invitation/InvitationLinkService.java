@@ -11,7 +11,7 @@ import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.InvitationType;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.repository.InvitationLinkRepository;
-import fr.revoicechat.core.representation.invitation.InvitationCategory;
+import fr.revoicechat.core.technicaldata.invitation.InvitationCategory;
 import fr.revoicechat.core.service.server.ServerEntityService;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.web.error.ResourceNotFoundException;

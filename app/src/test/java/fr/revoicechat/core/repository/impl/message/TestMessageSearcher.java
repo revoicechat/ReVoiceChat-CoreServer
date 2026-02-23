@@ -25,7 +25,7 @@ import fr.revoicechat.core.model.ServerType;
 import fr.revoicechat.core.model.ServerUser;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
-import fr.revoicechat.core.representation.message.MessageFilterParams;
+import fr.revoicechat.core.technicaldata.message.MessageFilterParams;
 import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.risk.model.Risk;
 import fr.revoicechat.risk.model.RiskMode;
@@ -105,7 +105,7 @@ class TestMessageSearcher {
     var result = messageSearcher.search(user1.getId(), param);
     // Then
     assertThat(result.pageNumber()).isZero();
-    assertThat(result.pageSize()).isEqualTo(messages.size());
+    assertThat(result.size()).isEqualTo(messages.size());
     assertThat(result.totalElements()).isEqualTo(messages.size());
     var content = result.content();
     assertThat(content).containsExactlyInAnyOrderElementsOf(messages.values());
@@ -121,7 +121,7 @@ class TestMessageSearcher {
     var result = messageSearcher.search(user1.getId(), param);
     // Then
     assertThat(result.pageNumber()).isZero();
-    assertThat(result.pageSize()).isEqualTo(2);
+    assertThat(result.size()).isEqualTo(2);
     assertThat(result.totalElements()).isEqualTo(10);
     var content = result.content();
     assertThat(content).hasSize(2).containsExactlyInAnyOrder(
@@ -141,7 +141,7 @@ class TestMessageSearcher {
     var result = messageSearcher.search(user1.getId(), param);
     // Then
     assertThat(result.pageNumber()).isZero();
-    assertThat(result.pageSize()).isEqualTo(2);
+    assertThat(result.size()).isEqualTo(2);
     assertThat(result.totalElements()).isEqualTo(8);
     var content = result.content();
     assertThat(content).hasSize(2).containsExactlyInAnyOrder(
@@ -160,7 +160,7 @@ class TestMessageSearcher {
     var result = messageSearcher.search(user1.getId(), param);
     // Then
     assertThat(result.pageNumber()).isZero();
-    assertThat(result.pageSize()).isEqualTo(2);
+    assertThat(result.size()).isEqualTo(2);
     assertThat(result.totalElements()).isEqualTo(10);
     var content = result.content();
     assertThat(content).hasSize(2).containsExactlyInAnyOrder(
@@ -181,7 +181,7 @@ class TestMessageSearcher {
     var result = messageSearcher.search(user1.getId(), param);
     // Then
     assertThat(result.pageNumber()).isZero();
-    assertThat(result.pageSize()).isEqualTo(2);
+    assertThat(result.size()).isEqualTo(2);
     var content = result.content();
     assertThat(content).hasSize(2).containsExactlyInAnyOrder(
         messages.get("message 10"),
@@ -200,7 +200,7 @@ class TestMessageSearcher {
     var result = messageSearcher.search(user1.getId(), param);
     // Then
     assertThat(result.pageNumber()).isZero();
-    assertThat(result.pageSize()).isEqualTo(2);
+    assertThat(result.size()).isEqualTo(2);
     assertThat(result.totalElements()).isEqualTo(10);
     var content = result.content();
     assertThat(content).hasSize(2).containsExactlyInAnyOrder(

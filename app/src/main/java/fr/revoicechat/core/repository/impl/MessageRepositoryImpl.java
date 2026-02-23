@@ -8,7 +8,7 @@ import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.repository.MessageRepository;
 import fr.revoicechat.core.repository.impl.message.MessageSearcher;
 import fr.revoicechat.core.repository.page.PageResult;
-import fr.revoicechat.core.representation.message.MessageFilterParams;
+import fr.revoicechat.core.technicaldata.message.MessageFilterParams;
 import fr.revoicechat.security.UserHolder;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;

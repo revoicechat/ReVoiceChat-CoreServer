@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import fr.revoicechat.notification.Notification;
-import fr.revoicechat.notification.representation.NotificationActionType;
+import fr.revoicechat.notification.data.NotificationActionType;
 import fr.revoicechat.risk.model.Risk;
 import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.model.ServerRoles;

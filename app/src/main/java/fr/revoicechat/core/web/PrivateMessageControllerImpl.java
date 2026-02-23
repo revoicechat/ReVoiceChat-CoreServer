@@ -3,12 +3,13 @@ package fr.revoicechat.core.web;
 import java.util.List;
 import java.util.UUID;
 
+import fr.revoicechat.core.notification.MessageNotification;
 import fr.revoicechat.core.repository.page.PageResult;
-import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
-import fr.revoicechat.core.representation.message.MessageFilterParams;
-import fr.revoicechat.core.representation.message.MessageRepresentation;
-import fr.revoicechat.core.representation.room.RoomRepresentation;
-import fr.revoicechat.core.service.MessageService;
+import fr.revoicechat.core.technicaldata.message.NewMessage;
+import fr.revoicechat.core.technicaldata.message.MessageFilterParams;
+import fr.revoicechat.core.representation.MessageRepresentation;
+import fr.revoicechat.core.representation.RoomRepresentation;
+import fr.revoicechat.core.service.message.MessageService;
 import fr.revoicechat.core.service.message.MessagePageResult;
 import fr.revoicechat.core.service.room.PrivateMessageService;
 import fr.revoicechat.core.web.api.PrivateMessageController;
@@ -38,11 +39,18 @@ public class PrivateMessageControllerImpl implements PrivateMessageController {
 
   @Override
   public PageResult<MessageRepresentation> messages(final UUID roomId, final MessageFilterParams params) {
-    return messagePageResult.getMessagesByRoom(roomId, params);
+    var pageResult = messagePageResult.getMessagesByRoom(roomId, params);
+    return new PageResult<>(
+        Mapper.mapAll(pageResult.content()),
+        pageResult.size(),
+        pageResult.totalElements()
+    );
   }
 
   @Override
-  public MessageRepresentation sendMessage(final UUID roomId, final CreatedMessageRepresentation representation) {
-    return Mapper.map(messageService.create(roomId, representation));
+  public MessageRepresentation sendMessage(final UUID roomId, final NewMessage newMessage) {
+    var message = messageService.create(roomId, newMessage);
+    MessageNotification.add(message);
+    return Mapper.map(message);
   }
 }

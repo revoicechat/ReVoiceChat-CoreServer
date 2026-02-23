@@ -7,8 +7,8 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import fr.revoicechat.core.representation.emote.CreationEmoteRepresentation;
-import fr.revoicechat.core.representation.emote.EmoteRepresentation;
+import fr.revoicechat.core.technicaldata.emote.NewEmote;
+import fr.revoicechat.core.representation.EmoteRepresentation;
 import fr.revoicechat.openapi.api.LoggedApi;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -38,7 +38,7 @@ public interface EmoteController extends LoggedApi {
   @APIResponse(responseCode = "400", description = "Invalid emote data provided")
   @PUT
   @Path("/me")
-  EmoteRepresentation addToMyEmotes(CreationEmoteRepresentation emote);
+  EmoteRepresentation addToMyEmotes(NewEmote emote);
 
   @Operation(
       summary = "Get global emotes",
@@ -58,7 +58,7 @@ public interface EmoteController extends LoggedApi {
   @APIResponse(responseCode = "403", description = "Insufficient permissions to create global emotes")
   @PUT
   @Path("/global")
-  EmoteRepresentation addToGlobalEmotes(CreationEmoteRepresentation emote);
+  EmoteRepresentation addToGlobalEmotes(NewEmote emote);
 
   @Operation(
       summary = "Get server emotes",
@@ -80,7 +80,7 @@ public interface EmoteController extends LoggedApi {
   @APIResponse(responseCode = "404", description = "Server not found")
   @PUT
   @Path("/server/{id}")
-  EmoteRepresentation addToServerEmotes(@PathParam("id") UUID serverId, CreationEmoteRepresentation emote);
+  EmoteRepresentation addToServerEmotes(@PathParam("id") UUID serverId, NewEmote emote);
 
   @Operation(
       summary = "Get emote by ID",
@@ -102,7 +102,7 @@ public interface EmoteController extends LoggedApi {
   @APIResponse(responseCode = "404", description = "Emote not found")
   @PATCH
   @Path("/{id}")
-  EmoteRepresentation patchEmote(@PathParam("id") UUID id, CreationEmoteRepresentation emote);
+  EmoteRepresentation patchEmote(@PathParam("id") UUID id, NewEmote emote);
 
   @Operation(
       summary = "Delete emote",

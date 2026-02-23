@@ -1,7 +1,7 @@
 package fr.revoicechat.core.mapper;
 
 import fr.revoicechat.core.model.room.PrivateMessageRoom;
-import fr.revoicechat.core.representation.room.RoomRepresentation;
+import fr.revoicechat.core.representation.RoomRepresentation;
 import fr.revoicechat.core.service.room.RoomReadStatusService;
 import fr.revoicechat.web.mapper.RepresentationMapper;
 import jakarta.enterprise.context.ApplicationScoped;

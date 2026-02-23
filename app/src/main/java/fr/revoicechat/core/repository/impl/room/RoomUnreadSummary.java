@@ -2,7 +2,7 @@ package fr.revoicechat.core.repository.impl.room;
 
 import java.util.UUID;
 
-import fr.revoicechat.core.representation.message.UnreadMessageStatus;
+import fr.revoicechat.core.technicaldata.message.UnreadMessageStatus;
 
 public record RoomUnreadSummary(
     UUID firstUnreadMessage,

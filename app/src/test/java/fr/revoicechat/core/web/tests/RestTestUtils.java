@@ -6,12 +6,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.revoicechat.core.model.ServerType;
 import fr.revoicechat.core.model.UserType;
-import fr.revoicechat.core.representation.login.UserPassword;
-import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
-import fr.revoicechat.core.representation.user.AdminUpdatableUserData;
-import fr.revoicechat.core.representation.user.SignupRepresentation;
-import fr.revoicechat.core.representation.user.UserRepresentation;
+import fr.revoicechat.core.technicaldata.login.UserPassword;
+import fr.revoicechat.core.technicaldata.server.NewServer;
+import fr.revoicechat.core.representation.ServerRepresentation;
+import fr.revoicechat.core.technicaldata.user.AdminUpdatableUserData;
+import fr.revoicechat.core.technicaldata.user.NewUserSignup;
+import fr.revoicechat.core.representation.UserRepresentation;
 import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
 import fr.revoicechat.risk.representation.RiskCategoryRepresentation;
@@ -40,7 +40,7 @@ public class RestTestUtils {
   }
 
   public static UserRepresentation signup(String user, String password) {
-    var signup = new SignupRepresentation(user, password, counter.getAndIncrement() + "@mail.com", UUID.randomUUID());
+    var signup = new NewUserSignup(user, password, counter.getAndIncrement() + "@mail.com", UUID.randomUUID());
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .body(signup)
@@ -76,7 +76,7 @@ public class RestTestUtils {
                              .then().statusCode(200)
                              .extract().body().jsonPath().getList(".", ServerRepresentation.class);
     if (servers.isEmpty()) {
-      var representation = new ServerCreationRepresentation("test", ServerType.PUBLIC);
+      var representation = new NewServer("test", ServerType.PUBLIC);
       RestAssured.given()
                  .contentType(MediaType.APPLICATION_JSON)
                  .header("Authorization", "Bearer " + token)

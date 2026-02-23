@@ -9,7 +9,7 @@ import java.util.UUID;
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.repository.impl.room.AccessibleRoomsResolver;
 import fr.revoicechat.core.repository.page.PageResult;
-import fr.revoicechat.core.representation.message.MessageFilterParams;
+import fr.revoicechat.core.technicaldata.message.MessageFilterParams;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -41,7 +41,6 @@ public class MessageSearcher {
     Set<UUID> accessibleRoomIds = accessibleRoomsResolver.resolve(currentUserId, params.getRoomId());
     return new PageResult<>(
         executeRequest(accessibleRoomIds, params),
-        params.getPage(),
         params.getSize(),
         countResult(accessibleRoomIds, params)
     );

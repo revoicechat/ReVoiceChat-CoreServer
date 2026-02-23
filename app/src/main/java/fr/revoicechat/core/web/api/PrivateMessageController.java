@@ -4,17 +4,15 @@ import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 
 import fr.revoicechat.core.repository.page.PageResult;
-import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
-import fr.revoicechat.core.representation.message.MessageFilterParams;
-import fr.revoicechat.core.representation.message.MessageRepresentation;
-import fr.revoicechat.core.representation.room.RoomRepresentation;
+import fr.revoicechat.core.technicaldata.message.NewMessage;
+import fr.revoicechat.core.technicaldata.message.MessageFilterParams;
+import fr.revoicechat.core.representation.MessageRepresentation;
+import fr.revoicechat.core.representation.RoomRepresentation;
 import fr.revoicechat.openapi.api.LoggedApi;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.GET;
@@ -55,6 +53,6 @@ public interface PrivateMessageController extends LoggedApi {
   @APIResponse(responseCode = "404", description = "Room not found")
   @PUT
   @Path("{id}/message")
-  MessageRepresentation sendMessage(@PathParam("id") UUID roomId, CreatedMessageRepresentation representation);
+  MessageRepresentation sendMessage(@PathParam("id") UUID roomId, NewMessage representation);
 
 }

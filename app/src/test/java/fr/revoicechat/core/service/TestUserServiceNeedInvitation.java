@@ -21,7 +21,8 @@ import fr.revoicechat.core.model.InvitationType;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
-import fr.revoicechat.core.representation.user.SignupRepresentation;
+import fr.revoicechat.core.service.user.UserService;
+import fr.revoicechat.core.technicaldata.user.NewUserSignup;
 import fr.revoicechat.core.service.TestUserServiceNeedInvitation.AppOnlyAccessibleByInvitationTrue;
 import fr.revoicechat.security.utils.PasswordUtils;
 import fr.revoicechat.web.error.BadRequestException;
@@ -42,25 +43,25 @@ class TestUserServiceNeedInvitation {
   @Test
   void testWithNoLink() {
     // Given
-    userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", null));
-    SignupRepresentation signer = new SignupRepresentation("user", "psw", "user@revoicechat.fr", null);
+    userService.create(new NewUserSignup("master", "psw", "master@revoicechat.fr", null));
+    NewUserSignup signer = new NewUserSignup("user", "psw", "user@revoicechat.fr", null);
     assertThatThrownBy(() -> userService.create(signer)).isInstanceOf(BadRequestException.class).hasMessage(USER_WITH_NO_VALID_INVITATION.translate());
   }
 
   @Test
   void testWithRandomLink() {
-    userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", null));
-    SignupRepresentation signer = new SignupRepresentation("user", "test", "user@revoicechat.fr", UUID.randomUUID());
+    userService.create(new NewUserSignup("master", "psw", "master@revoicechat.fr", null));
+    NewUserSignup signer = new NewUserSignup("user", "test", "user@revoicechat.fr", UUID.randomUUID());
     assertThatThrownBy(() -> userService.create(signer)).isInstanceOf(BadRequestException.class).hasMessage(USER_WITH_NO_VALID_INVITATION.translate());
   }
 
   @Test
   @Transactional
   void testWithInvitationLink() {
-    var adminRep = userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
+    var adminRep = userService.create(new NewUserSignup("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
     var admin = entityManager.find(User.class, adminRep.getId());
     var invitation = generateInvitationLink(admin, CREATED, APPLICATION_JOIN);
-    SignupRepresentation signer = new SignupRepresentation("user", "test", "user@revoicechat.fr", invitation.getId());
+    NewUserSignup signer = new NewUserSignup("user", "test", "user@revoicechat.fr", invitation.getId());
     var resultRepresentation = userService.create(signer);
     assertThat(resultRepresentation).isNotNull();
     assertUser(resultRepresentation);
@@ -75,10 +76,10 @@ class TestUserServiceNeedInvitation {
   @Test
   @Transactional
   void testWithPermanentInvitationLink() {
-    var adminRep = userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
+    var adminRep = userService.create(new NewUserSignup("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
     var admin = entityManager.find(User.class, adminRep.getId());
     var invitation = generateInvitationLink(admin, PERMANENT, APPLICATION_JOIN);
-    SignupRepresentation signer = new SignupRepresentation("user", "test", "user@revoicechat.fr", invitation.getId());
+    NewUserSignup signer = new NewUserSignup("user", "test", "user@revoicechat.fr", invitation.getId());
     var resultRepresentation = userService.create(signer);
     assertThat(resultRepresentation).isNotNull();
     assertUser(resultRepresentation);
@@ -93,10 +94,10 @@ class TestUserServiceNeedInvitation {
   @EnumSource(value = InvitationLinkStatus.class, names = { "CREATED", "PERMANENT" }, mode = Mode.EXCLUDE)
   @Transactional
   void testWithInvalidStatusInvitationLink(InvitationLinkStatus status) {
-    var adminRep = userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
+    var adminRep = userService.create(new NewUserSignup("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
     var admin = entityManager.find(User.class, adminRep.getId());
     var invitation = generateInvitationLink(admin, status, APPLICATION_JOIN);
-    SignupRepresentation signer = new SignupRepresentation("user", "test", "user@revoicechat.fr", invitation.getId());
+    NewUserSignup signer = new NewUserSignup("user", "test", "user@revoicechat.fr", invitation.getId());
     assertThatThrownBy(() -> userService.create(signer)).isInstanceOf(BadRequestException.class).hasMessage(USER_WITH_NO_VALID_INVITATION.translate());
   }
 
@@ -104,10 +105,10 @@ class TestUserServiceNeedInvitation {
   @EnumSource(value = InvitationType.class, names = "APPLICATION_JOIN", mode = Mode.EXCLUDE)
   @Transactional
   void testWithInvalidTypeInvitationLink(InvitationType type) {
-    var adminRep = userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
+    var adminRep = userService.create(new NewUserSignup("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
     var admin = entityManager.find(User.class, adminRep.getId());
     var invitation = generateInvitationLink(admin, CREATED, type);
-    SignupRepresentation signer = new SignupRepresentation("user", "test", "user@revoicechat.fr", invitation.getId());
+    NewUserSignup signer = new NewUserSignup("user", "test", "user@revoicechat.fr", invitation.getId());
     assertThatThrownBy(() -> userService.create(signer)).isInstanceOf(BadRequestException.class).hasMessage(USER_WITH_NO_VALID_INVITATION.translate());
   }
 

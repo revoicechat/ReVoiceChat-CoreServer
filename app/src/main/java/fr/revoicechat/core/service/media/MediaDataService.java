@@ -8,7 +8,7 @@ import fr.revoicechat.core.model.MediaData;
 import fr.revoicechat.core.model.MediaDataStatus;
 import fr.revoicechat.core.model.MediaOrigin;
 import fr.revoicechat.core.repository.MediaDataRepository;
-import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
+import fr.revoicechat.core.technicaldata.media.NewMediaData;
 import fr.revoicechat.web.error.ResourceNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
@@ -34,7 +34,7 @@ public class MediaDataService {
                    .orElseThrow(() -> new ResourceNotFoundException(MediaData.class, id));
   }
 
-  public MediaData create(final CreatedMediaDataRepresentation creation, MediaOrigin origin) {
+  public MediaData create(final NewMediaData creation, MediaOrigin origin) {
     MediaData mediaData = new MediaData();
     mediaData.setId(UUID.randomUUID());
     mediaData.setName(creation.name());

@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
-import fr.revoicechat.core.representation.user.UserRepresentation;
+import fr.revoicechat.core.representation.UserRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.service.NotificationService;

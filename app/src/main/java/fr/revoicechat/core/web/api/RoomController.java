@@ -10,12 +10,12 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 
 import fr.revoicechat.core.repository.page.PageResult;
-import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
-import fr.revoicechat.core.representation.message.MessageFilterParams;
-import fr.revoicechat.core.representation.message.MessageRepresentation;
-import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
-import fr.revoicechat.core.representation.room.RoomPresenceRepresentation;
-import fr.revoicechat.core.representation.room.RoomRepresentation;
+import fr.revoicechat.core.technicaldata.message.NewMessage;
+import fr.revoicechat.core.technicaldata.message.MessageFilterParams;
+import fr.revoicechat.core.representation.MessageRepresentation;
+import fr.revoicechat.core.technicaldata.room.NewRoom;
+import fr.revoicechat.core.representation.RoomPresenceRepresentation;
+import fr.revoicechat.core.representation.RoomRepresentation;
 import fr.revoicechat.openapi.api.LoggedApi;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.DELETE;
@@ -68,7 +68,7 @@ public interface RoomController extends LoggedApi {
       )
   )
   @PATCH
-  RoomRepresentation update(@PathParam("id") UUID roomId, CreationRoomRepresentation representation);
+  RoomRepresentation update(@PathParam("id") UUID roomId, NewRoom representation);
 
   @Operation(
       summary = "Delete room",
@@ -123,7 +123,7 @@ public interface RoomController extends LoggedApi {
   )
   @PUT
   @Path("/message")
-  MessageRepresentation sendMessage(@PathParam("id") UUID roomId, CreatedMessageRepresentation representation);
+  MessageRepresentation sendMessage(@PathParam("id") UUID roomId, NewMessage representation);
 
   @Tags(refs = { "Room", "User" })
   @Operation(
