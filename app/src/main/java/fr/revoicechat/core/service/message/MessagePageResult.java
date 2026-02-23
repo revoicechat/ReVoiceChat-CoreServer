@@ -6,7 +6,7 @@ import fr.revoicechat.core.repository.impl.MessageRepositoryImpl;
 import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.representation.message.MessageFilterParams;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
-import fr.revoicechat.core.service.MessageService;
+import fr.revoicechat.web.mapper.Mapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -14,11 +14,9 @@ import jakarta.transaction.Transactional;
 public class MessagePageResult {
 
   private final MessageRepositoryImpl messageRepositoryImpl;
-  private final MessageService messageService;
 
-  public MessagePageResult(final MessageRepositoryImpl messageRepositoryImpl, final MessageService messageService) {
+  public MessagePageResult(final MessageRepositoryImpl messageRepositoryImpl) {
     this.messageRepositoryImpl = messageRepositoryImpl;
-    this.messageService = messageService;
   }
 
   /**
@@ -33,7 +31,7 @@ public class MessagePageResult {
     var pageResult = messageRepositoryImpl.search(params);
     return new PageResult<>(pageResult.content()
                                       .stream()
-                                      .map(messageService::toRepresentation)
+                                      .<MessageRepresentation>map(Mapper::map)
                                       .toList(),
         pageResult.pageNumber(), pageResult.pageSize(), pageResult.totalElements());
   }

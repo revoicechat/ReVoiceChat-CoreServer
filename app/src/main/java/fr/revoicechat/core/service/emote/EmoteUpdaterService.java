@@ -4,18 +4,12 @@ import static fr.revoicechat.notification.representation.NotificationActionType.
 import static fr.revoicechat.risk.nls.RiskMembershipErrorCode.RISK_MEMBERSHIP_ERROR;
 
 import java.util.UUID;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
 import fr.revoicechat.core.model.Emote;
 import fr.revoicechat.core.model.FileType;
 import fr.revoicechat.core.model.MediaOrigin;
 import fr.revoicechat.core.nls.EmoteErrorCode;
 import fr.revoicechat.core.representation.emote.CreationEmoteRepresentation;
-import fr.revoicechat.core.representation.emote.EmoteRepresentation;
 import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
 import fr.revoicechat.core.risk.EmoteRiskType;
 import fr.revoicechat.core.service.emote.risk.EmoteRiskSupplier;
@@ -25,6 +19,11 @@ import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.security.model.AuthenticatedUser;
 import fr.revoicechat.web.error.BadRequestException;
 import io.quarkus.security.UnauthorizedException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class EmoteUpdaterService {
@@ -52,7 +51,7 @@ public class EmoteUpdaterService {
   }
 
   @Transactional
-  public EmoteRepresentation add(final UUID id, final CreationEmoteRepresentation emote) {
+  public Emote add(final UUID id, final CreationEmoteRepresentation emote) {
     var media = mediaDataService.create(new CreatedMediaDataRepresentation(emote.fileName()), MediaOrigin.EMOTE);
     if (!media.getType().equals(FileType.PICTURE)) {
       throw new BadRequestException(EmoteErrorCode.ONLY_PICTURES_ERR);
@@ -64,11 +63,11 @@ public class EmoteUpdaterService {
     newEmote.setEntity(id);
     newEmote.setMedia(media);
     entityManager.persist(newEmote);
-    return emoteRetrieverService.toRepresentation(newEmote);
+    return newEmote;
   }
 
   @Transactional
-  public EmoteRepresentation update(final UUID id, final CreationEmoteRepresentation representation) {
+  public Emote update(final UUID id, final CreationEmoteRepresentation representation) {
     var user = userHolder.get();
     var emote = emoteRetrieverService.getEntity(id);
     if (hasRisk(emote, user, EmoteRiskType.UPDATE_EMOTE)) {
@@ -76,7 +75,7 @@ public class EmoteUpdaterService {
       emote.setKeywords(representation.keywords());
       entityManager.persist(emote);
       emoteMediaNotifier.notify(emote, MODIFY);
-      return emoteRetrieverService.toRepresentation(emote);
+      return emote;
     } else {
       throw new UnauthorizedException(RISK_MEMBERSHIP_ERROR.translate(EmoteRiskType.UPDATE_EMOTE));
     }

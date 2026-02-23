@@ -22,6 +22,7 @@ import fr.revoicechat.core.service.server.ServerRetriever;
 import fr.revoicechat.core.web.api.ServerController;
 import fr.revoicechat.risk.RisksMembershipData;
 import fr.revoicechat.risk.retriever.ServerIdRetriever;
+import fr.revoicechat.web.mapper.Mapper;
 import jakarta.annotation.security.RolesAllowed;
 
 public class ServerControllerImpl implements ServerController {
@@ -34,7 +35,7 @@ public class ServerControllerImpl implements ServerController {
   private final ServerJoiner serverJoiner;
   private final ServerDeleterService serverDeleterService;
 
-  public ServerControllerImpl(final ServerRetriever serverRetriever, ServerService serverService, RoomService roomService, UserService userService, InvitationLinkService invitationLinkService, final ServerJoiner serverJoiner, final ServerDeleterService serverDeleterService) {
+  public ServerControllerImpl(ServerRetriever serverRetriever, ServerService serverService, RoomService roomService, UserService userService, InvitationLinkService invitationLinkService, ServerJoiner serverJoiner, ServerDeleterService serverDeleterService) {
     this.serverRetriever = serverRetriever;
     this.serverService = serverService;
     this.roomService = roomService;
@@ -47,38 +48,38 @@ public class ServerControllerImpl implements ServerController {
   @Override
   @RolesAllowed(ROLE_USER)
   public List<ServerRepresentation> getServers() {
-    return serverRetriever.getAllMyServers();
+    return Mapper.mapAll(serverRetriever.getAllMyServers());
   }
 
   @Override
   @RolesAllowed(ROLE_ADMIN)
   public List<ServerRepresentation> getAllServers() {
-    return serverService.getAll();
+    return Mapper.mapAll(serverService.getAll());
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   public List<ServerRepresentation> getPublicServers(boolean joinedToo) {
-    return serverRetriever.getAllPublicServers(joinedToo);
+    return Mapper.mapAll(serverRetriever.getAllPublicServers(joinedToo));
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   public ServerRepresentation getServer(UUID id) {
-    return serverService.get(id);
+    return Mapper.map(serverRetriever.getEntity(id));
   }
 
   @Override
   @RolesAllowed(ROLE_ADMIN)
   public ServerRepresentation createServer(ServerCreationRepresentation representation) {
-    return serverService.create(representation);
+    return Mapper.map(serverService.create(representation));
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   @RisksMembershipData(risks = "SERVER_UPDATE", retriever = ServerIdRetriever.class)
   public ServerRepresentation updateServer(UUID id, ServerCreationRepresentation representation) {
-    return serverService.update(id, representation);
+    return Mapper.map(serverService.update(id, representation));
   }
 
   @Override
@@ -91,34 +92,34 @@ public class ServerControllerImpl implements ServerController {
   @Override
   @RolesAllowed(ROLE_USER)
   public List<RoomRepresentation> getRooms(UUID id) {
-    return roomService.findAllForCurrentUser(id);
+    return Mapper.mapAll(roomService.findAllForCurrentUser(id));
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   @RisksMembershipData(risks = "SERVER_ROOM_ADD", retriever = ServerIdRetriever.class)
   public RoomRepresentation createRoom(UUID id, CreationRoomRepresentation representation) {
-    return roomService.create(id, representation);
+    return Mapper.map(roomService.create(id, representation));
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   public List<UserRepresentation> fetchUsers(final UUID id) {
-    return userService.fetchUserForServer(id);
+    return Mapper.mapAll(userService.fetchUserForServer(id));
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   @RisksMembershipData(risks = "SERVER_INVITATION_ADD", retriever = ServerIdRetriever.class)
   public InvitationRepresentation generateServerInvitation(final UUID id, final String category) {
-    return invitationLinkService.generateServerInvitation(id, InvitationCategory.of(category));
+    return Mapper.map(invitationLinkService.generateServerInvitation(id, InvitationCategory.of(category)));
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   @RisksMembershipData(risks = "SERVER_INVITATION_FETCH", retriever = ServerIdRetriever.class)
   public List<InvitationRepresentation> getAllServerInvitations(final UUID id) {
-    return invitationLinkService.getAllServerInvitations(id);
+    return Mapper.mapAll(invitationLinkService.getAllServerInvitations(id));
   }
 
   @Override

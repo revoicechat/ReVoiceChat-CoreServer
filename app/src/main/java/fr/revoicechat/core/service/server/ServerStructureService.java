@@ -8,13 +8,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import fr.revoicechat.core.mapper.ServerMapper;
+import fr.revoicechat.core.model.room.Room;
 import fr.revoicechat.core.model.server.ServerCategory;
 import fr.revoicechat.core.model.server.ServerItem;
-import fr.revoicechat.core.model.server.ServerRoom;
+import fr.revoicechat.core.model.server.ServerRoomItem;
 import fr.revoicechat.core.model.server.ServerStructure;
 import fr.revoicechat.core.repository.RoomRepository;
 import fr.revoicechat.core.repository.UserRepository;
-import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.server.ServerUpdateNotification;
 import fr.revoicechat.core.service.RoomService;
 import fr.revoicechat.notification.Notification;
@@ -63,15 +64,15 @@ public class ServerStructureService {
   public ServerStructure getStructure(final UUID id) {
     return Optional.ofNullable(serverEntityService.getEntity(id).getStructure())
                    .orElseGet(() -> new ServerStructure(new ArrayList<>(roomService.findAll(id).stream()
-                                                                                   .map(RoomRepresentation::id)
-                                                                                   .map(ServerRoom::new)
+                                                                                   .map(Room::getId)
+                                                                                   .map(ServerRoomItem::new)
                                                                                    .toList())));
   }
 
   private List<UUID> flatStructure(final List<ServerItem> structure, List<UUID> ids) {
     structure.forEach(item -> {
       switch (item) {
-        case ServerRoom(UUID id) -> ids.add(id);
+        case ServerRoomItem(UUID id) -> ids.add(id);
         case ServerCategory category -> flatStructure(category.items(), ids);
       }
     });

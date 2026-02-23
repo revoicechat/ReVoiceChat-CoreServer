@@ -5,9 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 
@@ -19,11 +16,13 @@ import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.representation.user.SignupRepresentation;
-import fr.revoicechat.core.representation.user.UserRepresentation;
-import fr.revoicechat.security.utils.PasswordUtils;
 import fr.revoicechat.core.service.TestUserServiceNoNeedInvitation.AppOnlyAccessibleByInvitationFalse;
+import fr.revoicechat.security.utils.PasswordUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 @QuarkusTest
 @CleanDatabase
@@ -55,7 +54,7 @@ class TestUserServiceNoNeedInvitation {
   @Transactional
   void testWithInvitationLink() {
     var adminRep = userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
-    var admin = entityManager.find(User.class, adminRep.id());
+    var admin = entityManager.find(User.class, adminRep.getId());
     var invitation = generateInvitationLink(admin);
     SignupRepresentation signer = new SignupRepresentation("user", "test", "user@revoicechat.fr", invitation.getId());
     var resultRepresentation = userService.create(signer);
@@ -66,8 +65,8 @@ class TestUserServiceNoNeedInvitation {
     assertThat(invitation.getApplier()).isNotNull();
   }
 
-  private void assertUser(final UserRepresentation resultRepresentation) {
-    var result = entityManager.find(User.class, resultRepresentation.id());
+  private void assertUser(final User resultRepresentation) {
+    var result = entityManager.find(User.class, resultRepresentation.getId());
     assertThat(result).isNotNull();
     assertThat(result.getCreatedDate()).isNotNull();
     assertThat(result.getLogin()).isEqualTo("user");

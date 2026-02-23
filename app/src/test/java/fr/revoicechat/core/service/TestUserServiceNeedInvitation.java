@@ -14,7 +14,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.EnumSource.Mode;
 
-import fr.revoicechat.web.error.BadRequestException;
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.InvitationLinkStatus;
@@ -23,9 +22,9 @@ import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.representation.user.SignupRepresentation;
-import fr.revoicechat.core.representation.user.UserRepresentation;
 import fr.revoicechat.core.service.TestUserServiceNeedInvitation.AppOnlyAccessibleByInvitationTrue;
 import fr.revoicechat.security.utils.PasswordUtils;
+import fr.revoicechat.web.error.BadRequestException;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
@@ -59,13 +58,13 @@ class TestUserServiceNeedInvitation {
   @Transactional
   void testWithInvitationLink() {
     var adminRep = userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
-    var admin = entityManager.find(User.class, adminRep.id());
+    var admin = entityManager.find(User.class, adminRep.getId());
     var invitation = generateInvitationLink(admin, CREATED, APPLICATION_JOIN);
     SignupRepresentation signer = new SignupRepresentation("user", "test", "user@revoicechat.fr", invitation.getId());
     var resultRepresentation = userService.create(signer);
     assertThat(resultRepresentation).isNotNull();
     assertUser(resultRepresentation);
-    var user = entityManager.find(User.class, resultRepresentation.id());
+    var user = entityManager.find(User.class, resultRepresentation.getId());
     entityManager.flush();
     entityManager.clear();
     var reloadedInvitation = entityManager.find(InvitationLink.class, invitation.getId());
@@ -77,7 +76,7 @@ class TestUserServiceNeedInvitation {
   @Transactional
   void testWithPermanentInvitationLink() {
     var adminRep = userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
-    var admin = entityManager.find(User.class, adminRep.id());
+    var admin = entityManager.find(User.class, adminRep.getId());
     var invitation = generateInvitationLink(admin, PERMANENT, APPLICATION_JOIN);
     SignupRepresentation signer = new SignupRepresentation("user", "test", "user@revoicechat.fr", invitation.getId());
     var resultRepresentation = userService.create(signer);
@@ -95,7 +94,7 @@ class TestUserServiceNeedInvitation {
   @Transactional
   void testWithInvalidStatusInvitationLink(InvitationLinkStatus status) {
     var adminRep = userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
-    var admin = entityManager.find(User.class, adminRep.id());
+    var admin = entityManager.find(User.class, adminRep.getId());
     var invitation = generateInvitationLink(admin, status, APPLICATION_JOIN);
     SignupRepresentation signer = new SignupRepresentation("user", "test", "user@revoicechat.fr", invitation.getId());
     assertThatThrownBy(() -> userService.create(signer)).isInstanceOf(BadRequestException.class).hasMessage(USER_WITH_NO_VALID_INVITATION.translate());
@@ -106,14 +105,14 @@ class TestUserServiceNeedInvitation {
   @Transactional
   void testWithInvalidTypeInvitationLink(InvitationType type) {
     var adminRep = userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
-    var admin = entityManager.find(User.class, adminRep.id());
+    var admin = entityManager.find(User.class, adminRep.getId());
     var invitation = generateInvitationLink(admin, CREATED, type);
     SignupRepresentation signer = new SignupRepresentation("user", "test", "user@revoicechat.fr", invitation.getId());
     assertThatThrownBy(() -> userService.create(signer)).isInstanceOf(BadRequestException.class).hasMessage(USER_WITH_NO_VALID_INVITATION.translate());
   }
 
-  private void assertUser(final UserRepresentation resultRepresentation) {
-    var result = entityManager.find(User.class, resultRepresentation.id());
+  private void assertUser(final User resultRepresentation) {
+    var result = entityManager.find(User.class, resultRepresentation.getId());
     assertThat(result).isNotNull();
     assertThat(result.getCreatedDate()).isNotNull();
     assertThat(result.getLogin()).isEqualTo("user");

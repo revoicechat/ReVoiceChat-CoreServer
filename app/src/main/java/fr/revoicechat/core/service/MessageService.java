@@ -1,33 +1,21 @@
 package fr.revoicechat.core.service;
 
 import static fr.revoicechat.core.model.MediaOrigin.ATTACHMENT;
-import static fr.revoicechat.notification.representation.NotificationActionType.*;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.model.MessageReactions;
-import fr.revoicechat.core.model.Server;
-import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.repository.MessageRepository;
-import fr.revoicechat.core.representation.emote.EmoteRepresentation;
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageNotification;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
-import fr.revoicechat.core.representation.message.MessageRepresentation.MessageAnsweredRepresentation;
-import fr.revoicechat.core.service.emote.EmoteRetrieverService;
 import fr.revoicechat.core.service.media.MediaDataService;
 import fr.revoicechat.core.service.message.MessageValidation;
-import fr.revoicechat.core.service.user.RoomUserFinder;
 import fr.revoicechat.notification.Notification;
-import fr.revoicechat.notification.representation.UserNotificationRepresentation;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.web.error.ResourceNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -55,7 +43,6 @@ import jakarta.transaction.Transactional;
  * </ul>
  *
  * @see MessageRepository
- * @see Notification
  * @see RoomService
  */
 @ApplicationScoped
@@ -66,23 +53,17 @@ public class MessageService {
   private final UserHolder userHolder;
   private final MessageValidation messageValidation;
   private final MediaDataService mediaDataService;
-  private final RoomUserFinder roomUserFinder;
-  private final EmoteRetrieverService emoteService;
 
   public MessageService(EntityManager entityManager,
                         RoomService roomService,
                         UserHolder userHolder,
                         MessageValidation messageValidation,
-                        MediaDataService mediaDataService,
-                        RoomUserFinder roomUserFinder,
-                        EmoteRetrieverService emoteService) {
+                        MediaDataService mediaDataService) {
     this.entityManager = entityManager;
     this.roomService = roomService;
     this.userHolder = userHolder;
     this.messageValidation = messageValidation;
     this.mediaDataService = mediaDataService;
-    this.roomUserFinder = roomUserFinder;
-    this.emoteService = emoteService;
   }
 
   /**
@@ -94,7 +75,7 @@ public class MessageService {
    * @return a representation of the created message
    */
   @Transactional
-  public MessageRepresentation create(UUID roomId, CreatedMessageRepresentation creation) {
+  public Message create(UUID roomId, CreatedMessageRepresentation creation) {
     messageValidation.isValid(roomId, creation);
     var room = roomService.getRoom(roomId);
     var message = new Message();
@@ -110,24 +91,9 @@ public class MessageService {
     message.setUser(userHolder.get());
     creation.medias().stream().map(data -> mediaDataService.create(data, ATTACHMENT)).forEach(message::addMediaData);
     entityManager.persist(message);
-    var representation = toRepresentation(message);
-    notifyUpdate(new MessageNotification(representation, ADD));
-    return representation;
+    MessageNotification.add(message);
+    return message;
   }
-
-  /**
-   * Retrieves the details of a specific message.
-   *
-   * @param id the unique identifier of the message
-   * @return a representation of the message
-   * @throws ResourceNotFoundException if the message does not exist
-   */
-  @Transactional
-  public MessageRepresentation read(UUID id) {
-    var message = getMessage(id);
-    return toRepresentation(message);
-  }
-
 
   /**
    * Updates the content of an existing message and notifies connected clients.
@@ -138,15 +104,14 @@ public class MessageService {
    * @throws ResourceNotFoundException if the message does not exist
    */
   @Transactional
-  public MessageRepresentation update(UUID id, CreatedMessageRepresentation creation) {
+  public Message update(UUID id, CreatedMessageRepresentation creation) {
     var message = getMessage(id);
     messageValidation.isValid(message.getRoom().getId(), creation);
     message.setText(creation.text());
     message.setUpdatedDate(OffsetDateTime.now());
     entityManager.persist(message);
-    var representation = toRepresentation(message);
-    notifyUpdate(new MessageNotification(representation, MODIFY));
-    return representation;
+    MessageNotification.update(message);
+    return message;
   }
 
   /**
@@ -160,95 +125,30 @@ public class MessageService {
   public UUID delete(UUID id) {
     var message = getMessage(id);
     entityManager.remove(message);
-    var deletedMessage = new MessageNotification(
-        new MessageRepresentation(id,
-            getServerId(message),
-            message.getRoom().getId()
-        ),
-        REMOVE
-    );
-    notifyUpdate(deletedMessage);
+    MessageNotification.delete(message);
     return id;
   }
 
   @Transactional
-  public MessageRepresentation addReaction(final UUID id, final String emoji) {
+  public Message addReaction(final UUID id, final String emoji) {
     var message = getMessage(id);
     var user = userHolder.get().getId();
     message.setReactions(message.getReactions().toggle(emoji, user));
     entityManager.persist(message);
-    var representation = toRepresentation(message);
-    notifyUpdate(new MessageNotification(representation, MODIFY));
-    return representation;
+    MessageNotification.update(message);
+    return message;
   }
 
-  private Message getMessage(final UUID id) {
+  /**
+   * Retrieves the details of a specific message.
+   *
+   * @param id the unique identifier of the message
+   * @return a representation of the message
+   * @throws ResourceNotFoundException if the message does not exist
+   */
+  @Transactional
+  public Message getMessage(final UUID id) {
     return Optional.ofNullable(entityManager.find(Message.class, id))
                    .orElseThrow(() -> new ResourceNotFoundException(Message.class, id));
-  }
-
-  public MessageRepresentation toRepresentation(final Message message) {
-    return new MessageRepresentation(
-        message.getId(),
-        message.getText(),
-        getServerId(message),
-        message.getRoom().getId(),
-        toAnswerRepresentation(message.getAnswerTo()),
-        new UserNotificationRepresentation(message.getUser().getId(), message.getUser().getDisplayName()),
-        message.getCreatedDate(),
-        message.getUpdatedDate(),
-        message.getMediaDatas().stream().map(mediaDataService::toRepresentation).toList(),
-        getEmoteRepresentations(message),
-        message.getReactions().reactions()
-    );
-  }
-
-  private MessageAnsweredRepresentation toAnswerRepresentation(final Message repliedMessage) {
-    if (repliedMessage == null) {
-      return null;
-    }
-    return new MessageAnsweredRepresentation(
-        repliedMessage.getId(),
-        repliedMessage.getText(),
-        !repliedMessage.getMediaDatas().isEmpty(),
-        repliedMessage.getUser().getId(),
-        getEmoteRepresentations(repliedMessage)
-    );
-  }
-
-  private List<EmoteRepresentation> getEmoteRepresentations(final Message message) {
-    Set<String> name = new HashSet<>();
-    List<EmoteRepresentation> emotes = new ArrayList<>(
-        distinctEmotes(name, emoteService.getGlobal())
-    );
-    if (message.getRoom() instanceof ServerRoom serverRoom) {
-      emotes.addAll(distinctEmotes(name, emoteService.getAll(serverRoom.getServer().getId())));
-    }
-    emotes.addAll(distinctEmotes(name, emoteService.getAll(message.getUser().getId())));
-    return emotes;
-  }
-
-  private Collection<EmoteRepresentation> distinctEmotes(final Set<String> name, final List<EmoteRepresentation> all) {
-    Collection<EmoteRepresentation> result = new ArrayList<>();
-    for (EmoteRepresentation representation : all) {
-      if (!name.contains(representation.name())) {
-        result.add(representation);
-        name.add(representation.name());
-      }
-    }
-    return result;
-  }
-
-  private static UUID getServerId(final Message message) {
-    return Optional.ofNullable(message.getRoom())
-                   .filter(ServerRoom.class::isInstance)
-                   .map(ServerRoom.class::cast)
-                   .map(ServerRoom::getServer)
-                   .map(Server::getId)
-                   .orElse(null);
-  }
-
-  private void notifyUpdate(final MessageNotification message) {
-    Notification.of(message).sendTo(roomUserFinder.find(message.message().roomId()));
   }
 }

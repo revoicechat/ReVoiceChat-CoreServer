@@ -14,7 +14,7 @@ import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageFilterParams;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
 import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
-import fr.revoicechat.core.representation.room.RoomPresence;
+import fr.revoicechat.core.representation.room.RoomPresenceRepresentation;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.openapi.api.LoggedApi;
 import jakarta.ws.rs.BeanParam;
@@ -145,5 +145,5 @@ public interface RoomController extends LoggedApi {
   )
   @GET
   @Path("/user")
-  RoomPresence fetchUsers(@PathParam("id") UUID id);
+  RoomPresenceRepresentation fetchUsers(@PathParam("id") UUID id);
 }

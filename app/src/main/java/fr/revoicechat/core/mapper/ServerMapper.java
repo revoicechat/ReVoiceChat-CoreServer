@@ -1,4 +1,4 @@
-package fr.revoicechat.core.service.server;
+package fr.revoicechat.core.mapper;
 
 import java.util.Optional;
 
@@ -9,10 +9,11 @@ import fr.revoicechat.core.risk.ServerRiskType;
 import fr.revoicechat.core.service.room.RoomReadStatusService;
 import fr.revoicechat.risk.service.RiskService;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
+import fr.revoicechat.web.mapper.RepresentationMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class ServerMapper {
+public class ServerMapper implements RepresentationMapper<Server, ServerRepresentation> {
 
   private final RiskService riskService;
   private final RoomReadStatusService roomReadStatusService;
@@ -22,6 +23,7 @@ public class ServerMapper {
     this.roomReadStatusService = roomReadStatusService;
   }
 
+  @Override
   public ServerRepresentation map(final Server server) {
     return new ServerRepresentation(
         server.getId(),
@@ -32,6 +34,7 @@ public class ServerMapper {
     );
   }
 
+  @Override
   public ServerRepresentation mapLight(final Server server) {
     return new ServerRepresentation(
         server.getId(),

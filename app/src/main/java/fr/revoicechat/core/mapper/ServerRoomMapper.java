@@ -1,25 +1,26 @@
-package fr.revoicechat.core.service.room;
+package fr.revoicechat.core.mapper;
 
 import java.util.Optional;
 import java.util.UUID;
 
-import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.model.Server;
-import fr.revoicechat.core.model.room.Room;
 import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
+import fr.revoicechat.core.service.room.RoomReadStatusService;
+import fr.revoicechat.web.mapper.RepresentationMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class RoomMapper {
+public class ServerRoomMapper implements RepresentationMapper<ServerRoom, RoomRepresentation> {
 
   private final RoomReadStatusService roomReadStatusService;
 
-  public RoomMapper(final RoomReadStatusService roomReadStatusService) {
+  public ServerRoomMapper(final RoomReadStatusService roomReadStatusService) {
     this.roomReadStatusService = roomReadStatusService;
   }
 
-  public RoomRepresentation map(final Room room) {
+  @Override
+  public RoomRepresentation map(final ServerRoom room) {
     return new RoomRepresentation(
         room.getId(),
         room.getName(),
@@ -29,7 +30,8 @@ public class RoomMapper {
     );
   }
 
-  public RoomRepresentation mapLight(final Room room) {
+  @Override
+  public RoomRepresentation mapLight(final ServerRoom room) {
     return new RoomRepresentation(
         room.getId(),
         room.getName(),
@@ -39,10 +41,8 @@ public class RoomMapper {
     );
   }
 
-  private static UUID getServerId(final Room room) {
+  private static UUID getServerId(final ServerRoom room) {
     return Optional.ofNullable(room)
-                   .filter(ServerRoom.class::isInstance)
-                   .map(ServerRoom.class::cast)
                    .map(ServerRoom::getServer)
                    .map(Server::getId)
                    .orElse(null);

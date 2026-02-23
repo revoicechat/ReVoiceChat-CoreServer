@@ -12,6 +12,7 @@ import fr.revoicechat.core.service.MessageService;
 import fr.revoicechat.core.service.message.MessagePageResult;
 import fr.revoicechat.core.service.room.PrivateMessageService;
 import fr.revoicechat.core.web.api.PrivateMessageController;
+import fr.revoicechat.web.mapper.Mapper;
 
 public class PrivateMessageControllerImpl implements PrivateMessageController {
 
@@ -27,12 +28,12 @@ public class PrivateMessageControllerImpl implements PrivateMessageController {
 
   @Override
   public List<RoomRepresentation> findAll() {
-    return privateMessageService.findAll();
+    return Mapper.mapAll(privateMessageService.findAll());
   }
 
   @Override
   public RoomRepresentation get(final UUID id) {
-    return privateMessageService.get(id);
+    return Mapper.map(privateMessageService.get(id));
   }
 
   @Override
@@ -42,6 +43,6 @@ public class PrivateMessageControllerImpl implements PrivateMessageController {
 
   @Override
   public MessageRepresentation sendMessage(final UUID roomId, final CreatedMessageRepresentation representation) {
-    return messageService.create(roomId, representation);
+    return Mapper.map(messageService.create(roomId, representation));
   }
 }

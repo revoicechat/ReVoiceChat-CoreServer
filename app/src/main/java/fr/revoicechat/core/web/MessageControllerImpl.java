@@ -4,6 +4,7 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.ROLE_USER;
 
 import java.util.UUID;
 
+import fr.revoicechat.web.mapper.Mapper;
 import jakarta.annotation.security.RolesAllowed;
 
 import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
@@ -22,12 +23,12 @@ public class MessageControllerImpl implements MessageController {
 
   @Override
   public MessageRepresentation read(UUID id) {
-    return messageService.read(id);
+    return Mapper.map(messageService.getMessage(id));
   }
 
   @Override
   public MessageRepresentation update(UUID id, CreatedMessageRepresentation representation) {
-    return messageService.update(id, representation);
+    return Mapper.map(messageService.update(id, representation));
   }
 
   @Override
@@ -37,6 +38,6 @@ public class MessageControllerImpl implements MessageController {
 
   @Override
   public MessageRepresentation addReaction(final UUID id, final String emoji) {
-    return messageService.addReaction(id, emoji);
+    return Mapper.map(messageService.addReaction(id, emoji));
   }
 }

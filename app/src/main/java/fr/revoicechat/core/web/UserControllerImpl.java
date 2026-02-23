@@ -10,6 +10,8 @@ import fr.revoicechat.core.representation.message.MessageRepresentation;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.representation.user.AdminUpdatableUserData;
 import fr.revoicechat.core.service.room.PrivateMessageService;
+import fr.revoicechat.notification.Notification;
+import fr.revoicechat.web.mapper.Mapper;
 import jakarta.annotation.security.RolesAllowed;
 
 import fr.revoicechat.core.representation.user.UpdatableUserData;
@@ -29,40 +31,44 @@ public class UserControllerImpl implements UserController {
   @Override
   @RolesAllowed(ROLE_USER)
   public UserRepresentation me() {
-    return userService.findCurrentUser();
+    return Mapper.map(userService.findCurrentUser());
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   public UserRepresentation updateMe(final UpdatableUserData userData) {
-    return userService.updateConnectedUser(userData);
+    UserRepresentation representation = Mapper.map(userService.updateConnectedUser(userData));
+    Notification.of(representation).sendTo(userService.everyone());
+    return representation;
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   public UserRepresentation get(UUID id) {
-    return userService.get(id);
+    return Mapper.map(userService.getUser(id));
   }
 
   @Override
   public RoomRepresentation getPrivateMessage(final UUID id) {
-    return privateMessageService.getDirectDiscussion(id);
+    return Mapper.map(privateMessageService.getDirectDiscussion(id));
   }
 
   @Override
   public MessageRepresentation sendPrivateMessage(final UUID id, final CreatedMessageRepresentation representation) {
-    return privateMessageService.sendPrivateMessageTo(id, representation);
+    return Mapper.map(privateMessageService.sendPrivateMessageTo(id, representation));
   }
 
   @Override
   @RolesAllowed(ROLE_ADMIN)
   public UserRepresentation updateAsAdmin(final UUID id, final AdminUpdatableUserData userData) {
-    return userService.updateAsAdmin(id, userData);
+    UserRepresentation representation = Mapper.map(userService.updateAsAdmin(id, userData));
+    Notification.of(representation).sendTo(userService.everyone());
+    return representation;
   }
 
   @Override
   @RolesAllowed(ROLE_ADMIN)
   public List<UserRepresentation> fetchAll() {
-    return userService.fetchAll();
+    return Mapper.mapAll(userService.fetchAll());
   }
 }

@@ -9,31 +9,29 @@ import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
 import fr.revoicechat.core.representation.message.MessageFilterParams;
 import fr.revoicechat.core.representation.message.MessageRepresentation;
 import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
-import fr.revoicechat.core.representation.room.RoomPresence;
+import fr.revoicechat.core.representation.room.RoomPresenceRepresentation;
 import fr.revoicechat.core.representation.room.RoomRepresentation;
 import fr.revoicechat.core.retriever.EntityByRoomIdRetriever;
 import fr.revoicechat.core.service.MessageService;
 import fr.revoicechat.core.service.RoomService;
 import fr.revoicechat.core.service.message.MessagePageResult;
-import fr.revoicechat.core.service.room.RoomPresenceService;
+import fr.revoicechat.core.technicaldata.RoomPresence;
 import fr.revoicechat.core.web.api.RoomController;
 import fr.revoicechat.risk.RisksMembershipData;
+import fr.revoicechat.web.mapper.Mapper;
 import jakarta.annotation.security.RolesAllowed;
 
 @RolesAllowed(ROLE_USER)
 public class RoomControllerImpl implements RoomController {
 
   private final RoomService roomService;
-  private final RoomPresenceService roomPresenceService;
   private final MessageService messageService;
   private final MessagePageResult messagePageResult;
 
   public RoomControllerImpl(RoomService roomService,
-                            RoomPresenceService roomPresenceService,
                             MessageService messageService,
                             MessagePageResult messagePageResult) {
     this.roomService = roomService;
-    this.roomPresenceService = roomPresenceService;
     this.messageService = messageService;
     this.messagePageResult = messagePageResult;
   }
@@ -41,13 +39,13 @@ public class RoomControllerImpl implements RoomController {
   @Override
   @RisksMembershipData(risks = "SERVER_ROOM_READ", retriever = EntityByRoomIdRetriever.class)
   public RoomRepresentation read(UUID roomId) {
-    return roomService.read(roomId);
+    return Mapper.map(roomService.getRoom(roomId));
   }
 
   @Override
   @RisksMembershipData(risks = "SERVER_ROOM_UPDATE", retriever = EntityByRoomIdRetriever.class)
   public RoomRepresentation update(UUID roomId, CreationRoomRepresentation representation) {
-    return roomService.update(roomId, representation);
+    return Mapper.map(roomService.update(roomId, representation));
   }
 
   @Override
@@ -66,11 +64,11 @@ public class RoomControllerImpl implements RoomController {
   @Override
   @RisksMembershipData(risks = "SERVER_ROOM_SEND_MESSAGE", retriever = EntityByRoomIdRetriever.class)
   public MessageRepresentation sendMessage(UUID roomId, CreatedMessageRepresentation representation) {
-    return messageService.create(roomId, representation);
+    return Mapper.map(messageService.create(roomId, representation));
   }
 
   @Override
-  public RoomPresence fetchUsers(final UUID id) {
-    return roomPresenceService.get(id);
+  public RoomPresenceRepresentation fetchUsers(final UUID id) {
+    return Mapper.map(new RoomPresence(roomService.getRoom(id)));
   }
 }

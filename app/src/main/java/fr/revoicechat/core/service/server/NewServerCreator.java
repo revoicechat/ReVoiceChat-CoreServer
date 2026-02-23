@@ -7,6 +7,7 @@ import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.model.room.RoomType;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.server.ServerCategory;
+import fr.revoicechat.core.model.server.ServerRoomItem;
 import fr.revoicechat.core.model.server.ServerStructure;
 import fr.revoicechat.risk.service.server.ServerRoleDefaultCreator;
 import fr.revoicechat.security.UserHolder;
@@ -39,10 +40,10 @@ public class NewServerCreator {
     var vocal = createRoom(server, "Vocal", RoomType.VOICE);
     server.setStructure(new ServerStructure(List.of(
         new ServerCategory("text", List.of(
-            new fr.revoicechat.core.model.server.ServerRoom(general.getId()),
-            new fr.revoicechat.core.model.server.ServerRoom(random.getId())
+            new ServerRoomItem(general.getId()),
+            new ServerRoomItem(random.getId())
         )),
-        new ServerCategory("vocal", List.of(new fr.revoicechat.core.model.server.ServerRoom(vocal.getId())))
+        new ServerCategory("vocal", List.of(new ServerRoomItem(vocal.getId())))
     )));
     entityManager.persist(server);
     serverRoleCreator.createDefault(server.getId());

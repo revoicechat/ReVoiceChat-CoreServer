@@ -9,22 +9,21 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import fr.revoicechat.core.model.InvitationLink;
-import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.repository.UserRepository;
 import fr.revoicechat.core.representation.user.AdminUpdatableUserData;
 import fr.revoicechat.core.representation.user.SignupRepresentation;
 import fr.revoicechat.core.representation.user.UpdatableUserData;
 import fr.revoicechat.core.representation.user.UpdatableUserData.PasswordUpdated;
-import fr.revoicechat.core.representation.user.UserRepresentation;
 import fr.revoicechat.core.service.invitation.InvitationLinkUsage;
 import fr.revoicechat.core.service.user.PasswordValidation;
-import fr.revoicechat.notification.Notification;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.security.utils.PasswordUtils;
 import fr.revoicechat.web.error.BadRequestException;
@@ -59,7 +58,7 @@ public class UserService {
   }
 
   @Transactional
-  public UserRepresentation create(final SignupRepresentation signer) {
+  public User create(final SignupRepresentation signer) {
     if (signer.username() == null || signer.username().isEmpty()) {
       throw new BadRequestException(USER_LOGIN_INVALID);
     }
@@ -76,7 +75,7 @@ public class UserService {
     return generateUser(signer, invitationLink, UserType.USER);
   }
 
-  private UserRepresentation generateUser(SignupRepresentation signer, InvitationLink invitationLink, UserType type) {
+  private User generateUser(SignupRepresentation signer, InvitationLink invitationLink, UserType type) {
     var user = new User();
     user.setId(UUID.randomUUID());
     user.setCreatedDate(OffsetDateTime.now());
@@ -87,7 +86,7 @@ public class UserService {
     user.setPassword(PasswordUtils.encodePassword(signer.password()));
     entityManager.persist(user);
     invitationLinkUsage.use(invitationLink, user);
-    return toRepresentation(user);
+    return user;
   }
 
   public User findByLogin(final String username) {
@@ -100,40 +99,32 @@ public class UserService {
            && invitationLink.isValid();
   }
 
-  public UserRepresentation findCurrentUser() {
-    return toRepresentation(userHolder.get());
+  public User findCurrentUser() {
+    return userHolder.get();
   }
 
-  public UserRepresentation get(final UUID id) {
-    return toRepresentation(getUser(id));
-  }
-
-  public List<UserRepresentation> fetchAll() {
-    return entityManager.createQuery("select u from User u", User.class).getResultStream()
-                        .map(this::toRepresentation)
-                        .toList();
+  public List<User> fetchAll() {
+    return entityManager.createQuery("select u from User u", User.class).getResultList();
   }
 
   @Transactional
-  public List<UserRepresentation> fetchUserForServer(final UUID id) {
-    return userRepository.findByServers(id).map(this::toRepresentation).toList();
+  public List<User> fetchUserForServer(final UUID id) {
+    return userRepository.findByServers(id).toList();
   }
 
   @Transactional
-  public List<UserRepresentation> fetchUserForRoom(final UUID id) {
+  public List<User> fetchUserForRoom(final UUID id) {
     var server = entityManager.find(ServerRoom.class, id).getServer();
     return fetchUserForServer(server.getId());
   }
 
   @Transactional
-  public UserRepresentation updateAsAdmin(final UUID id, final AdminUpdatableUserData userData) {
+  public User updateAsAdmin(final UUID id, final AdminUpdatableUserData userData) {
     var user = getUser(id);
     Optional.ofNullable(userData.displayName()).filter(not(String::isBlank)).ifPresent(user::setDisplayName);
     Optional.ofNullable(userData.type()).ifPresent(user::setType);
     entityManager.persist(user);
-    var representation = toRepresentation(user);
-    Notification.of(representation).sendTo(userRepository.everyone());
-    return representation;
+    return user;
   }
 
   public User getUser(final UUID id) {
@@ -145,15 +136,17 @@ public class UserService {
   }
 
   @Transactional
-  public UserRepresentation updateConnectedUser(final UpdatableUserData userData) {
+  public User updateConnectedUser(final UpdatableUserData userData) {
     User user = userHolder.get();
     Optional.ofNullable(userData.password()).ifPresent(psw -> setPassword(user, psw));
     Optional.ofNullable(userData.displayName()).filter(not(String::isBlank)).ifPresent(user::setDisplayName);
     Optional.ofNullable(userData.status()).ifPresent(user::setStatus);
     entityManager.persist(user);
-    var representation = toRepresentation(user);
-    Notification.of(representation).sendTo(userRepository.everyone());
-    return representation;
+    return user;
+  }
+
+  public Stream<User> everyone() {
+    return userRepository.everyone();
   }
 
   private void setPassword(final User user, final PasswordUpdated password) {
@@ -165,16 +158,5 @@ public class UserService {
     } else {
       throw new BadRequestException(USER_PASSWORD_WRONG_CONFIRMATION);
     }
-  }
-
-  public UserRepresentation toRepresentation(final User user) {
-    return new UserRepresentation(
-        user.getId(),
-        user.getDisplayName(),
-        user.getLogin(),
-        user.getCreatedDate(),
-        Notification.ping(user),
-        user.getType()
-    );
   }
 }

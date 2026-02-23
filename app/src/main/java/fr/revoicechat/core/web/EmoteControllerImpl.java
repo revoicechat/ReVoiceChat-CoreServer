@@ -14,6 +14,7 @@ import fr.revoicechat.core.web.api.EmoteController;
 import fr.revoicechat.risk.RisksMembershipData;
 import fr.revoicechat.risk.retriever.ServerIdRetriever;
 import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.web.mapper.Mapper;
 import jakarta.annotation.security.RolesAllowed;
 
 public class EmoteControllerImpl implements EmoteController {
@@ -34,33 +35,33 @@ public class EmoteControllerImpl implements EmoteController {
   @RolesAllowed(ROLE_USER)
   public List<EmoteRepresentation> getMyEmotes() {
     var id = userHolder.getId();
-    return emoteRetrieverService.getAll(id);
+    return Mapper.mapAll(emoteRetrieverService.getAll(id));
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   public EmoteRepresentation addToMyEmotes(final CreationEmoteRepresentation emote) {
     var id = userHolder.getId();
-    return emoteUpdaterService.add(id, emote);
+    return Mapper.map(emoteUpdaterService.add(id, emote));
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   public List<EmoteRepresentation> getGlobalEmotes() {
-    return emoteRetrieverService.getGlobal();
+    return Mapper.mapAll(emoteRetrieverService.getGlobal());
   }
 
   @Override
   @RolesAllowed(ROLE_ADMIN)
   public EmoteRepresentation addToGlobalEmotes(final CreationEmoteRepresentation emote) {
-    return emoteUpdaterService.add(null, emote);
+    return Mapper.map(emoteUpdaterService.add(null, emote));
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   public List<EmoteRepresentation> getServerEmotes(final UUID serverId) {
     var server = serverService.getEntity(serverId);
-    return emoteRetrieverService.getAll(server.getId());
+    return Mapper.mapAll(emoteRetrieverService.getAll(server.getId()));
   }
 
   @Override
@@ -68,19 +69,19 @@ public class EmoteControllerImpl implements EmoteController {
   @RisksMembershipData(risks = "ADD_EMOTE", retriever = ServerIdRetriever.class)
   public EmoteRepresentation addToServerEmotes(final UUID serverId, final CreationEmoteRepresentation emote) {
     var server = serverService.getEntity(serverId);
-    return emoteUpdaterService.add(server.getId(), emote);
+    return Mapper.map(emoteUpdaterService.add(server.getId(), emote));
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   public EmoteRepresentation getEmote(final UUID id) {
-    return emoteRetrieverService.get(id);
+    return Mapper.map(emoteRetrieverService.getEntity(id));
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   public EmoteRepresentation patchEmote(final UUID id, final CreationEmoteRepresentation emote) {
-    return emoteUpdaterService.update(id, emote);
+    return Mapper.map(emoteUpdaterService.update(id, emote));
   }
 
   @Override

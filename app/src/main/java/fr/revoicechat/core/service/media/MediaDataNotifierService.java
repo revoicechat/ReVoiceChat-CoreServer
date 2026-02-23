@@ -5,6 +5,7 @@ import fr.revoicechat.notification.representation.NotificationActionType;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class MediaDataNotifierService {
@@ -16,6 +17,7 @@ public class MediaDataNotifierService {
     this.mediaNotifiers = mediaNotifiers;
   }
 
+  @Transactional
   public void notify(MediaData mediaData, NotificationActionType actionType) {
     mediaNotifiers.stream()
                   .filter(notifier -> notifier.origin().equals(mediaData.getOrigin()))
