@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.repository.page.PageResult;
-import fr.revoicechat.core.representation.message.MessageFilterParams;
+import fr.revoicechat.core.technicaldata.message.MessageFilterParams;
 
 public interface MessageRepository {
   PageResult<Message> search(MessageFilterParams params);

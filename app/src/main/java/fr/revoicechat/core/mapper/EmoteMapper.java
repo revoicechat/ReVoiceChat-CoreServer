@@ -3,7 +3,7 @@ package fr.revoicechat.core.mapper;
 import java.util.ArrayList;
 
 import fr.revoicechat.core.model.Emote;
-import fr.revoicechat.core.representation.emote.EmoteRepresentation;
+import fr.revoicechat.core.representation.EmoteRepresentation;
 import fr.revoicechat.web.mapper.RepresentationMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 

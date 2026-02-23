@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.room.ServerRoom;
-import fr.revoicechat.core.representation.room.RoomRepresentation;
+import fr.revoicechat.core.representation.RoomRepresentation;
 import fr.revoicechat.core.service.room.RoomReadStatusService;
 import fr.revoicechat.web.mapper.RepresentationMapper;
 import jakarta.enterprise.context.ApplicationScoped;

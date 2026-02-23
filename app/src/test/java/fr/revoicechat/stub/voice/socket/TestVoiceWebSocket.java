@@ -15,9 +15,9 @@ import fr.revoicechat.core.model.room.RoomType;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
-import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
-import fr.revoicechat.core.representation.room.RoomRepresentation;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
+import fr.revoicechat.core.technicaldata.room.NewRoom;
+import fr.revoicechat.core.representation.RoomRepresentation;
+import fr.revoicechat.core.representation.ServerRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import fr.revoicechat.live.voice.socket.VoiceWebSocket;
 import fr.revoicechat.security.service.SecurityTokenService;
@@ -228,7 +228,7 @@ class TestVoiceWebSocket {
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
-                      .body(new CreationRoomRepresentation(roomName, roomType))
+                      .body(new NewRoom(roomName, roomType))
                       .when().pathParam("id", server.id()).put("/server/{id}/room")
                       .then().statusCode(200)
                       .extract().body()

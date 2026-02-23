@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.User;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
+import fr.revoicechat.core.representation.ServerRepresentation;
 import fr.revoicechat.core.risk.ServerRiskType;
 import fr.revoicechat.core.service.room.RoomReadStatusService;
 import fr.revoicechat.risk.service.RiskService;

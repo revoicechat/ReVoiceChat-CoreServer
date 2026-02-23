@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.revoicechat.notification.model.NotificationData;
-import fr.revoicechat.notification.representation.UserNotificationRepresentation;
+import fr.revoicechat.notification.data.UserNotificationRepresentation;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest

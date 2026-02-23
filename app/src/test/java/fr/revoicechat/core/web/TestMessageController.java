@@ -14,13 +14,13 @@ import fr.revoicechat.core.model.room.RoomType;
 import fr.revoicechat.core.model.ServerType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.repository.page.PageResult;
-import fr.revoicechat.core.representation.media.CreatedMediaDataRepresentation;
-import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
-import fr.revoicechat.core.representation.message.MessageRepresentation;
-import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
-import fr.revoicechat.core.representation.room.RoomRepresentation;
-import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
+import fr.revoicechat.core.technicaldata.media.NewMediaData;
+import fr.revoicechat.core.technicaldata.message.NewMessage;
+import fr.revoicechat.core.representation.MessageRepresentation;
+import fr.revoicechat.core.technicaldata.room.NewRoom;
+import fr.revoicechat.core.representation.RoomRepresentation;
+import fr.revoicechat.core.technicaldata.server.NewServer;
+import fr.revoicechat.core.representation.ServerRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -73,7 +73,7 @@ class TestMessageController {
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)
                .header("Authorization", "Bearer " + token)
-               .body(new CreatedMessageRepresentation("message 2", null, List.of()))
+               .body(new NewMessage("message 2", null, List.of()))
                .when().pathParam("id", message.id()).patch("/message/{id}")
                .then().statusCode(200);
     PageResult<MessageRepresentation> page2 = getPage(token, room);
@@ -141,7 +141,7 @@ class TestMessageController {
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)
                .header("Authorization", "Bearer " + token)
-               .body(new CreatedMessageRepresentation("message 2", null, List.of()))
+               .body(new NewMessage("message 2", null, List.of()))
                .when()
                .pathParam("id", message.id())
                .pathParam("emoji", emoji)
@@ -160,22 +160,22 @@ class TestMessageController {
                           .extract().body();
     var pageResult = body.as(PageResult.class);
     var messages = body.jsonPath().getList("content", MessageRepresentation.class);
-    return new PageResult<>(messages, pageResult.pageNumber(), pageResult.pageSize(), pageResult.totalElements());
+    return new PageResult<>(messages, pageResult.size(), pageResult.totalElements());
   }
 
   private static MessageRepresentation createMessage(final String token, final RoomRepresentation room) {
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
-                      .body(new CreatedMessageRepresentation("message 1", null, List.of(new CreatedMediaDataRepresentation("test1.png"),
-                                                                                  new CreatedMediaDataRepresentation("test2.mp4"))))
+                      .body(new NewMessage("message 1", null, List.of(new NewMediaData("test1.png"),
+                                                                                  new NewMediaData("test2.mp4"))))
                       .when().pathParam("id", room.id()).put("/room/{id}/message")
                       .then().statusCode(200)
                       .extract().body().as(MessageRepresentation.class);
   }
 
   private static RoomRepresentation createRoom(final String token, final ServerRepresentation server) {
-    CreationRoomRepresentation representation = new CreationRoomRepresentation("test", RoomType.TEXT);
+    NewRoom representation = new NewRoom("test", RoomType.TEXT);
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
@@ -186,7 +186,7 @@ class TestMessageController {
   }
 
   private static ServerRepresentation createServer(String token) {
-    var representation = new ServerCreationRepresentation("test", ServerType.PUBLIC);
+    var representation = new NewServer("test", ServerType.PUBLIC);
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)

@@ -16,11 +16,11 @@ import fr.revoicechat.core.model.server.ServerCategory;
 import fr.revoicechat.core.model.server.ServerRoomItem;
 import fr.revoicechat.core.model.server.ServerStructure;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
-import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
-import fr.revoicechat.core.representation.room.RoomRepresentation;
-import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
-import fr.revoicechat.core.representation.user.UserRepresentation;
+import fr.revoicechat.core.representation.InvitationRepresentation;
+import fr.revoicechat.core.representation.RoomRepresentation;
+import fr.revoicechat.core.technicaldata.server.NewServer;
+import fr.revoicechat.core.representation.ServerRepresentation;
+import fr.revoicechat.core.representation.UserRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -50,7 +50,7 @@ class TestServerController {
     var servers = getServers(token);
     ServerRepresentation server = servers.getFirst();
     assertThat(server.name()).isEqualTo("test");
-    var newName = new ServerCreationRepresentation("new name", ServerType.PUBLIC);
+    var newName = new NewServer("new name", ServerType.PUBLIC);
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)
                .header("Authorization", "Bearer " + token)
@@ -69,7 +69,7 @@ class TestServerController {
   @Test
   void testUpdateServerButResourceNotFound() {
     String token = RestTestUtils.logNewUser();
-    var newName = new ServerCreationRepresentation("new name", ServerType.PUBLIC);
+    var newName = new NewServer("new name", ServerType.PUBLIC);
     var randomId = UUID.randomUUID();
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)
@@ -342,7 +342,7 @@ class TestServerController {
   }
 
   private static ServerRepresentation createServer(String token, String name, ServerType type) {
-    var representation = new ServerCreationRepresentation(name, type);
+    var representation = new NewServer(name, type);
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)

@@ -3,7 +3,7 @@ package fr.revoicechat.core.mapper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import fr.revoicechat.core.model.MediaData;
-import fr.revoicechat.core.representation.media.MediaDataRepresentation;
+import fr.revoicechat.core.representation.MediaDataRepresentation;
 import fr.revoicechat.web.mapper.RepresentationMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 

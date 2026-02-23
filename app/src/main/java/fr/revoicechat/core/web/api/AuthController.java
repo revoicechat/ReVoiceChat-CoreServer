@@ -7,9 +7,9 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import fr.revoicechat.core.representation.login.UserPassword;
-import fr.revoicechat.core.representation.user.SignupRepresentation;
-import fr.revoicechat.core.representation.user.UserRepresentation;
+import fr.revoicechat.core.technicaldata.login.UserPassword;
+import fr.revoicechat.core.technicaldata.user.NewUserSignup;
+import fr.revoicechat.core.representation.UserRepresentation;
 import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -31,7 +31,7 @@ public interface AuthController {
   )
   @RequestBody(
       description = "User registration information including username, password, and optional profile details",
-      content = @Content(schema = @Schema(implementation = SignupRepresentation.class))
+      content = @Content(schema = @Schema(implementation = NewUserSignup.class))
   )
   @APIResponse(responseCode = "200", description = "User account created successfully")
   @APIResponse(responseCode = "400", description = "Invalid registration data or username already exists")
@@ -39,7 +39,7 @@ public interface AuthController {
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/signup")
-  UserRepresentation signup(SignupRepresentation user);
+  UserRepresentation signup(NewUserSignup user);
 
   @Operation(
       summary = "User login",

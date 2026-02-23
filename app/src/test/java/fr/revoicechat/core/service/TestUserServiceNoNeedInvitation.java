@@ -15,7 +15,8 @@ import fr.revoicechat.core.model.InvitationType;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
-import fr.revoicechat.core.representation.user.SignupRepresentation;
+import fr.revoicechat.core.service.user.UserService;
+import fr.revoicechat.core.technicaldata.user.NewUserSignup;
 import fr.revoicechat.core.service.TestUserServiceNoNeedInvitation.AppOnlyAccessibleByInvitationFalse;
 import fr.revoicechat.security.utils.PasswordUtils;
 import io.quarkus.test.junit.QuarkusTest;
@@ -34,8 +35,8 @@ class TestUserServiceNoNeedInvitation {
 
   @Test
   void testWithNoLink() {
-    userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", null));
-    SignupRepresentation signer = new SignupRepresentation("user", "test", "user@revoicechat.fr", null);
+    userService.create(new NewUserSignup("master", "psw", "master@revoicechat.fr", null));
+    NewUserSignup signer = new NewUserSignup("user", "test", "user@revoicechat.fr", null);
     var resultRepresentation = userService.create(signer);
     assertThat(resultRepresentation).isNotNull();
     assertUser(resultRepresentation);
@@ -43,8 +44,8 @@ class TestUserServiceNoNeedInvitation {
 
   @Test
   void testWithRandomLink() {
-    userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", null));
-    SignupRepresentation signer = new SignupRepresentation("user", "test", "user@revoicechat.fr", UUID.randomUUID());
+    userService.create(new NewUserSignup("master", "psw", "master@revoicechat.fr", null));
+    NewUserSignup signer = new NewUserSignup("user", "test", "user@revoicechat.fr", UUID.randomUUID());
     var resultRepresentation = userService.create(signer);
     assertThat(resultRepresentation).isNotNull();
     assertUser(resultRepresentation);
@@ -53,10 +54,10 @@ class TestUserServiceNoNeedInvitation {
   @Test
   @Transactional
   void testWithInvitationLink() {
-    var adminRep = userService.create(new SignupRepresentation("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
+    var adminRep = userService.create(new NewUserSignup("master", "psw", "master@revoicechat.fr", UUID.randomUUID()));
     var admin = entityManager.find(User.class, adminRep.getId());
     var invitation = generateInvitationLink(admin);
-    SignupRepresentation signer = new SignupRepresentation("user", "test", "user@revoicechat.fr", invitation.getId());
+    NewUserSignup signer = new NewUserSignup("user", "test", "user@revoicechat.fr", invitation.getId());
     var resultRepresentation = userService.create(signer);
     assertThat(resultRepresentation).isNotNull();
     assertUser(resultRepresentation);

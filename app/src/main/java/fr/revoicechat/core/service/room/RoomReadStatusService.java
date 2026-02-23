@@ -11,7 +11,7 @@ import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.room.RoomReadStatus;
 import fr.revoicechat.core.model.room.RoomUserId;
 import fr.revoicechat.core.repository.RoomRepository;
-import fr.revoicechat.core.representation.message.UnreadMessageStatus;
+import fr.revoicechat.core.technicaldata.message.UnreadMessageStatus;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.web.error.ResourceNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;

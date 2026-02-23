@@ -1,7 +1,7 @@
 package fr.revoicechat.core.mapper;
 
 import fr.revoicechat.core.model.User;
-import fr.revoicechat.core.representation.user.UserRepresentation;
+import fr.revoicechat.core.representation.UserRepresentation;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.web.mapper.RepresentationMapper;
 import jakarta.enterprise.context.ApplicationScoped;

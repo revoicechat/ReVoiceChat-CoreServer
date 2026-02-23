@@ -1,17 +1,17 @@
 package fr.revoicechat.core.web;
 
 import static fr.revoicechat.core.model.MediaDataStatus.DELETING;
-import static fr.revoicechat.core.representation.media.UpdatableMediaDataStatus.STORED;
-import static fr.revoicechat.notification.representation.NotificationActionType.*;
+import static fr.revoicechat.core.technicaldata.media.UpdatableMediaDataStatus.STORED;
+import static fr.revoicechat.notification.data.NotificationActionType.*;
 import static fr.revoicechat.security.utils.RevoiceChatRoles.ROLE_USER;
 
 import java.util.List;
 import java.util.UUID;
 
 import fr.revoicechat.core.model.MediaDataStatus;
-import fr.revoicechat.core.representation.media.MediaDataRepresentation;
-import fr.revoicechat.core.representation.media.UpdatableMediaDataStatus;
-import fr.revoicechat.core.service.media.MediaDataNotifierService;
+import fr.revoicechat.core.representation.MediaDataRepresentation;
+import fr.revoicechat.core.technicaldata.media.UpdatableMediaDataStatus;
+import fr.revoicechat.core.notification.service.MediaDataNotifierService;
 import fr.revoicechat.core.service.media.MediaDataService;
 import fr.revoicechat.core.web.api.MediaDataController;
 import fr.revoicechat.web.mapper.Mapper;

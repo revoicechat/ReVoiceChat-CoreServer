@@ -5,20 +5,19 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.*;
 import java.util.List;
 import java.util.UUID;
 
-import fr.revoicechat.core.representation.invitation.InvitationCategory;
-import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
-import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
-import fr.revoicechat.core.representation.room.RoomRepresentation;
-import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
-import fr.revoicechat.core.representation.user.UserRepresentation;
-import fr.revoicechat.core.service.RoomService;
-import fr.revoicechat.core.service.ServerService;
-import fr.revoicechat.core.service.UserService;
-import fr.revoicechat.core.service.invitation.InvitationLinkService;
+import fr.revoicechat.core.notification.ServerUpdateNotification;
+import fr.revoicechat.core.notification.service.room.RoomNotifier;
+import fr.revoicechat.core.notification.service.server.ServerUpdateNotifier;
+import fr.revoicechat.core.representation.RoomRepresentation;
+import fr.revoicechat.core.representation.ServerRepresentation;
+import fr.revoicechat.core.representation.UserRepresentation;
+import fr.revoicechat.core.service.room.RoomService;
 import fr.revoicechat.core.service.server.ServerDeleterService;
-import fr.revoicechat.core.service.server.ServerJoiner;
 import fr.revoicechat.core.service.server.ServerRetriever;
+import fr.revoicechat.core.service.server.ServerService;
+import fr.revoicechat.core.service.user.UserService;
+import fr.revoicechat.core.technicaldata.room.NewRoom;
+import fr.revoicechat.core.technicaldata.server.NewServer;
 import fr.revoicechat.core.web.api.ServerController;
 import fr.revoicechat.risk.RisksMembershipData;
 import fr.revoicechat.risk.retriever.ServerIdRetriever;
@@ -31,18 +30,18 @@ public class ServerControllerImpl implements ServerController {
   private final ServerService serverService;
   private final RoomService roomService;
   private final UserService userService;
-  private final InvitationLinkService invitationLinkService;
-  private final ServerJoiner serverJoiner;
   private final ServerDeleterService serverDeleterService;
+  private final RoomNotifier roomNotifier;
+  private final ServerUpdateNotifier serverUpdateNotifier;
 
-  public ServerControllerImpl(ServerRetriever serverRetriever, ServerService serverService, RoomService roomService, UserService userService, InvitationLinkService invitationLinkService, ServerJoiner serverJoiner, ServerDeleterService serverDeleterService) {
+  public ServerControllerImpl(ServerRetriever serverRetriever, ServerService serverService, RoomService roomService, UserService userService, ServerDeleterService serverDeleterService, final RoomNotifier roomNotifier, final ServerUpdateNotifier serverUpdateNotifier) {
     this.serverRetriever = serverRetriever;
     this.serverService = serverService;
     this.roomService = roomService;
     this.userService = userService;
-    this.invitationLinkService = invitationLinkService;
-    this.serverJoiner = serverJoiner;
     this.serverDeleterService = serverDeleterService;
+    this.roomNotifier = roomNotifier;
+    this.serverUpdateNotifier = serverUpdateNotifier;
   }
 
   @Override
@@ -71,15 +70,17 @@ public class ServerControllerImpl implements ServerController {
 
   @Override
   @RolesAllowed(ROLE_ADMIN)
-  public ServerRepresentation createServer(ServerCreationRepresentation representation) {
+  public ServerRepresentation createServer(NewServer representation) {
     return Mapper.map(serverService.create(representation));
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   @RisksMembershipData(risks = "SERVER_UPDATE", retriever = ServerIdRetriever.class)
-  public ServerRepresentation updateServer(UUID id, ServerCreationRepresentation representation) {
-    return Mapper.map(serverService.update(id, representation));
+  public ServerRepresentation updateServer(UUID id, NewServer newServer) {
+    var server = serverService.update(id, newServer);
+    serverUpdateNotifier.update(server);
+    return Mapper.map(server);
   }
 
   @Override
@@ -98,39 +99,15 @@ public class ServerControllerImpl implements ServerController {
   @Override
   @RolesAllowed(ROLE_USER)
   @RisksMembershipData(risks = "SERVER_ROOM_ADD", retriever = ServerIdRetriever.class)
-  public RoomRepresentation createRoom(UUID id, CreationRoomRepresentation representation) {
-    return Mapper.map(roomService.create(id, representation));
+  public RoomRepresentation createRoom(UUID id, NewRoom newRoom) {
+    var room = roomService.create(id, newRoom);
+    roomNotifier.add(room);
+    return Mapper.map(room);
   }
 
   @Override
   @RolesAllowed(ROLE_USER)
   public List<UserRepresentation> fetchUsers(final UUID id) {
     return Mapper.mapAll(userService.fetchUserForServer(id));
-  }
-
-  @Override
-  @RolesAllowed(ROLE_USER)
-  @RisksMembershipData(risks = "SERVER_INVITATION_ADD", retriever = ServerIdRetriever.class)
-  public InvitationRepresentation generateServerInvitation(final UUID id, final String category) {
-    return Mapper.map(invitationLinkService.generateServerInvitation(id, InvitationCategory.of(category)));
-  }
-
-  @Override
-  @RolesAllowed(ROLE_USER)
-  @RisksMembershipData(risks = "SERVER_INVITATION_FETCH", retriever = ServerIdRetriever.class)
-  public List<InvitationRepresentation> getAllServerInvitations(final UUID id) {
-    return Mapper.mapAll(invitationLinkService.getAllServerInvitations(id));
-  }
-
-  @Override
-  @RolesAllowed(ROLE_USER)
-  public void joinPublic(final UUID serverId) {
-    serverJoiner.joinPublic(serverId);
-  }
-
-  @Override
-  @RolesAllowed(ROLE_USER)
-  public void joinPrivate(final UUID invitation) {
-    serverJoiner.joinPrivate(invitation);
   }
 }

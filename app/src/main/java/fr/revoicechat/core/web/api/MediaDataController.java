@@ -18,8 +18,8 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import fr.revoicechat.core.model.MediaDataStatus;
-import fr.revoicechat.core.representation.media.UpdatableMediaDataStatus;
-import fr.revoicechat.core.representation.media.MediaDataRepresentation;
+import fr.revoicechat.core.technicaldata.media.UpdatableMediaDataStatus;
+import fr.revoicechat.core.representation.MediaDataRepresentation;
 
 @Path("/media")
 @Tag(name = "Media", description = "Manage media files including images, videos, and attachments")

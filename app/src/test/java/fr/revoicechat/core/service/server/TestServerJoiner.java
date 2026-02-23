@@ -12,6 +12,7 @@ import fr.revoicechat.core.model.InvitationLinkStatus;
 import fr.revoicechat.core.model.InvitationType;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.ServerType;
+import fr.revoicechat.core.model.ServerUser;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.service.invitation.InvitationLinkEntityRetriever;
 import fr.revoicechat.core.service.invitation.InvitationLinkUsage;
@@ -171,7 +172,9 @@ class TestServerJoiner {
     boolean joined = false;
 
     @Override
-    public void join(final Server server) {joined = true;}
+    public ServerUser join(final Server server) {joined = true;
+      return null;
+    }
   }
 
   private static class InvitationLinkUsageMock implements InvitationLinkUsage {

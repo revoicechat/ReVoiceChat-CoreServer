@@ -10,8 +10,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.ServerType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
-import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
+import fr.revoicechat.core.technicaldata.server.NewServer;
+import fr.revoicechat.core.representation.ServerRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
@@ -90,7 +90,7 @@ class TestUserMembershipController {
   }
 
   private static ServerRepresentation createServer(String token) {
-    var representation = new ServerCreationRepresentation("test", ServerType.PUBLIC);
+    var representation = new NewServer("test", ServerType.PUBLIC);
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)

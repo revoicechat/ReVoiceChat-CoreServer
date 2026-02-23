@@ -7,7 +7,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 import fr.revoicechat.core.model.User;
-import fr.revoicechat.core.service.UserService;
 import fr.revoicechat.security.UserHolder;
 
 @ApplicationScoped

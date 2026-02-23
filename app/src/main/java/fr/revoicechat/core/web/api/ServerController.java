@@ -8,12 +8,12 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 
-import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
-import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
-import fr.revoicechat.core.representation.room.RoomRepresentation;
-import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
-import fr.revoicechat.core.representation.user.UserRepresentation;
+import fr.revoicechat.core.representation.InvitationRepresentation;
+import fr.revoicechat.core.technicaldata.room.NewRoom;
+import fr.revoicechat.core.representation.RoomRepresentation;
+import fr.revoicechat.core.technicaldata.server.NewServer;
+import fr.revoicechat.core.representation.ServerRepresentation;
+import fr.revoicechat.core.representation.UserRepresentation;
 import fr.revoicechat.openapi.api.LoggedApi;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -62,7 +62,7 @@ public interface ServerController extends LoggedApi {
   @APIResponse(responseCode = "200", description = "Server created successfully")
   @APIResponse(responseCode = "400", description = "Invalid server data provided")
   @PUT
-  ServerRepresentation createServer(ServerCreationRepresentation representation);
+  ServerRepresentation createServer(NewServer representation);
 
   @Operation(summary = "Update server", description = "Update the properties of an existing server such as name, description, or icon. Requires server administrative permissions.")
   @APIResponse(responseCode = "200", description = "Server updated successfully")
@@ -73,7 +73,7 @@ public interface ServerController extends LoggedApi {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/{id}")
-  ServerRepresentation updateServer(@PathParam("id") UUID id, ServerCreationRepresentation representation);
+  ServerRepresentation updateServer(@PathParam("id") UUID id, NewServer representation);
 
   @Operation(summary = "Delete server", description = "Permanently delete a server and all associated rooms and messages. This action cannot be undone. Only the server owner can delete a server.")
   @APIResponse(responseCode = "200", description = "Server deleted successfully")
@@ -101,7 +101,7 @@ public interface ServerController extends LoggedApi {
   @APIResponse(responseCode = "404", description = "Server not found")
   @PUT
   @Path("/{id}/room")
-  RoomRepresentation createRoom(@PathParam("id") final UUID id, CreationRoomRepresentation representation);
+  RoomRepresentation createRoom(@PathParam("id") final UUID id, NewRoom representation);
 
   @Tags(refs = { "Server", "User" })
   @Operation(summary = "Get server members", description = "Retrieve the list of all users who are members of a specific server.")
@@ -111,41 +111,4 @@ public interface ServerController extends LoggedApi {
   @GET
   @Path("/{id}/user")
   List<UserRepresentation> fetchUsers(@PathParam("id") UUID id);
-
-  @Tags(refs = { "Server", "Invitation" })
-  @Operation(summary = "Generate server invitation", description = "Create a new invitation link for users to join the server. Requires appropriate server permissions.")
-  @APIResponse(responseCode = "200", description = "Server invitation generated successfully")
-  @APIResponse(responseCode = "403", description = "Insufficient permissions to generate server invitations")
-  @APIResponse(responseCode = "404", description = "Server not found")
-  @POST
-  @Path("/{id}/invitation")
-  InvitationRepresentation generateServerInvitation(@PathParam("id") UUID id,
-                                                    @QueryParam("category") @DefaultValue("UNIQUE") String category);
-
-  @Tags(refs = { "Server", "Invitation" })
-  @Operation(summary = "Get server invitations", description = "Retrieve all active invitation links for a specific server. Requires appropriate server permissions.")
-  @APIResponse(responseCode = "200", description = "Server invitations retrieved successfully")
-  @APIResponse(responseCode = "403", description = "Insufficient permissions to view server invitations")
-  @APIResponse(responseCode = "404", description = "Server not found")
-  @GET
-  @Path("/{id}/invitation")
-  List<InvitationRepresentation> getAllServerInvitations(@PathParam("id") UUID id);
-
-  @Tags(refs = { "Server", "Invitation", "User" })
-  @Operation(summary = "Join a public server (no invitation needed)")
-  @APIResponse(responseCode = "204", description = "Server successfully joined")
-  @APIResponse(responseCode = "403", description = "Insufficient permissions to join this server")
-  @APIResponse(responseCode = "404", description = "Server not found")
-  @POST
-  @Path("/{id}/join")
-  void joinPublic(@PathParam("id") UUID serverId);
-
-  @Tags(refs = { "Server", "Invitation", "User" })
-  @Operation(summary = "Join a private server via an invitation")
-  @APIResponse(responseCode = "204", description = "Server successfully joined")
-  @APIResponse(responseCode = "403", description = "Insufficient permissions to join this server")
-  @APIResponse(responseCode = "404", description = "Server not found")
-  @POST
-  @Path("/join/{invitation}")
-  void joinPrivate(@PathParam("invitation") UUID invitation);
 }

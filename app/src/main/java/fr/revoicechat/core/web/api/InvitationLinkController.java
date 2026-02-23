@@ -16,7 +16,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 
-import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
+import fr.revoicechat.core.representation.InvitationRepresentation;
 import jakarta.ws.rs.QueryParam;
 
 @Path("invitation")

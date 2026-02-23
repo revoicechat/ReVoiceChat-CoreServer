@@ -11,15 +11,14 @@ import java.util.UUID;
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.room.ServerRoom;
-import fr.revoicechat.core.representation.emote.EmoteRepresentation;
-import fr.revoicechat.core.representation.message.MessageRepresentation;
-import fr.revoicechat.core.representation.message.MessageRepresentation.MessageAnsweredRepresentation;
+import fr.revoicechat.core.representation.EmoteRepresentation;
+import fr.revoicechat.core.representation.MessageRepresentation;
+import fr.revoicechat.core.representation.MessageRepresentation.MessageAnsweredRepresentation;
 import fr.revoicechat.core.service.emote.EmoteRetrieverService;
-import fr.revoicechat.notification.representation.UserNotificationRepresentation;
+import fr.revoicechat.notification.data.UserNotificationRepresentation;
 import fr.revoicechat.web.mapper.Mapper;
 import fr.revoicechat.web.mapper.RepresentationMapper;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class MessageMapper implements RepresentationMapper<Message, MessageRepresentation> {

@@ -15,13 +15,13 @@ import fr.revoicechat.core.model.room.RoomType;
 import fr.revoicechat.core.model.ServerType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.repository.page.PageResult;
-import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
-import fr.revoicechat.core.representation.message.MessageRepresentation;
-import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
-import fr.revoicechat.core.representation.room.RoomPresenceRepresentation;
-import fr.revoicechat.core.representation.room.RoomRepresentation;
-import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
+import fr.revoicechat.core.technicaldata.message.NewMessage;
+import fr.revoicechat.core.representation.MessageRepresentation;
+import fr.revoicechat.core.technicaldata.room.NewRoom;
+import fr.revoicechat.core.representation.RoomPresenceRepresentation;
+import fr.revoicechat.core.representation.RoomRepresentation;
+import fr.revoicechat.core.technicaldata.server.NewServer;
+import fr.revoicechat.core.representation.ServerRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -39,7 +39,7 @@ class TestServerRoomController {
     var server = createServer(token);
     List<RoomRepresentation> rooms = getRooms(token, server);
     assertThat(rooms).hasSize(3);
-    CreationRoomRepresentation representation = new CreationRoomRepresentation("test", null);
+    NewRoom representation = new NewRoom("test", null);
     var room = rooms.getFirst();
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)
@@ -81,7 +81,7 @@ class TestServerRoomController {
     String token = RestTestUtils.logNewUser();
     var server = createServer(token);
     var room = createRoom(token, server);
-    CreationRoomRepresentation representation = new CreationRoomRepresentation("test", RoomType.TEXT);
+    NewRoom representation = new NewRoom("test", RoomType.TEXT);
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)
                .header("Authorization", "Bearer " + token)
@@ -95,7 +95,7 @@ class TestServerRoomController {
     String token = RestTestUtils.logNewUser();
     var server = createServer(token);
     var room = createRoom(token, server);
-    CreationRoomRepresentation representation = new CreationRoomRepresentation("test", RoomType.VOICE);
+    NewRoom representation = new NewRoom("test", RoomType.VOICE);
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)
                .header("Authorization", "Bearer " + token)
@@ -112,7 +112,7 @@ class TestServerRoomController {
     PageResult<MessageRepresentation> page = getPage(token, room, 0);
     assertThat(page.content()).isEmpty();
     IntStream.range(0, 13).forEach(i -> {
-      CreatedMessageRepresentation created = new CreatedMessageRepresentation("message " + i, null, List.of());
+      NewMessage created = new NewMessage("message " + i, null, List.of());
       RestAssured.given()
                  .contentType(MediaType.APPLICATION_JSON)
                  .header("Authorization", "Bearer " + token)
@@ -122,8 +122,6 @@ class TestServerRoomController {
       await().during(250, TimeUnit.MILLISECONDS);
     });
     PageResult<MessageRepresentation> page1 = getPage(token, room, 0);
-    assertThat(page1.pageNumber()).isZero();
-    assertThat(page1.totalPages()).isEqualTo(2);
     assertThat(page1.content()).hasSize(10).map(MessageRepresentation::text).containsExactly(
         "message 12",
         "message 11",
@@ -137,8 +135,6 @@ class TestServerRoomController {
         "message 3"
     );
     PageResult<MessageRepresentation> page2 = getPage(token, room, 1);
-    assertThat(page2.pageNumber()).isEqualTo(1);
-    assertThat(page2.totalPages()).isEqualTo(2);
     assertThat(page2.content()).hasSize(3).map(MessageRepresentation::text)
                                .containsExactly("message 2", "message 1", "message 0");
   }
@@ -151,7 +147,7 @@ class TestServerRoomController {
     PageResult<MessageRepresentation> page = getPage(token, room, 0);
     assertThat(page.content()).isEmpty();
     IntStream.range(0, 51).forEach(i -> {
-      CreatedMessageRepresentation created = new CreatedMessageRepresentation("message " + (i < 10 ? "0" : "") + i, null, List.of());
+      NewMessage created = new NewMessage("message " + (i < 10 ? "0" : "") + i, null, List.of());
       RestAssured.given()
                  .contentType(MediaType.APPLICATION_JSON)
                  .header("Authorization", "Bearer " + token)
@@ -161,8 +157,6 @@ class TestServerRoomController {
       await().during(250, TimeUnit.MILLISECONDS);
     });
     PageResult<MessageRepresentation> pageFull = getPage(token, room);
-    assertThat(pageFull.pageNumber()).isZero();
-    assertThat(pageFull.totalPages()).isEqualTo(2);
     assertThat(pageFull.content())
         .hasSize(50).map(MessageRepresentation::text)
         .containsExactly("message 50",
@@ -185,7 +179,7 @@ class TestServerRoomController {
                           .extract().body();
     var pageResult = body.as(PageResult.class);
     var messages = body.jsonPath().getList("content", MessageRepresentation.class);
-    return new PageResult<>(messages, pageResult.pageNumber(), pageResult.pageSize(), pageResult.totalElements());
+    return new PageResult<>(messages, pageResult.size(), pageResult.totalElements());
   }
 
   private static PageResult<MessageRepresentation> getPage(final String token, final RoomRepresentation room) {
@@ -198,11 +192,11 @@ class TestServerRoomController {
                           .extract().body();
     var pageResult = body.as(PageResult.class);
     var messages = body.jsonPath().getList("content", MessageRepresentation.class);
-    return new PageResult<>(messages, pageResult.pageNumber(), pageResult.pageSize(), pageResult.totalElements());
+    return new PageResult<>(messages, pageResult.size(), pageResult.totalElements());
   }
 
   private static RoomRepresentation createRoom(final String token, final ServerRepresentation server) {
-    CreationRoomRepresentation representation = new CreationRoomRepresentation("test", RoomType.TEXT);
+    NewRoom representation = new NewRoom("test", RoomType.TEXT);
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
@@ -231,7 +225,7 @@ class TestServerRoomController {
   }
 
   private static ServerRepresentation createServer(String token) {
-    var representation = new ServerCreationRepresentation("test", ServerType.PUBLIC);
+    var representation = new NewServer("test", ServerType.PUBLIC);
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)

@@ -7,7 +7,6 @@ import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 
@@ -17,8 +16,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import fr.revoicechat.core.representation.message.CreatedMessageRepresentation;
-import fr.revoicechat.core.representation.message.MessageRepresentation;
+import fr.revoicechat.core.technicaldata.message.NewMessage;
+import fr.revoicechat.core.representation.MessageRepresentation;
 
 @Path("message/{id}")
 @Tag(name = "Message", description = "Manage individual chat messages")
@@ -63,7 +62,7 @@ public interface MessageController extends LoggedApi {
       )
   )
   @PATCH
-  MessageRepresentation update(@PathParam("id") UUID id, CreatedMessageRepresentation representation);
+  MessageRepresentation update(@PathParam("id") UUID id, NewMessage representation);
 
   @Operation(
       summary = "Delete message",

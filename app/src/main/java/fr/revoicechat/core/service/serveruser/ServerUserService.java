@@ -1,8 +1,9 @@
 package fr.revoicechat.core.service.serveruser;
 
 import fr.revoicechat.core.model.Server;
+import fr.revoicechat.core.model.ServerUser;
 
 @FunctionalInterface
 public interface ServerUserService {
-  void join(Server server);
+  ServerUser join(Server server);
 }

@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.Server;
-import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
+import fr.revoicechat.core.representation.InvitationRepresentation;
 import fr.revoicechat.web.mapper.RepresentationMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 
