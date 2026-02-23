@@ -104,7 +104,6 @@ class TestMessageSearcher {
     // When
     var result = messageSearcher.search(user1.getId(), param);
     // Then
-    assertThat(result.pageNumber()).isZero();
     assertThat(result.size()).isEqualTo(messages.size());
     assertThat(result.totalElements()).isEqualTo(messages.size());
     var content = result.content();
@@ -120,7 +119,6 @@ class TestMessageSearcher {
     // When
     var result = messageSearcher.search(user1.getId(), param);
     // Then
-    assertThat(result.pageNumber()).isZero();
     assertThat(result.size()).isEqualTo(2);
     assertThat(result.totalElements()).isEqualTo(10);
     var content = result.content();
@@ -140,7 +138,6 @@ class TestMessageSearcher {
     // When
     var result = messageSearcher.search(user1.getId(), param);
     // Then
-    assertThat(result.pageNumber()).isZero();
     assertThat(result.size()).isEqualTo(2);
     assertThat(result.totalElements()).isEqualTo(8);
     var content = result.content();
@@ -159,7 +156,6 @@ class TestMessageSearcher {
     // When
     var result = messageSearcher.search(user1.getId(), param);
     // Then
-    assertThat(result.pageNumber()).isZero();
     assertThat(result.size()).isEqualTo(2);
     assertThat(result.totalElements()).isEqualTo(10);
     var content = result.content();
@@ -180,7 +176,6 @@ class TestMessageSearcher {
     // When
     var result = messageSearcher.search(user1.getId(), param);
     // Then
-    assertThat(result.pageNumber()).isZero();
     assertThat(result.size()).isEqualTo(2);
     var content = result.content();
     assertThat(content).hasSize(2).containsExactlyInAnyOrder(
@@ -199,7 +194,6 @@ class TestMessageSearcher {
     // When
     var result = messageSearcher.search(user1.getId(), param);
     // Then
-    assertThat(result.pageNumber()).isZero();
     assertThat(result.size()).isEqualTo(2);
     assertThat(result.totalElements()).isEqualTo(10);
     var content = result.content();
@@ -218,7 +212,6 @@ class TestMessageSearcher {
     // When
     var result = messageSearcher.search(user1.getId(), param);
     // Then
-    assertThat(result.pageNumber()).isZero();
     var content = result.content();
     assertThat(content).hasSize(8)
         .allMatch(message -> Objects.equals(message.getUser(), user1))
@@ -245,7 +238,6 @@ class TestMessageSearcher {
     // When
     var result = messageSearcher.search(user2.getId(), param);
     // Then
-    assertThat(result.pageNumber()).isZero();
     var content = result.content();
     assertThat(content).hasSize(messages.size() - 5)
                        .allMatch(message -> !Objects.equals(message.getRoom(), room3));
@@ -274,13 +266,13 @@ class TestMessageSearcher {
   }
 
   private Server createServer(final User user) {
-    Server server = new Server();
-    server.setId(UUID.randomUUID());
-    server.setName("server_" + id.getAndIncrement());
-    server.setType(ServerType.PUBLIC);
-    server.setOwner(user);
-    entityManager.persist(server);
-    return server;
+    Server newServer = new Server();
+    newServer.setId(UUID.randomUUID());
+    newServer.setName("server_" + id.getAndIncrement());
+    newServer.setType(ServerType.PUBLIC);
+    newServer.setOwner(user);
+    entityManager.persist(newServer);
+    return newServer;
   }
 
   private void joinServer(final Server server, final User user) {

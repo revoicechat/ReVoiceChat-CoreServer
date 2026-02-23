@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import fr.revoicechat.core.notification.MessageNotification;
 import fr.revoicechat.core.notification.RoomNotification;
+import fr.revoicechat.core.notification.service.message.MessageNotifier;
+import fr.revoicechat.core.notification.service.room.RoomNotifier;
 import fr.revoicechat.core.repository.page.PageResult;
 import fr.revoicechat.core.technicaldata.message.NewMessage;
 import fr.revoicechat.core.technicaldata.message.MessageFilterParams;
@@ -29,13 +31,19 @@ public class RoomControllerImpl implements RoomController {
   private final RoomService roomService;
   private final MessageService messageService;
   private final MessagePageResult messagePageResult;
+  private final RoomNotifier roomNotifier;
+  private final MessageNotifier messageNotifier;
 
   public RoomControllerImpl(RoomService roomService,
                             MessageService messageService,
-                            MessagePageResult messagePageResult) {
+                            MessagePageResult messagePageResult,
+                            RoomNotifier roomNotifier,
+                            MessageNotifier messageNotifier) {
     this.roomService = roomService;
     this.messageService = messageService;
     this.messagePageResult = messagePageResult;
+    this.roomNotifier = roomNotifier;
+    this.messageNotifier = messageNotifier;
   }
 
   @Override
@@ -48,7 +56,7 @@ public class RoomControllerImpl implements RoomController {
   @RisksMembershipData(risks = "SERVER_ROOM_UPDATE", retriever = EntityByRoomIdRetriever.class)
   public RoomRepresentation update(UUID roomId, NewRoom newRoom) {
     var room = roomService.update(roomId, newRoom);
-    RoomNotification.update(room);
+    roomNotifier.update(room);
     return Mapper.map(room);
   }
 
@@ -56,7 +64,7 @@ public class RoomControllerImpl implements RoomController {
   @RisksMembershipData(risks = "SERVER_ROOM_DELETE", retriever = EntityByRoomIdRetriever.class)
   public UUID delete(UUID roomId) {
     var room = roomService.delete(roomId);
-    RoomNotification.delete(room);
+    roomNotifier.delete(room);
     return room.getId();
   }
 
@@ -76,7 +84,7 @@ public class RoomControllerImpl implements RoomController {
   @RisksMembershipData(risks = "SERVER_ROOM_SEND_MESSAGE", retriever = EntityByRoomIdRetriever.class)
   public MessageRepresentation sendMessage(UUID roomId, NewMessage newMessage) {
     var message = messageService.create(roomId, newMessage);
-    MessageNotification.add(message);
+    messageNotifier.add(message);
     return Mapper.map(message);
   }
 

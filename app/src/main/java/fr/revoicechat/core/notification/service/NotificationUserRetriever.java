@@ -1,4 +1,4 @@
-package fr.revoicechat.core.notification;
+package fr.revoicechat.core.notification.service;
 
 import java.util.UUID;
 import java.util.stream.Stream;

@@ -1,6 +1,6 @@
 package fr.revoicechat.core.notification.service.profil;
 
-import static fr.revoicechat.core.notification.NotificationUserRetriever.findUserForServer;
+import static fr.revoicechat.core.notification.service.NotificationUserRetriever.findUserForServer;
 
 import java.util.UUID;
 

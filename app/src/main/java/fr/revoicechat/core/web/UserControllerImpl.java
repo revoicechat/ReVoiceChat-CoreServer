@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import fr.revoicechat.core.notification.MessageNotification;
+import fr.revoicechat.core.notification.service.message.MessageNotifier;
 import fr.revoicechat.core.technicaldata.message.NewMessage;
 import fr.revoicechat.core.representation.MessageRepresentation;
 import fr.revoicechat.core.representation.RoomRepresentation;
@@ -23,10 +24,12 @@ import fr.revoicechat.core.web.api.UserController;
 public class UserControllerImpl implements UserController {
   private final UserService userService;
   private final PrivateMessageService privateMessageService;
+  private final MessageNotifier messageNotifier;
 
-  public UserControllerImpl(final UserService userService, final PrivateMessageService privateMessageService) {
+  public UserControllerImpl(final UserService userService, final PrivateMessageService privateMessageService, final MessageNotifier messageNotifier) {
     this.userService = userService;
     this.privateMessageService = privateMessageService;
+    this.messageNotifier = messageNotifier;
   }
 
   @Override
@@ -57,7 +60,7 @@ public class UserControllerImpl implements UserController {
   @Override
   public MessageRepresentation sendPrivateMessage(final UUID id, final NewMessage newMessage) {
     var message = privateMessageService.sendPrivateMessageTo(id, newMessage);
-    MessageNotification.add(message);
+    messageNotifier.add(message);
     return Mapper.map(message);
   }
 

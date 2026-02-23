@@ -5,8 +5,9 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.*;
 import java.util.List;
 import java.util.UUID;
 
-import fr.revoicechat.core.notification.RoomNotification;
 import fr.revoicechat.core.notification.ServerUpdateNotification;
+import fr.revoicechat.core.notification.service.room.RoomNotifier;
+import fr.revoicechat.core.notification.service.server.ServerUpdateNotifier;
 import fr.revoicechat.core.representation.RoomRepresentation;
 import fr.revoicechat.core.representation.ServerRepresentation;
 import fr.revoicechat.core.representation.UserRepresentation;
@@ -30,13 +31,17 @@ public class ServerControllerImpl implements ServerController {
   private final RoomService roomService;
   private final UserService userService;
   private final ServerDeleterService serverDeleterService;
+  private final RoomNotifier roomNotifier;
+  private final ServerUpdateNotifier serverUpdateNotifier;
 
-  public ServerControllerImpl(ServerRetriever serverRetriever, ServerService serverService, RoomService roomService, UserService userService, ServerDeleterService serverDeleterService) {
+  public ServerControllerImpl(ServerRetriever serverRetriever, ServerService serverService, RoomService roomService, UserService userService, ServerDeleterService serverDeleterService, final RoomNotifier roomNotifier, final ServerUpdateNotifier serverUpdateNotifier) {
     this.serverRetriever = serverRetriever;
     this.serverService = serverService;
     this.roomService = roomService;
     this.userService = userService;
     this.serverDeleterService = serverDeleterService;
+    this.roomNotifier = roomNotifier;
+    this.serverUpdateNotifier = serverUpdateNotifier;
   }
 
   @Override
@@ -74,7 +79,7 @@ public class ServerControllerImpl implements ServerController {
   @RisksMembershipData(risks = "SERVER_UPDATE", retriever = ServerIdRetriever.class)
   public ServerRepresentation updateServer(UUID id, NewServer newServer) {
     var server = serverService.update(id, newServer);
-    ServerUpdateNotification.update(server);
+    serverUpdateNotifier.update(server);
     return Mapper.map(server);
   }
 
@@ -96,7 +101,7 @@ public class ServerControllerImpl implements ServerController {
   @RisksMembershipData(risks = "SERVER_ROOM_ADD", retriever = ServerIdRetriever.class)
   public RoomRepresentation createRoom(UUID id, NewRoom newRoom) {
     var room = roomService.create(id, newRoom);
-    RoomNotification.add(room);
+    roomNotifier.add(room);
     return Mapper.map(room);
   }
 

@@ -6,5 +6,4 @@ import fr.revoicechat.notification.model.NotificationPayload;
 import fr.revoicechat.notification.model.NotificationType;
 
 @NotificationType(name = "NEW_USER_IN_SERVER")
-public record NewUserInServer(UUID server, UUID user)
-    implements NotificationPayload {}
+public record NewUserInServer(UUID server, UUID user) implements NotificationPayload {}

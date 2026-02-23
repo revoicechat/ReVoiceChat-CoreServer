@@ -160,7 +160,7 @@ class TestMessageController {
                           .extract().body();
     var pageResult = body.as(PageResult.class);
     var messages = body.jsonPath().getList("content", MessageRepresentation.class);
-    return new PageResult<>(messages, pageResult.pageNumber(), pageResult.size(), pageResult.totalElements());
+    return new PageResult<>(messages, pageResult.size(), pageResult.totalElements());
   }
 
   private static MessageRepresentation createMessage(final String token, final RoomRepresentation room) {

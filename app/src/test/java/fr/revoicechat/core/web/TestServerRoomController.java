@@ -122,8 +122,6 @@ class TestServerRoomController {
       await().during(250, TimeUnit.MILLISECONDS);
     });
     PageResult<MessageRepresentation> page1 = getPage(token, room, 0);
-    assertThat(page1.pageNumber()).isZero();
-    assertThat(page1.totalPages()).isEqualTo(2);
     assertThat(page1.content()).hasSize(10).map(MessageRepresentation::text).containsExactly(
         "message 12",
         "message 11",
@@ -137,8 +135,6 @@ class TestServerRoomController {
         "message 3"
     );
     PageResult<MessageRepresentation> page2 = getPage(token, room, 1);
-    assertThat(page2.pageNumber()).isEqualTo(1);
-    assertThat(page2.totalPages()).isEqualTo(2);
     assertThat(page2.content()).hasSize(3).map(MessageRepresentation::text)
                                .containsExactly("message 2", "message 1", "message 0");
   }
@@ -161,8 +157,6 @@ class TestServerRoomController {
       await().during(250, TimeUnit.MILLISECONDS);
     });
     PageResult<MessageRepresentation> pageFull = getPage(token, room);
-    assertThat(pageFull.pageNumber()).isZero();
-    assertThat(pageFull.totalPages()).isEqualTo(2);
     assertThat(pageFull.content())
         .hasSize(50).map(MessageRepresentation::text)
         .containsExactly("message 50",
@@ -185,7 +179,7 @@ class TestServerRoomController {
                           .extract().body();
     var pageResult = body.as(PageResult.class);
     var messages = body.jsonPath().getList("content", MessageRepresentation.class);
-    return new PageResult<>(messages, pageResult.pageNumber(), pageResult.size(), pageResult.totalElements());
+    return new PageResult<>(messages, pageResult.size(), pageResult.totalElements());
   }
 
   private static PageResult<MessageRepresentation> getPage(final String token, final RoomRepresentation room) {
@@ -198,7 +192,7 @@ class TestServerRoomController {
                           .extract().body();
     var pageResult = body.as(PageResult.class);
     var messages = body.jsonPath().getList("content", MessageRepresentation.class);
-    return new PageResult<>(messages, pageResult.pageNumber(), pageResult.size(), pageResult.totalElements());
+    return new PageResult<>(messages, pageResult.size(), pageResult.totalElements());
   }
 
   private static RoomRepresentation createRoom(final String token, final ServerRepresentation server) {

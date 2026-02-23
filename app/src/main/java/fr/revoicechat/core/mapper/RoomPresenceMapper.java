@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.representation.RoomPresenceRepresentation;
+import fr.revoicechat.core.representation.RoomPresenceRepresentation.ConnectedUserRepresentation;
 import fr.revoicechat.core.service.user.UserService;
 import fr.revoicechat.core.technicaldata.room.RoomPresence;
 import fr.revoicechat.live.stream.service.StreamRetriever;
