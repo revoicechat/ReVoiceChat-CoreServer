@@ -1,13 +1,13 @@
 package fr.revoicechat.core.service.user;
 
 import java.util.UUID;
+
+import fr.revoicechat.core.model.User;
+import fr.revoicechat.security.UserHolder;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-
-import fr.revoicechat.core.model.User;
-import fr.revoicechat.security.UserHolder;
 
 @ApplicationScoped
 public class UserSettingsService {

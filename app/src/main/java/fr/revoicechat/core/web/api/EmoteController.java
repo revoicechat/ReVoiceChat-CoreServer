@@ -7,8 +7,8 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import fr.revoicechat.core.technicaldata.emote.NewEmote;
 import fr.revoicechat.core.representation.EmoteRepresentation;
+import fr.revoicechat.core.technicaldata.emote.NewEmote;
 import fr.revoicechat.openapi.api.LoggedApi;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;

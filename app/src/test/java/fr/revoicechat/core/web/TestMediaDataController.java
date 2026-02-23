@@ -11,12 +11,13 @@ import fr.revoicechat.core.model.MediaDataStatus;
 import fr.revoicechat.core.model.room.RoomType;
 import fr.revoicechat.core.model.ServerType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
+import fr.revoicechat.core.representation.RoomRepresentation;
 import fr.revoicechat.core.technicaldata.media.NewMediaData;
 import fr.revoicechat.core.representation.MediaDataRepresentation;
 import fr.revoicechat.core.technicaldata.message.NewMessage;
 import fr.revoicechat.core.representation.MessageRepresentation;
 import fr.revoicechat.core.technicaldata.room.NewRoom;
-import fr.revoicechat.core.representation.RoomRepresentation;
+import fr.revoicechat.core.representation.ServerRoomRepresentation;
 import fr.revoicechat.core.technicaldata.server.NewServer;
 import fr.revoicechat.core.representation.ServerRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
@@ -141,7 +142,7 @@ class TestMediaDataController {
                       .body(representation)
                       .when().pathParam("id", server.id()).put("/server/{id}/room")
                       .then().statusCode(200)
-                      .extract().body().as(RoomRepresentation.class);
+                      .extract().body().as(ServerRoomRepresentation.class);
   }
 
   private static ServerRepresentation createServer(String token) {

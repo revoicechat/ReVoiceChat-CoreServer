@@ -3,16 +3,16 @@ package fr.revoicechat.core.security;
 import static fr.revoicechat.core.nls.UserErrorCode.USER_NOT_FOUND;
 
 import java.util.UUID;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.WebApplicationException;
 
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.notification.NotificationRegistrableHolder;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.security.service.SecurityTokenService;
 import io.quarkus.security.identity.SecurityIdentity;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.WebApplicationException;
 
 @ApplicationScoped
 public class UserHolderImpl implements UserHolder, NotificationRegistrableHolder {

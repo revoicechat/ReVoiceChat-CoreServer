@@ -2,6 +2,9 @@ package fr.revoicechat.core.model;
 
 import java.util.Objects;
 import java.util.UUID;
+
+import fr.revoicechat.core.model.server.ServerStructure;
+import fr.revoicechat.core.repository.jpa.ServerStructureConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -11,9 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import fr.revoicechat.core.model.server.ServerStructure;
-import fr.revoicechat.core.repository.jpa.ServerStructureConverter;
 
 @Entity
 @Table(name = "RVC_SERVER")

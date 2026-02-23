@@ -3,14 +3,14 @@ package fr.revoicechat.core.model;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
+
+import fr.revoicechat.core.model.ServerUser.ServerUserId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import fr.revoicechat.core.model.ServerUser.ServerUserId;
 
 @Entity
 @Table(name = "RVC_SERVER_USER")

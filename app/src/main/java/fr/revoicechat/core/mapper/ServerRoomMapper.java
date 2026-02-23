@@ -5,13 +5,13 @@ import java.util.UUID;
 
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.room.ServerRoom;
-import fr.revoicechat.core.representation.RoomRepresentation;
+import fr.revoicechat.core.representation.ServerRoomRepresentation;
 import fr.revoicechat.core.service.room.RoomReadStatusService;
 import fr.revoicechat.web.mapper.RepresentationMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class ServerRoomMapper implements RepresentationMapper<ServerRoom, RoomRepresentation> {
+public class ServerRoomMapper implements RepresentationMapper<ServerRoom, ServerRoomRepresentation> {
 
   private final RoomReadStatusService roomReadStatusService;
 
@@ -20,8 +20,8 @@ public class ServerRoomMapper implements RepresentationMapper<ServerRoom, RoomRe
   }
 
   @Override
-  public RoomRepresentation map(final ServerRoom room) {
-    return new RoomRepresentation(
+  public ServerRoomRepresentation map(final ServerRoom room) {
+    return new ServerRoomRepresentation(
         room.getId(),
         room.getName(),
         room.getType(),
@@ -31,8 +31,8 @@ public class ServerRoomMapper implements RepresentationMapper<ServerRoom, RoomRe
   }
 
   @Override
-  public RoomRepresentation mapLight(final ServerRoom room) {
-    return new RoomRepresentation(
+  public ServerRoomRepresentation mapLight(final ServerRoom room) {
+    return new ServerRoomRepresentation(
         room.getId(),
         room.getName(),
         room.getType(),

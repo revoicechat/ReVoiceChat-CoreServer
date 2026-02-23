@@ -2,12 +2,12 @@ package fr.revoicechat.core.repository.jpa;
 
 import java.io.IOError;
 import java.util.List;
-import jakarta.persistence.AttributeConverter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.revoicechat.core.model.server.ServerStructure;
+import jakarta.persistence.AttributeConverter;
 
 public class ServerStructureConverter implements AttributeConverter<ServerStructure, String> {
 

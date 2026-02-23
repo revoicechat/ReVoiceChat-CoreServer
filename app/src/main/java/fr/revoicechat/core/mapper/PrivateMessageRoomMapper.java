@@ -1,13 +1,14 @@
 package fr.revoicechat.core.mapper;
 
 import fr.revoicechat.core.model.room.PrivateMessageRoom;
-import fr.revoicechat.core.representation.RoomRepresentation;
+import fr.revoicechat.core.representation.PrivateMessageRoomRepresentation;
 import fr.revoicechat.core.service.room.RoomReadStatusService;
+import fr.revoicechat.web.mapper.Mapper;
 import fr.revoicechat.web.mapper.RepresentationMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class PrivateMessageRoomMapper implements RepresentationMapper<PrivateMessageRoom, RoomRepresentation> {
+public class PrivateMessageRoomMapper implements RepresentationMapper<PrivateMessageRoom, PrivateMessageRoomRepresentation> {
 
   private final RoomReadStatusService roomReadStatusService;
 
@@ -16,23 +17,23 @@ public class PrivateMessageRoomMapper implements RepresentationMapper<PrivateMes
   }
 
   @Override
-  public RoomRepresentation map(final PrivateMessageRoom room) {
-    return new RoomRepresentation(
+  public PrivateMessageRoomRepresentation map(final PrivateMessageRoom room) {
+    return new PrivateMessageRoomRepresentation(
         room.getId(),
         room.getName(),
-        room.getType(),
-        null,
+        room.getMode(),
+        Mapper.mapAll(room.getUsers()),
         roomReadStatusService.getUnreadMessagesStatus(room)
     );
   }
 
   @Override
-  public RoomRepresentation mapLight(final PrivateMessageRoom room) {
-    return new RoomRepresentation(
+  public PrivateMessageRoomRepresentation mapLight(final PrivateMessageRoom room) {
+    return new PrivateMessageRoomRepresentation(
         room.getId(),
         room.getName(),
-        room.getType(),
-        null,
+        room.getMode(),
+        Mapper.mapLightAll(room.getUsers()),
         null
     );
   }

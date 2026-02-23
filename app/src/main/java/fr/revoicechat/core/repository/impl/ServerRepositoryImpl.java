@@ -1,10 +1,8 @@
 package fr.revoicechat.core.repository.impl;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Stream;
 
-import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.model.ServerUser;
 import fr.revoicechat.core.model.User;

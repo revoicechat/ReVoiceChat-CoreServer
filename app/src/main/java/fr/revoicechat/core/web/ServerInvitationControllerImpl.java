@@ -1,12 +1,12 @@
 package fr.revoicechat.core.web;
 
-import static fr.revoicechat.security.utils.RevoiceChatRoles.*;
+import static fr.revoicechat.security.utils.RevoiceChatRoles.ROLE_USER;
 
 import java.util.List;
 import java.util.UUID;
 
-import fr.revoicechat.core.representation.InvitationRepresentation;
 import fr.revoicechat.core.notification.NewUserInServer;
+import fr.revoicechat.core.representation.InvitationRepresentation;
 import fr.revoicechat.core.service.invitation.InvitationLinkService;
 import fr.revoicechat.core.service.server.ServerJoiner;
 import fr.revoicechat.core.technicaldata.invitation.InvitationCategory;

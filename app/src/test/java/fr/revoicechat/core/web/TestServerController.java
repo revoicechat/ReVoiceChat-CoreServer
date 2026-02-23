@@ -18,6 +18,7 @@ import fr.revoicechat.core.model.server.ServerStructure;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.representation.InvitationRepresentation;
 import fr.revoicechat.core.representation.RoomRepresentation;
+import fr.revoicechat.core.representation.ServerRoomRepresentation;
 import fr.revoicechat.core.technicaldata.server.NewServer;
 import fr.revoicechat.core.representation.ServerRepresentation;
 import fr.revoicechat.core.representation.UserRepresentation;
@@ -379,6 +380,6 @@ class TestServerController {
                       .when().pathParam("id", id).get("/room/{id}")
                       .then().statusCode(200)
                       .extract()
-                      .body().as(RoomRepresentation.class);
+                      .body().as(ServerRoomRepresentation.class);
   }
 }

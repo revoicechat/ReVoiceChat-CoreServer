@@ -5,9 +5,9 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.*;
 import java.util.List;
 import java.util.UUID;
 
-import fr.revoicechat.core.technicaldata.invitation.InvitationCategory;
 import fr.revoicechat.core.representation.InvitationRepresentation;
 import fr.revoicechat.core.service.invitation.InvitationLinkService;
+import fr.revoicechat.core.technicaldata.invitation.InvitationCategory;
 import fr.revoicechat.core.web.api.InvitationLinkController;
 import fr.revoicechat.web.mapper.Mapper;
 import jakarta.annotation.security.RolesAllowed;

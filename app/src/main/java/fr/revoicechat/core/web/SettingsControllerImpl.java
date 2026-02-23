@@ -5,12 +5,11 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.ROLE_USER;
 import java.util.Map;
 import java.util.UUID;
 
-import jakarta.annotation.security.PermitAll;
-import jakarta.annotation.security.RolesAllowed;
-
 import fr.revoicechat.core.service.settings.SettingsService;
 import fr.revoicechat.core.service.user.UserSettingsService;
 import fr.revoicechat.core.web.api.SettingsController;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 
 public class SettingsControllerImpl implements SettingsController {
 

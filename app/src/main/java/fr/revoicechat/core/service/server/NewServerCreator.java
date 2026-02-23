@@ -3,9 +3,9 @@ package fr.revoicechat.core.service.server;
 import java.util.List;
 import java.util.UUID;
 
-import fr.revoicechat.core.model.room.ServerRoom;
-import fr.revoicechat.core.model.room.RoomType;
 import fr.revoicechat.core.model.Server;
+import fr.revoicechat.core.model.room.RoomType;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.model.server.ServerCategory;
 import fr.revoicechat.core.model.server.ServerRoomItem;
 import fr.revoicechat.core.model.server.ServerStructure;

@@ -1,10 +1,9 @@
 package fr.revoicechat.core.service.emote.risk;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
 import fr.revoicechat.core.model.Emote;
 import fr.revoicechat.risk.type.RiskType;
 import fr.revoicechat.security.model.AuthenticatedUser;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class UserEmoteRiskSupplier implements EmoteRiskSupplier {

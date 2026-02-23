@@ -2,7 +2,6 @@ package fr.revoicechat.core.notification.service.message;
 
 import static fr.revoicechat.core.notification.service.NotificationUserRetriever.findUserForRoom;
 import static fr.revoicechat.notification.data.NotificationActionType.*;
-import static fr.revoicechat.notification.data.NotificationActionType.REMOVE;
 
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.notification.MessageNotification;

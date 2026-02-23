@@ -5,7 +5,6 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.*;
 import java.util.List;
 import java.util.UUID;
 
-import fr.revoicechat.core.notification.ServerUpdateNotification;
 import fr.revoicechat.core.notification.service.room.RoomNotifier;
 import fr.revoicechat.core.notification.service.server.ServerUpdateNotifier;
 import fr.revoicechat.core.representation.RoomRepresentation;

@@ -14,7 +14,7 @@ import fr.revoicechat.core.model.room.RoomType;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
 import fr.revoicechat.core.technicaldata.room.NewRoom;
 import fr.revoicechat.core.representation.RoomPresenceRepresentation;
-import fr.revoicechat.core.representation.RoomRepresentation;
+import fr.revoicechat.core.representation.ServerRoomRepresentation;
 import fr.revoicechat.core.representation.ServerRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
@@ -87,7 +87,7 @@ class TestServerRoomPresenceService {
                       .when().pathParam("id", server.id()).put("/server/{id}/room")
                       .then().statusCode(200)
                       .extract().body()
-                      .as(RoomRepresentation.class).id();
+                      .as(ServerRoomRepresentation.class).id();
   }
 
   private static List<ServerRepresentation> getServers(String token) {

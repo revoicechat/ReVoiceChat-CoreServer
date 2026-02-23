@@ -5,11 +5,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import fr.revoicechat.core.model.room.Room;
-import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.model.Server;
+import fr.revoicechat.core.model.room.Room;
 import fr.revoicechat.core.model.room.RoomReadStatus;
 import fr.revoicechat.core.model.room.RoomUserId;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.repository.RoomRepository;
 import fr.revoicechat.core.technicaldata.message.UnreadMessageStatus;
 import fr.revoicechat.security.UserHolder;
