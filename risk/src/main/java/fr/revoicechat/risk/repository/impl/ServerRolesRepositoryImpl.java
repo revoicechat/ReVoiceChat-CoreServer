@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import fr.revoicechat.risk.model.ServerRoles;
 import fr.revoicechat.risk.repository.ServerRolesRepository;
+import fr.revoicechat.risk.technicaldata.AffectedRisk;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
 import fr.revoicechat.risk.type.RiskType;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -44,20 +45,19 @@ public class ServerRolesRepositoryImpl implements ServerRolesRepository {
   }
 
   @Override
-  public List<AffectedRisk> getAffectedRisks(final RiskEntity entity, final RiskType riskType) {
+  public Stream<AffectedRisk> getAffectedRisks(final RiskEntity entity, final RiskType riskType) {
     return entityManager.createQuery("""
-                            select sr.id, r.mode
+                            select sr.id, r.mode, r.entity, sr.priority
                             from Risk r
                             join r.serverRoles sr
                             where r.type = :riskType
                               and sr.server = :serverId
                               and (r.entity is null or r.entity = :entityId)
-                            order by sr.priority
                             """, AffectedRisk.class)
                         .setParameter(RISK_TYPE, riskType)
                         .setParameter(SERVER_ID, entity.serverId())
                         .setParameter(ENTITY_ID, entity.entityId())
-                        .getResultList();
+                        .getResultStream();
   }
 
   @Override
