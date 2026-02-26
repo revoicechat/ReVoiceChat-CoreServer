@@ -6,7 +6,7 @@ import java.util.UUID;
 import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.model.ServerRoles;
 import fr.revoicechat.risk.repository.ServerRolesRepository;
-import fr.revoicechat.risk.repository.ServerRolesRepository.AffectedRisk;
+import fr.revoicechat.risk.technicaldata.AffectedRisk;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
 import fr.revoicechat.risk.type.RiskType;
 import fr.revoicechat.security.UserHolder;
@@ -39,14 +39,14 @@ public class RiskServiceImpl implements RiskService {
     if (membership.isEmpty()) {
       return false;
     }
-    var serverAffectedRisk = serverRolesRepository.getAffectedRisks(entity, riskType);
-    return serverAffectedRisk.stream()
-                             .filter(affectedRisk -> isUserMembership(affectedRisk, membership))
-                             .filter(affectedRisk -> !affectedRisk.mode().equals(RiskMode.DEFAULT))
-                             .findFirst()
-                             .map(AffectedRisk::mode)
-                             .orElse(RiskMode.DISABLE)
-                             .isEnable();
+    return serverRolesRepository.getAffectedRisks(entity, riskType)
+                                .sorted()
+                                .filter(affectedRisk -> isUserMembership(affectedRisk, membership))
+                                .filter(affectedRisk -> !affectedRisk.mode().equals(RiskMode.DEFAULT))
+                                .findFirst()
+                                .map(AffectedRisk::mode)
+                                .orElse(RiskMode.DISABLE)
+                                .isEnable();
   }
 
   private boolean isUserMembership(final AffectedRisk affectedRisk, final List<ServerRoles> membership) {
