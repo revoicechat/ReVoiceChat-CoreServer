@@ -16,7 +16,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
-import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.repository.UserRepository;
 import fr.revoicechat.core.service.invitation.InvitationLinkUsage;
 import fr.revoicechat.core.technicaldata.user.AdminUpdatableUserData;
@@ -109,12 +108,6 @@ public class UserService {
   @Transactional
   public List<User> fetchUserForServer(final UUID id) {
     return userRepository.findByServers(id).toList();
-  }
-
-  @Transactional
-  public List<User> fetchUserForRoom(final UUID id) {
-    var server = entityManager.find(ServerRoom.class, id).getServer();
-    return fetchUserForServer(server.getId());
   }
 
   @Transactional
