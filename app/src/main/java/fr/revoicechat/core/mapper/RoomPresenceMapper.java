@@ -14,7 +14,9 @@ import fr.revoicechat.live.voice.service.ConnectedUserRetriever;
 import fr.revoicechat.web.mapper.Mapper;
 import fr.revoicechat.web.mapper.RepresentationMapper;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
+@Transactional
 @ApplicationScoped
 public class RoomPresenceMapper implements RepresentationMapper<RoomPresence, RoomPresenceRepresentation> {
 
