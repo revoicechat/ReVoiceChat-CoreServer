@@ -20,7 +20,7 @@ public class OpenGraphService {
 
   private final HttpClient httpClient = HttpClient.newHttpClient();
 
-  public OpenGraphData extractIfSingleUrl(String text) throws IOException, InterruptedException {
+  public OpenGraphData extractForSingleUrl(String text) throws IOException, InterruptedException {
     List<String> urls = UrlsExtractor.extract(text);
     if (urls.size() != 1) {
       return null;
