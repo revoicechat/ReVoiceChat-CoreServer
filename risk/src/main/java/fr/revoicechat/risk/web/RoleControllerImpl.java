@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.UUID;
 
 import fr.revoicechat.risk.RisksMembershipData;
-import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
+import fr.revoicechat.risk.representation.RiskUpdateRepresentation;
 import fr.revoicechat.risk.representation.ServerRoleRepresentation;
 import fr.revoicechat.risk.retriever.ServerRoleIdRetriever;
 import fr.revoicechat.risk.service.DefaultRiskType;
@@ -44,9 +44,9 @@ public class RoleControllerImpl implements RoleController {
 
   @Override
   @RisksMembershipData(risks = "UPDATE_ROLE", retriever = ServerRoleIdRetriever.class)
-  public void patchOrAddRisk(final UUID roleId, final String type, final RiskMode mode) {
+  public void patchOrAddRisk(final UUID roleId, final String type, RiskUpdateRepresentation updateRepresentation) {
     var risk = new DefaultRiskType(type);
-    serverRoleService.addRiskOrReplace(roleId, risk, mode);
+    serverRoleService.addRiskOrReplace(roleId, updateRepresentation.entity(), risk, updateRepresentation.mode());
   }
 
   @Override

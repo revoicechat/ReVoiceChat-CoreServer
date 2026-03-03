@@ -21,4 +21,22 @@ public interface RiskController {
   @APIResponse(responseCode = "200", description = "Risk categories retrieved successfully")
   @GET
   List<RiskCategoryRepresentation> getAllRisks();
+
+  @Operation(
+      summary = "Get all risk categories for server entity",
+      description = "Retrieve all available risk categories and their associated permissions. Risk categories define what actions users can perform within the application."
+  )
+  @APIResponse(responseCode = "200", description = "Risk categories retrieved successfully")
+  @GET
+  @Path("server")
+  List<RiskCategoryRepresentation> getSpecificServerRisks();
+
+  @Operation(
+      summary = "Get all risk categories for room entity",
+      description = "Retrieve all available risk categories and their associated permissions. Risk categories define what actions users can perform within the application."
+  )
+  @APIResponse(responseCode = "200", description = "Risk categories retrieved successfully")
+  @GET
+  @Path("room")
+  List<RiskCategoryRepresentation> getSpecificRoomRisks();
 }

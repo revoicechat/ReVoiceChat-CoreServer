@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import fr.revoicechat.risk.model.ServerRoles;
 import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
-import fr.revoicechat.risk.service.risk.RiskMapper;
+import fr.revoicechat.risk.service.risk.RiskCreator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -15,12 +15,12 @@ public class ServerRoleCreator implements ServerRoleDefaultCreator{
 
   private final EntityManager entityManager;
   private final ServerFinder serverFinder;
-  private final RiskMapper riskMapper;
+  private final RiskCreator riskCreator;
 
-  public ServerRoleCreator(EntityManager entityManager, ServerFinder serverFinder, RiskMapper riskMapper) {
+  public ServerRoleCreator(EntityManager entityManager, ServerFinder serverFinder, RiskCreator riskCreator) {
     this.entityManager = entityManager;
     this.serverFinder = serverFinder;
-    this.riskMapper = riskMapper;
+    this.riskCreator = riskCreator;
   }
 
   @Transactional
@@ -46,6 +46,6 @@ public class ServerRoleCreator implements ServerRoleDefaultCreator{
   }
 
   private void mapRisks(final CreatedServerRoleRepresentation representation, final ServerRoles roles) {
-    representation.risks().forEach(risk -> riskMapper.map(roles, risk));
+    representation.risks().forEach(risk -> riskCreator.create(roles, risk));
   }
 }

@@ -4,13 +4,13 @@ import static fr.revoicechat.security.utils.RevoiceChatRoles.*;
 
 import java.util.List;
 import java.util.UUID;
-import jakarta.annotation.security.RolesAllowed;
 
-import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
+import fr.revoicechat.core.representation.InvitationRepresentation;
 import fr.revoicechat.core.service.invitation.InvitationLinkService;
+import fr.revoicechat.core.technicaldata.invitation.InvitationCategory;
 import fr.revoicechat.core.web.api.InvitationLinkController;
-import fr.revoicechat.risk.RisksMembershipData;
-import fr.revoicechat.risk.retriever.ServerIdRetriever;
+import fr.revoicechat.web.mapper.Mapper;
+import jakarta.annotation.security.RolesAllowed;
 
 @RolesAllowed(ROLE_USER)
 public class InvitationLinkControllerImpl implements InvitationLinkController {
@@ -21,35 +21,34 @@ public class InvitationLinkControllerImpl implements InvitationLinkController {
   }
 
   @Override
-  public InvitationRepresentation generateApplicationInvitation() {
-    return invitationLinkService.generateApplicationInvitation();
+  public InvitationRepresentation generateApplicationInvitation(final String category) {
+    return Mapper.map(invitationLinkService.generateApplicationInvitation(InvitationCategory.of(category)));
   }
 
   @Override
-  @RisksMembershipData(risks = "SERVER_INVITATION_ADD", retriever = ServerIdRetriever.class)
-  public InvitationRepresentation generateServerInvitation(UUID serverId) {
-    return invitationLinkService.generateServerInvitation(serverId);
+  public InvitationRepresentation generateServerInvitation(final UUID serverId, final String category) {
+    return Mapper.map(invitationLinkService.generateServerInvitation(serverId, InvitationCategory.of(category)));
   }
 
   @Override
   public List<InvitationRepresentation> getAllServerInvitations(final UUID serverId) {
-    return invitationLinkService.getAllServerInvitations(serverId);
+    return Mapper.mapAll(invitationLinkService.getAllServerInvitations(serverId));
   }
 
   @Override
   public InvitationRepresentation get(UUID id) {
-    return invitationLinkService.get(id);
+    return Mapper.map(invitationLinkService.get(id));
   }
 
   @Override
   public List<InvitationRepresentation> getAll() {
-    return invitationLinkService.getAllFromUser();
+    return Mapper.mapAll(invitationLinkService.getAllFromUser());
   }
 
   @Override
   @RolesAllowed(ROLE_ADMIN)
   public List<InvitationRepresentation> getAllApplicationInvitations() {
-    return invitationLinkService.getAllApplicationInvitations();
+    return Mapper.mapAll(invitationLinkService.getAllApplicationInvitations());
   }
 
   @Override

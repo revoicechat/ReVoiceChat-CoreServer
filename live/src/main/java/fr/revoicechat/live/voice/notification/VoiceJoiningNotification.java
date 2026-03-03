@@ -6,7 +6,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import fr.revoicechat.notification.model.NotificationPayload;
 import fr.revoicechat.notification.model.NotificationType;
-import fr.revoicechat.notification.representation.UserNotificationRepresentation;
+import fr.revoicechat.notification.data.UserNotificationRepresentation;
 
 @NotificationType(name = "VOICE_JOINING")
 @Schema(description = "Voice joining notification")

@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
-import fr.revoicechat.core.representation.user.UserRepresentation;
+import fr.revoicechat.core.representation.UserRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.service.NotificationService;
@@ -52,8 +52,9 @@ class TestNotificationController {
          var _ = source(client, events)) {
       assertThat(events).isEmpty();
       assertThat(service.getProcessor(user.id())).hasSize(1);
+      await().during(3, SECONDS);
       Notification.ping(NotificationRegistrable.forId(user.id()));
-      await().during(1, SECONDS);
+      await().atMost(10, SECONDS).until(() -> !events.isEmpty());
       assertThat(events).containsExactly("{\"type\":\"PING\",\"data\":{}}");
       var retrievedUser = RestAssured.given()
                                      .contentType(MediaType.APPLICATION_JSON)

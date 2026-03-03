@@ -10,7 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 
 @ApplicationScoped
-public class ServerEntityService implements ServerFinder {
+public class ServerEntityService implements ServerEntityRetriever, ServerFinder {
 
   private final EntityManager entityManager;
 
@@ -23,8 +23,13 @@ public class ServerEntityService implements ServerFinder {
     getEntity(id);
   }
 
+  @Override
   public Server getEntity(final UUID id) {
-    return Optional.ofNullable(entityManager.find(Server.class, id))
+    return Optional.ofNullable(getEntityOrNull(id))
                    .orElseThrow(() -> new ResourceNotFoundException(Server.class, id));
+  }
+
+  public Server getEntityOrNull(final UUID id) {
+    return entityManager.find(Server.class, id);
   }
 }

@@ -1,6 +1,5 @@
 package fr.revoicechat.risk.service;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.assertj.core.api.Assertions;
@@ -8,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.risk.RisksMembershipData;
-import fr.revoicechat.risk.representation.RiskCategoryRepresentation;
 import fr.revoicechat.risk.retriever.ServerIdRetriever;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
 import fr.revoicechat.risk.type.RiskType;
@@ -61,11 +59,6 @@ class TestRisksMembershipInterceptor {
     @Override
     public boolean hasRisk(final RiskEntity entity, final RiskType riskType) {
       return hasRisk;
-    }
-
-    @Override
-    public List<RiskCategoryRepresentation> getAllRisks() {
-      return List.of();
     }
   }
 }

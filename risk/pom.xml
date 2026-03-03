@@ -10,6 +10,7 @@
   </parent>
 
   <artifactId>revoicechat-risk</artifactId>
+  <name>ReVoiceChat Risk</name>
 
   <dependencies>
     <dependency>

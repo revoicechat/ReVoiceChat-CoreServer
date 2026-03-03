@@ -6,15 +6,16 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.core.junit.CleanDatabase;
-import fr.revoicechat.core.quarkus.profile.MultiServerProfile;
-import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
+import fr.revoicechat.core.model.ServerType;
+import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
+import fr.revoicechat.core.technicaldata.server.NewServer;
+import fr.revoicechat.core.representation.ServerRepresentation;
+import fr.revoicechat.core.risk.RoomRiskType;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.representation.CreatedServerRoleRepresentation;
 import fr.revoicechat.risk.representation.RiskRepresentation;
 import fr.revoicechat.risk.representation.ServerRoleRepresentation;
-import fr.revoicechat.core.risk.RoomRiskType;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
@@ -22,7 +23,7 @@ import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 @CleanDatabase
-@TestProfile(MultiServerProfile.class)
+@TestProfile(BasicIntegrationTestProfile.class)
 class TestServerRoleController {
 
   @Test
@@ -59,7 +60,7 @@ class TestServerRoleController {
   }
 
   private static ServerRepresentation createServer(String token) {
-    var representation = new ServerCreationRepresentation("test");
+    var representation = new NewServer("test", ServerType.PUBLIC);
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)

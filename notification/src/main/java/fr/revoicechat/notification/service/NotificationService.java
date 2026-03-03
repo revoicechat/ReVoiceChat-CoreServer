@@ -16,7 +16,7 @@ import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.notification.model.NotificationData;
 import fr.revoicechat.notification.model.NotificationRegistrable;
-import fr.revoicechat.notification.representation.UserStatusUpdate;
+import fr.revoicechat.notification.data.UserStatusUpdate;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.sse.SseEventSink;

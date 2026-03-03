@@ -1,6 +1,6 @@
 package fr.revoicechat.stub.voice.socket;
 
-import static fr.revoicechat.core.model.RoomType.*;
+import static fr.revoicechat.core.model.room.RoomType.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.awaitility.Awaitility.await;
 
@@ -11,32 +11,30 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.core.junit.CleanDatabase;
-import fr.revoicechat.core.model.RoomType;
+import fr.revoicechat.core.model.room.RoomType;
 import fr.revoicechat.core.model.User;
 import fr.revoicechat.core.model.UserType;
-import fr.revoicechat.core.quarkus.profile.MonoServerProfile;
-import fr.revoicechat.core.representation.room.CreationRoomRepresentation;
-import fr.revoicechat.core.representation.room.RoomRepresentation;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
+import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
+import fr.revoicechat.core.technicaldata.room.NewRoom;
+import fr.revoicechat.core.representation.ServerRoomRepresentation;
+import fr.revoicechat.core.representation.ServerRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
-import fr.revoicechat.security.service.SecurityTokenService;
 import fr.revoicechat.live.voice.socket.VoiceWebSocket;
+import fr.revoicechat.security.service.SecurityTokenService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
 import jakarta.websocket.CloseReason.CloseCodes;
 import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 @CleanDatabase
-@TestProfile(MonoServerProfile.class)
+@TestProfile(BasicIntegrationTestProfile.class)
 class TestVoiceWebSocket {
 
   @Inject SecurityTokenService jwtService;
-  @Inject EntityManager entityManager;
 
   @Test
   void test() throws Exception {
@@ -230,11 +228,11 @@ class TestVoiceWebSocket {
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
-                      .body(new CreationRoomRepresentation(roomName, roomType))
+                      .body(new NewRoom(roomName, roomType))
                       .when().pathParam("id", server.id()).put("/server/{id}/room")
                       .then().statusCode(200)
                       .extract().body()
-                      .as(RoomRepresentation.class).id();
+                      .as(ServerRoomRepresentation.class).id();
   }
 
   private static List<ServerRepresentation> getServers(String token) {

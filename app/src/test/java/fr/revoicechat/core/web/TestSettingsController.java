@@ -28,8 +28,7 @@ class TestSettingsController {
                                    .extract().body().as(Map.class);
     assertThat(settings).containsKeys(
         "global.app-only-accessible-by-invitation",
-        "global.sever-mode",
         "message.max-length"
-    ).doesNotContainKeys("test.generate-fictive-users", "dev.error.log");
+    ).doesNotContainKeys("dev.error.log");
   }
 }

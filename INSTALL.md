@@ -84,6 +84,10 @@ cp rvc-core.service.example rvc-core.service
 ```sh
 sudo systemctl link /srv/rvc/ReVoiceChat-CoreServer/rvc-core.service
 ```
+- Reload daemon
+```sh
+sudo systemctl daemon-reload
+```
 - Enable service
 ```sh
 sudo systemctl enable rvc-core.service
