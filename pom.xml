@@ -19,6 +19,7 @@
     <module>web</module>
     <module>live</module>
     <module>risk</module>
+    <module>opengraph</module>
   </modules>
 
   <properties>
@@ -32,8 +33,8 @@
     <surefire-plugin.version>3.5.5</surefire-plugin.version>
     <io.smallrye.jandex.version>3.5.3</io.smallrye.jandex.version>
     <org.reflection.version>0.10.2</org.reflection.version>
+    <org.jsoup.version>1.22.1</org.jsoup.version>
     <org.assertj.version>3.27.7</org.assertj.version>
-
     <quarkus.test.coverage.enabled>true</quarkus.test.coverage.enabled>
     <sonar.coverage.jacoco.xmlReportPaths>../target/coverage/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
   </properties>
@@ -81,6 +82,11 @@
         <groupId>fr.revoicechat</groupId>
         <artifactId>revoicechat-risk</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jsoup</groupId>
+        <artifactId>jsoup</artifactId>
+        <version>${org.jsoup.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
