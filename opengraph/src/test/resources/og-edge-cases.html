@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edge Cases Test Page</title>
+
+  <!-- Intentionally partial / edge-case OG data for testing robustness -->
+
+  <!-- og:title present but og:type missing → your parser should return null for type -->
+  <meta property="og:title" content="A Page With Minimal OpenGraph" />
+
+  <!-- og:url present, og:description intentionally absent -->
+  <meta property="og:url" content="https://example-edge.com/minimal" />
+
+  <!-- og:image with no sub-properties (width/height/alt all missing) -->
+  <meta property="og:image" content="https://picsum.photos/seed/edge/600/300" />
+
+  <!-- og:site_name is blank → your getMeta filter(!isBlank) should return null -->
+  <meta property="og:site_name" content="" />
+
+  <!-- og:locale is whitespace only → should also be filtered out -->
+  <meta property="og:locale" content="   " />
+
+  <!-- A non-OG meta tag mixed in, should be ignored -->
+  <meta name="description" content="This is a standard HTML meta description, not OG." />
+  <meta name="author" content="Test Author" />
+
+  <!-- Duplicate og:title — parser should pick the first -->
+  <meta property="og:title" content="DUPLICATE TITLE — should not appear" />
+
+  <!-- og:image:alt is present but og:image:width / og:image:height are absent -->
+  <meta property="og:image:alt" content="A placeholder image for edge case testing" />
+
+  <!-- article tags present even though og:type is not article — tests that your parser still reads them -->
+  <meta property="article:author" content="https://example-edge.com/authors/ghost" />
+  <meta property="article:tag" content="edge-case" />
+</head>
+<body>
+  <h1>Edge Cases</h1>
+  <p>This page deliberately tests robustness of the OpenGraph parser.</p>
+  <ul>
+    <li><strong>og:type</strong> — absent (should be null)</li>
+    <li><strong>og:description</strong> — absent (should be null)</li>
+    <li><strong>og:site_name</strong> — blank string (should be null after isBlank filter)</li>
+    <li><strong>og:locale</strong> — whitespace only (should be null after isBlank filter)</li>
+    <li><strong>og:image:width / height</strong> — absent despite og:image being present</li>
+    <li><strong>og:title</strong> — duplicated, first value wins</li>
+    <li><strong>article:*</strong> — present even though og:type ≠ article</li>
+    <li><strong>non-OG meta tags</strong> — present, should be ignored</li>
+  </ul>
+</body>
+</html>
