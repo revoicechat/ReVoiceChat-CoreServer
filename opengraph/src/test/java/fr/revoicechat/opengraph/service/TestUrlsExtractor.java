@@ -1,4 +1,4 @@
-package fr.revoicechat.opengraph.utils;
+package fr.revoicechat.opengraph.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
