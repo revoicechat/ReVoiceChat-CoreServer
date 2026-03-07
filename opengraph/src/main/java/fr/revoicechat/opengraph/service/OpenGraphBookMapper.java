@@ -11,7 +11,7 @@ final class OpenGraphBookMapper extends OpenGraphMapper<OpenGraphBook> {
         getMeta(doc, "book:author"),
         getMeta(doc, "book:isbn"),
         getMeta(doc, "book:release_date"),
-        getMeta(doc, "book:tag")
+        getMetas(doc, "book:tag")
     );
   }
 }

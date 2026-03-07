@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import fr.revoicechat.core.model.MessageReactions.MessageReaction;
 import fr.revoicechat.notification.data.UserNotificationRepresentation;
+import fr.revoicechat.opengraph.OpenGraphSchema;
 
 public record MessageRepresentation(
     UUID id,
@@ -18,11 +19,12 @@ public record MessageRepresentation(
     OffsetDateTime updatedDate,
     List<MediaDataRepresentation> medias,
     List<EmoteRepresentation> emotes,
-    List<MessageReaction> reactions
+    List<MessageReaction> reactions,
+    OpenGraphSchema openGraph
 ) {
 
   public MessageRepresentation(UUID id, UUID serverId, UUID roomId) {
-    this(id, null, serverId, roomId, null, null, null, null, null, null, null);
+    this(id, null, serverId, roomId, null, null, null, null, null, null, null, null);
   }
 
   public record MessageAnsweredRepresentation(

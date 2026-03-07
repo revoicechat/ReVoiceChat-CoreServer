@@ -1,16 +1,13 @@
-package fr.revoicechat.opengraph;
+package fr.revoicechat.opengraph.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
 
 @QuarkusTest
 class TestOpenGraphService {
-
-  @Inject OpenGraphExtractor extractor;
 
   @Test
   void testWithOneUrl() {
@@ -19,7 +16,7 @@ class TestOpenGraphService {
         look https://github.com/revoicechat/ReVoiceChat-CoreServer for
         the core part of ReVoiceChat""";
     // When
-    var result = extractor.extract(text);
+    var result = new OpenGraphService().extract(text);
     // Then
     assertThat(result).isNotNull();
     assertThat(result.getBasic().url()).isEqualTo("https://github.com/revoicechat/ReVoiceChat-CoreServer");
@@ -31,23 +28,19 @@ class TestOpenGraphService {
 
   @Test
   void testWithTwoUrl() {
-    // Given
-    var text = """
+    assertThat(new OpenGraphService().extract("""
         - https://github.com/revoicechat/ReVoiceChat-CoreServer
-        - https://github.com/revoicechat/revoicechat""";
-    // When
-    var result = extractor.extract(text);
-    // Then
-    assertThat(result).isNull();
+        - https://github.com/revoicechat/revoicechat""")
+    ).isNull();
   }
 
   @Test
   void testWithNoUrl() {
-    // Given
-    var text = "no url";
-    // When
-    var result = extractor.extract(text);
-    // Then
-    assertThat(result).isNull();
+    assertThat(new OpenGraphService().extract("no url")).isNull();
+  }
+
+  @Test
+  void testWithNull() {
+    assertThat(new OpenGraphService().extract(null)).isNull();
   }
 }

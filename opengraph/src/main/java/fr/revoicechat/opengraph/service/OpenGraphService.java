@@ -24,6 +24,9 @@ public class OpenGraphService implements OpenGraphExtractor {
   @Override
   @SuppressWarnings("java:S2142") // interruption error is not rethrow
   public OpenGraphSchema extract(String text) {
+    if (text == null) {
+      return null;
+    }
     try {
       List<String> urls = UrlsExtractor.extract(text);
       if (urls.size() != 1) {

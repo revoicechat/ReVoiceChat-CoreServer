@@ -1,6 +1,8 @@
 package fr.revoicechat.opengraph;
 
+import java.util.List;
+
 public record OpenGraphBook(String author,
                             String isbn,
                             String releaseDate,
-                            String tag) {}
+                            List<String> tags) {}

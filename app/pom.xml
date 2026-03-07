@@ -21,6 +21,10 @@
 
     <dependency>
       <groupId>fr.revoicechat</groupId>
+      <artifactId>revoicechat-opengraph</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>fr.revoicechat</groupId>
       <artifactId>revoicechat-openapi</artifactId>
     </dependency>
     <dependency>

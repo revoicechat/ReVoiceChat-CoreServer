@@ -13,7 +13,7 @@ final class OpenGraphArticleMapper extends OpenGraphMapper<OpenGraphArticle> {
         getMeta(doc, "article:expiration_time"),
         getMeta(doc, "article:author"),
         getMeta(doc, "article:section"),
-        getMeta(doc, "article:tag")
+        getMetas(doc, "article:tag")
     );
   }
 }

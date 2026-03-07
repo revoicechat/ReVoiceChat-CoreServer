@@ -16,6 +16,7 @@ import fr.revoicechat.core.representation.MessageRepresentation;
 import fr.revoicechat.core.representation.MessageRepresentation.MessageAnsweredRepresentation;
 import fr.revoicechat.core.service.emote.EmoteRetrieverService;
 import fr.revoicechat.notification.data.UserNotificationRepresentation;
+import fr.revoicechat.opengraph.OpenGraphExtractor;
 import fr.revoicechat.web.mapper.Mapper;
 import fr.revoicechat.web.mapper.RepresentationMapper;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,9 +24,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class MessageMapper implements RepresentationMapper<Message, MessageRepresentation> {
 
+  private final OpenGraphExtractor openGraphExtractor;
   private final EmoteRetrieverService emoteService;
 
-  public MessageMapper(final EmoteRetrieverService emoteService) {
+  public MessageMapper(final OpenGraphExtractor openGraphExtractor, final EmoteRetrieverService emoteService) {
+    this.openGraphExtractor = openGraphExtractor;
     this.emoteService = emoteService;
   }
 
@@ -51,7 +54,8 @@ public class MessageMapper implements RepresentationMapper<Message, MessageRepre
         message.getUpdatedDate(),
         Mapper.mapAll(message.getMediaDatas()),
         getEmoteRepresentations(message),
-        message.getReactions().reactions()
+        message.getReactions().reactions(),
+        openGraphExtractor.extract(message.getText())
     );
   }
 
