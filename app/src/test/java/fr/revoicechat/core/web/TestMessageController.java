@@ -23,6 +23,7 @@ import fr.revoicechat.core.representation.ServerRoomRepresentation;
 import fr.revoicechat.core.technicaldata.server.NewServer;
 import fr.revoicechat.core.representation.ServerRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
+import fr.revoicechat.opengraph.OpenGraphSchema;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
@@ -54,8 +55,10 @@ class TestMessageController {
     assertThat(message.text()).isEqualTo("message 1");
     assertThat(message.user()).isNotNull();
     assertThat(message.medias()).hasSize(2)
-                                .anyMatch(media -> media.name().equals("test1.png") && media.type().equals(FileType.PICTURE))
-                                .anyMatch(media -> media.name().equals("test2.mp4") && media.type().equals(FileType.VIDEO));
+                                .anyMatch(media -> media.name().equals("test1.png") &&
+                                                   media.type().equals(FileType.PICTURE))
+                                .anyMatch(media -> media.name().equals("test2.mp4") &&
+                                                   media.type().equals(FileType.VIDEO));
     for (var media : message.medias()) {
       var entity = entityManager.find(MediaData.class, media.id());
       assertThat(entity).isNotNull();
@@ -79,6 +82,21 @@ class TestMessageController {
                .then().statusCode(200);
     PageResult<MessageRepresentation> page2 = getPage(token, room);
     assertThat(page2.content()).hasSize(1).map(MessageRepresentation::text).containsExactly("message 2");
+  }
+
+  @Test
+  void testMessageOpenGraph() {
+    String token = RestTestUtils.logNewUser();
+    var server = createServer(token);
+    var room = createRoom(token, server);
+    var message = createMessage(token, room);
+    var graph = RestAssured.given()
+                           .contentType(MediaType.APPLICATION_JSON)
+                           .header("Authorization", "Bearer " + token)
+                           .when().pathParam("id", message.id()).get("/message/{id}/open-graph")
+                           .then().statusCode(204)
+                           .extract().body().asString();
+    assertThat(graph).isEmpty();
   }
 
   @Test
@@ -169,7 +187,7 @@ class TestMessageController {
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
                       .body(new NewMessage("message 1", null, List.of(new NewMediaData("test1.png"),
-                                                                                  new NewMediaData("test2.mp4"))))
+                          new NewMediaData("test2.mp4"))))
                       .when().pathParam("id", room.id()).put("/room/{id}/message")
                       .then().statusCode(200)
                       .extract().body().as(MessageRepresentation.class);

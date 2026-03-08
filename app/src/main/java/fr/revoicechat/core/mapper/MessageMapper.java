@@ -55,7 +55,7 @@ public class MessageMapper implements RepresentationMapper<Message, MessageRepre
         Mapper.mapAll(message.getMediaDatas()),
         getEmoteRepresentations(message),
         message.getReactions().reactions(),
-        openGraphExtractor.extract(message.getText())
+        openGraphExtractor.hasPreview(message.getText())
     );
   }
 

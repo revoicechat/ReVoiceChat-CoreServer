@@ -6,9 +6,11 @@ import java.util.UUID;
 
 import fr.revoicechat.core.notification.service.message.MessageNotifier;
 import fr.revoicechat.core.representation.MessageRepresentation;
+import fr.revoicechat.core.representation.OpenGraphSchemaHolder;
 import fr.revoicechat.core.service.message.MessageService;
 import fr.revoicechat.core.technicaldata.message.NewMessage;
 import fr.revoicechat.core.web.api.MessageController;
+import fr.revoicechat.opengraph.OpenGraphSchema;
 import fr.revoicechat.web.mapper.Mapper;
 import jakarta.annotation.security.RolesAllowed;
 
@@ -26,6 +28,11 @@ public class MessageControllerImpl implements MessageController {
   @Override
   public MessageRepresentation read(UUID id) {
     return Mapper.map(messageService.getMessage(id));
+  }
+
+  @Override
+  public OpenGraphSchema getOpenGraph(final UUID id) {
+    return Mapper.map(new OpenGraphSchemaHolder(messageService.getMessage(id)));
   }
 
   @Override
