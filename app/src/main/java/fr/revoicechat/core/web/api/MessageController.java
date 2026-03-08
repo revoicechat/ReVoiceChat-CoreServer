@@ -11,6 +11,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import fr.revoicechat.core.representation.MessageRepresentation;
 import fr.revoicechat.core.technicaldata.message.NewMessage;
 import fr.revoicechat.openapi.api.LoggedApi;
+import fr.revoicechat.opengraph.OpenGraphSchema;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
@@ -41,6 +42,15 @@ public interface MessageController extends LoggedApi {
   )
   @GET
   MessageRepresentation read(@PathParam("id") UUID id);
+
+  @Operation(
+      summary = "Get OpenGraph by message ID",
+      description = "Retrieve a specific OpenGraph by its message unique identifier. Users must have access to the room containing this message."
+  )
+  @APIResponse(responseCode = "200", description = "OpenGraph of a message successfully extract")
+  @GET
+  @Path("/open-graph")
+  OpenGraphSchema getOpenGraph(@PathParam("id") UUID id);
 
   @Operation(
       summary = "Update message",
