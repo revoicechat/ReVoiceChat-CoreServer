@@ -19,7 +19,11 @@ public class OpenGraphService implements OpenGraphExtractor {
 
   private static final Logger LOG = LoggerFactory.getLogger(OpenGraphService.class);
 
-  private final HttpFetcher fetcher = new HttpFetcher();
+  private final HttpFetcher fetcher;
+
+  public OpenGraphService(HttpFetcher fetcher) {
+    this.fetcher = fetcher;
+  }
 
   @Override
   @SuppressWarnings("java:S2142") // interruption error is not rethrow
