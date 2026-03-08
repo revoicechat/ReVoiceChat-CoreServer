@@ -1,10 +1,12 @@
 package fr.revoicechat.opengraph;
 
+import fr.revoicechat.opengraph.utils.OpenGraphSchemaUtils;
+
 public final class OpenGraphSchemaBuilder {
   private final OpenGraphSchema schema = new OpenGraphSchema();
 
   public OpenGraphSchema build() {
-    return schema;
+    return OpenGraphSchemaUtils.isEmpty(schema) ? null : schema;
   }
 
   public OpenGraphSchemaBuilder basic(OpenGraphBasicData basic) {

@@ -1,5 +1,6 @@
 package fr.revoicechat.opengraph.stub;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import jakarta.annotation.security.PermitAll;
@@ -49,10 +50,31 @@ public class OpenGraphTestController {
   }
 
   @GET
-  @Path("/edge-cases")
+  @Path("/no-og")
   @Produces(MediaType.TEXT_HTML)
+  public Response noOpenGraph() {
+    return htmlResource("no-og.html");
+  }
+
+  @GET
+  @Path("/edge-cases")
+  @Produces(MediaType.APPLICATION_JSON)
   public Response edgeCases() {
     return htmlResource("og-edge-cases.html");
+  }
+
+  @GET
+  @Path("/json-data")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response jsonCases() {
+    return htmlResource("json-data.json");
+  }
+
+  @GET
+  @Path("/error-case")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response errorCase() throws IOException {
+    throw new IOException();
   }
 
   private Response htmlResource(String filename) {

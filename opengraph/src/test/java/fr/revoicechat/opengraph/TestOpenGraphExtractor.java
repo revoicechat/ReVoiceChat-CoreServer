@@ -3,6 +3,8 @@ package fr.revoicechat.opengraph;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
@@ -168,5 +170,13 @@ class TestOpenGraphExtractor {
     assertThat(result.page.locale()).isNull();
     assertThat(result.image.image()).isEqualTo("https://picsum.photos/seed/edge/600/300");
     assertThat(result.article.author()).isEqualTo("https://example-edge.com/authors/ghost");
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = { "no-og", "json-data", "error-case" })
+  void noOpenGraph(String path) {
+    String url = "http://localhost:%d/tests/open-graph/%s".formatted(RestAssured.port, path);
+    var result = extractor.extract(url);
+    assertThat(result).isNull();
   }
 }
