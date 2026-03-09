@@ -1,8 +1,8 @@
 package fr.revoicechat.web.nls;
 
-import fr.revoicechat.i18n.LocalizedMessage;
+import fr.revoicechat.i18n.ErrorLocalizedMessage;
 
-public enum HttpStatusErrorCode implements LocalizedMessage {
+public enum HttpStatusErrorCode implements ErrorLocalizedMessage {
   UNAUTHORIZED_TITLE,
   UNAUTHORIZED_MESSAGE,
   FORBIDDEN_TITLE,
