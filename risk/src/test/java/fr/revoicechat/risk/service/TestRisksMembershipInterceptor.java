@@ -1,5 +1,6 @@
 package fr.revoicechat.risk.service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.assertj.core.api.Assertions;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import fr.revoicechat.risk.RisksMembershipData;
 import fr.revoicechat.risk.retriever.ServerIdRetriever;
+import fr.revoicechat.risk.technicaldata.AffectedRisk;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
 import fr.revoicechat.risk.type.RiskType;
 import io.quarkus.security.UnauthorizedException;
