@@ -6,18 +6,19 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.model.MessageReactions;
 import fr.revoicechat.core.repository.MessageRepository;
+import fr.revoicechat.core.risk.MessageRiskType;
 import fr.revoicechat.core.service.media.MediaDataService;
 import fr.revoicechat.core.service.room.RoomService;
 import fr.revoicechat.core.technicaldata.message.NewMessage;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.web.error.ResourceNotFoundException;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
 /**
  * Service layer for managing chat messages within rooms.
@@ -45,17 +46,20 @@ public class MessageService {
   private final UserHolder userHolder;
   private final MessageValidation messageValidation;
   private final MediaDataService mediaDataService;
+  private final MessageAuthorization messageAuthorization;
 
   public MessageService(EntityManager entityManager,
                         RoomService roomService,
                         UserHolder userHolder,
                         MessageValidation messageValidation,
-                        MediaDataService mediaDataService) {
+                        MediaDataService mediaDataService,
+                        MessageAuthorization messageAuthorization) {
     this.entityManager = entityManager;
     this.roomService = roomService;
     this.userHolder = userHolder;
     this.messageValidation = messageValidation;
     this.mediaDataService = mediaDataService;
+    this.messageAuthorization = messageAuthorization;
   }
 
   /**
@@ -97,6 +101,7 @@ public class MessageService {
   @Transactional
   public Message update(UUID id, NewMessage creation) {
     var message = getMessage(id);
+    messageAuthorization.asserRisk(message, MessageRiskType.MESSAGE_UPDATE);
     messageValidation.isValid(message.getRoom().getId(), creation);
     message.setText(creation.text());
     message.setUpdatedDate(OffsetDateTime.now());
@@ -114,6 +119,7 @@ public class MessageService {
   @Transactional
   public Message delete(UUID id) {
     var message = getMessage(id);
+    messageAuthorization.asserRisk(message, MessageRiskType.MESSAGE_DELETE);
     entityManager.remove(message);
     return message;
   }
