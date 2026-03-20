@@ -31,11 +31,12 @@ import io.restassured.RestAssured;
 class TestUserController {
 
   @Test
-  @TestSecurity(user = "test-user", roles = { "USER" })
   void testGetUser() {
     var signedUser = RestTestUtils.signup("nyphew", "psw");
+    var token = RestTestUtils.login("nyphew", "psw");
     var retrievedUser = RestAssured.given()
                                    .contentType(MediaType.APPLICATION_JSON)
+                                   .header("Authorization", "Bearer " + token)
                                    .when().pathParam("id", signedUser.id()).get("/user/{id}")
                                    .then().statusCode(200)
                                    .extract().body().as(UserRepresentation.class);
@@ -141,7 +142,7 @@ class TestUserController {
   }
 
   @Test
-  @TestSecurity(user = "test-user", roles = { "USER" })
+  @TestSecurity(user = "b2b4f3e1-c15c-4e67-8657-77ee38b0b268", roles = { "USER" })
   void testGetUserNotFound() {
     RestAssured.given()
                .contentType(MediaType.APPLICATION_JSON)

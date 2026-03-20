@@ -40,8 +40,8 @@ public class SanctionService {
   }
 
   @Transactional
-  public boolean isSanctioned(UUID serverId, SanctionType sanctionType) {
-    return sanctionRepository.getSanctions(userHolder.getId(), serverId)
+  public boolean isSanctioned(UUID userId, UUID serverId, SanctionType sanctionType) {
+    return sanctionRepository.getSanctions(userId, serverId)
                              .filter(Sanction::isActive)
                              .map(Sanction::getType)
                              .anyMatch(List.of(BAN, sanctionType)::contains);

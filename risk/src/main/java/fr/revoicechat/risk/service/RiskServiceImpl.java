@@ -43,7 +43,7 @@ public class RiskServiceImpl implements RiskService {
 
   @Override
   public boolean hasRisk(final UUID userId, final RiskEntity entity, final RiskType riskType, final SanctionType sanctionType) {
-    if (sanctionService.isSanctioned(entity.serverId(), sanctionType)) {
+    if (sanctionService.isSanctioned(userId, entity.serverId(), sanctionType)) {
       return false;
     }
     return affectedRiskService.get(userId, entity, riskType)
