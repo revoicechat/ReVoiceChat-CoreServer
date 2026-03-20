@@ -2,6 +2,7 @@ package fr.revoicechat.risk.service;
 
 import java.util.UUID;
 
+import fr.revoicechat.moderation.service.SanctionService;
 import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.technicaldata.AffectedRisk;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
