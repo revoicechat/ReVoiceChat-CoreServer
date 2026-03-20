@@ -17,7 +17,6 @@ public class SanctionRepositoryImpl implements SanctionRepository {
 
   @PersistenceContext EntityManager entityManager;
 
-
   @Override
   public Stream<Sanction> getSanctions(final UUID userId) {
     return entityManager.createQuery("""
@@ -41,5 +40,10 @@ public class SanctionRepositoryImpl implements SanctionRepository {
                         .setParameter(USER_ID, userId)
                         .setParameter(SERVER_ID, serverId)
                         .getResultStream();
+  }
+
+  @Override
+  public Stream<Sanction> findAll() {
+    return entityManager.createQuery("select s from Sanction s", Sanction.class).getResultStream();
   }
 }

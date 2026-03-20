@@ -25,13 +25,13 @@ public class SanctionService {
   }
 
   @Transactional
-  public List<Sanction> getSanctions() {
-    return activeSanctions(sanctionRepository.getSanctions(userHolder.getId()));
+  public List<Sanction> getSanctions(UUID userId) {
+    return activeSanctions(sanctionRepository.getSanctions(userId));
   }
 
   @Transactional
-  public List<Sanction> getSanctions(UUID serverId) {
-    return activeSanctions(sanctionRepository.getSanctions(userHolder.getId(), serverId));
+  public List<Sanction> getSanctions(UUID userId, UUID serverId) {
+    return activeSanctions(sanctionRepository.getSanctions(userId, serverId));
   }
 
   @Transactional

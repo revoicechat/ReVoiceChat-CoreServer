@@ -10,4 +10,6 @@ public interface SanctionRepository {
   Stream<Sanction> getSanctions(final UUID userId);
 
   Stream<Sanction> getSanctions(final UUID userId, UUID serverId);
+
+  Stream<Sanction> findAll();
 }
