@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import fr.revoicechat.moderation.model.SanctionType;
 import fr.revoicechat.risk.RisksMembershipData;
 import fr.revoicechat.risk.retriever.ServerIdRetriever;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
@@ -53,6 +54,16 @@ class TestRisksMembershipInterceptor {
 
     @Override
     public boolean hasRisk(final UUID userId, final RiskEntity entity, final RiskType riskType) {
+      return hasRisk;
+    }
+
+    @Override
+    public boolean hasRisk(final UUID userId, final RiskEntity entity, final RiskType riskType, final SanctionType sanctionType) {
+      return hasRisk;
+    }
+
+    @Override
+    public boolean hasRisk(final RiskEntity entity, final RiskType riskType, final SanctionType sanctionType) {
       return hasRisk;
     }
 

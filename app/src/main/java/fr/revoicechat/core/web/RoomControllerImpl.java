@@ -1,8 +1,10 @@
 package fr.revoicechat.core.web;
 
+import static fr.revoicechat.moderation.model.SanctionType.TEXT_TIME_OUT;
 import static fr.revoicechat.security.utils.RevoiceChatRoles.ROLE_USER;
 
 import java.util.UUID;
+import jakarta.annotation.security.RolesAllowed;
 
 import fr.revoicechat.core.notification.service.message.MessageNotifier;
 import fr.revoicechat.core.notification.service.room.RoomNotifier;
@@ -21,7 +23,6 @@ import fr.revoicechat.core.technicaldata.room.RoomPresence;
 import fr.revoicechat.core.web.api.RoomController;
 import fr.revoicechat.risk.RisksMembershipData;
 import fr.revoicechat.web.mapper.Mapper;
-import jakarta.annotation.security.RolesAllowed;
 
 @RolesAllowed(ROLE_USER)
 public class RoomControllerImpl implements RoomController {
@@ -79,7 +80,7 @@ public class RoomControllerImpl implements RoomController {
   }
 
   @Override
-  @RisksMembershipData(risks = "SERVER_ROOM_SEND_MESSAGE", retriever = EntityByRoomIdRetriever.class)
+  @RisksMembershipData(risks = "SERVER_ROOM_SEND_MESSAGE", retriever = EntityByRoomIdRetriever.class, sanctionType = TEXT_TIME_OUT)
   public MessageRepresentation sendMessage(UUID roomId, NewMessage newMessage) {
     var message = messageService.create(roomId, newMessage);
     messageNotifier.add(message);

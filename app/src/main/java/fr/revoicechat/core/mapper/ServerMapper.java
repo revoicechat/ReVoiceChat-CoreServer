@@ -1,5 +1,7 @@
 package fr.revoicechat.core.mapper;
 
+import static fr.revoicechat.core.risk.ServerRiskType.SERVER_UPDATE;
+
 import java.util.Optional;
 
 import fr.revoicechat.core.model.Server;
@@ -30,7 +32,7 @@ public class ServerMapper implements RepresentationMapper<Server, ServerRepresen
         server.getName(),
         Optional.ofNullable(server.getOwner()).map(User::getId).orElse(null),
         roomReadStatusService.getUnreadMessagesStatus(server),
-        riskService.hasRisk(new RiskEntity(server.getId(), null), ServerRiskType.SERVER_UPDATE)
+        riskService.hasRisk(new RiskEntity(server.getId(), null), SERVER_UPDATE)
     );
   }
 

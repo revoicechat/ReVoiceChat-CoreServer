@@ -6,6 +6,7 @@ import java.util.UUID;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import fr.revoicechat.live.risk.LiveDiscussionRisks;
+import fr.revoicechat.moderation.model.SanctionType;
 import fr.revoicechat.risk.service.RiskService;
 import fr.revoicechat.risk.type.RiskType;
 
@@ -31,9 +32,9 @@ public class DiscussionRiskService {
   private LiveDiscussionRisks get(UUID roomId, UUID userId, RiskType send, RiskType receive) {
     var riskEntity = roomRisksEntityRetriever.get(roomId);
     return new LiveDiscussionRisks(
-        riskService.hasRisk(userId, riskEntity, JOIN_VOICE_ROOM),
-        riskService.hasRisk(userId, riskEntity, send),
-        riskService.hasRisk(userId, riskEntity, receive)
+        riskService.hasRisk(userId, riskEntity, JOIN_VOICE_ROOM, SanctionType.VOICE_TIME_OUT),
+        riskService.hasRisk(userId, riskEntity, send,            SanctionType.VOICE_TIME_OUT),
+        riskService.hasRisk(userId, riskEntity, receive,         SanctionType.VOICE_TIME_OUT)
     );
   }
 }
