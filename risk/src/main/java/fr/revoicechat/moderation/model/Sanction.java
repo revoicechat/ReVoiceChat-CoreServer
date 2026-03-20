@@ -21,7 +21,9 @@ public class Sanction {
   @Enumerated(EnumType.STRING)
   private SanctionType type;
 
+  @Column(name = "START_AT")
   private LocalDateTime startAt;
+  @Column(name = "EXPIRES_AT")
   private LocalDateTime expiresAt;
 
   @Column(name = "ISSUED_BY", nullable = false, updatable = false)
