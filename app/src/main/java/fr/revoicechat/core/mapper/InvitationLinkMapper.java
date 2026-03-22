@@ -6,8 +6,10 @@ import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.Server;
 import fr.revoicechat.core.representation.InvitationRepresentation;
 import fr.revoicechat.web.mapper.RepresentationMapper;
+import io.quarkus.arc.Unremovable;
 import jakarta.enterprise.context.ApplicationScoped;
 
+@Unremovable
 @ApplicationScoped
 public class InvitationLinkMapper implements RepresentationMapper<InvitationLink, InvitationRepresentation> {
 

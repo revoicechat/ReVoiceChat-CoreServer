@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import fr.revoicechat.core.model.Emote;
 import fr.revoicechat.core.representation.EmoteRepresentation;
 import fr.revoicechat.web.mapper.RepresentationMapper;
+import io.quarkus.arc.Unremovable;
 import jakarta.enterprise.context.ApplicationScoped;
 
+@Unremovable
 @ApplicationScoped
 public class EmoteMapper implements RepresentationMapper<Emote, EmoteRepresentation> {
 

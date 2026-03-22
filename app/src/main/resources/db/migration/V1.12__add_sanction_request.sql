@@ -7,5 +7,5 @@ create table RVC_SANCTION_REVOCATION_REQUEST
     STATUS      varchar(255) not null,
     REQUEST_AT  timestamp(6),
     primary key (id),
-    constraint FK_RVC_SANCTION_TARGETED_USER foreign key (SANCTION_ID) references RVC_SANCTION DEFERRABLE
+    constraint FK_RVC_SANCTION_REVOCATION_REQUEST_SANCTION foreign key (SANCTION_ID) references RVC_SANCTION DEFERRABLE
 );

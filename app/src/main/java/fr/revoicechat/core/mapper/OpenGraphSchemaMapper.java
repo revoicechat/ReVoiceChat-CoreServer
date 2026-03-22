@@ -4,8 +4,10 @@ import fr.revoicechat.core.representation.OpenGraphSchemaHolder;
 import fr.revoicechat.opengraph.OpenGraphExtractor;
 import fr.revoicechat.opengraph.OpenGraphSchema;
 import fr.revoicechat.web.mapper.RepresentationMapper;
+import io.quarkus.arc.Unremovable;
 import jakarta.enterprise.context.ApplicationScoped;
 
+@Unremovable
 @ApplicationScoped
 public class OpenGraphSchemaMapper implements RepresentationMapper<OpenGraphSchemaHolder, OpenGraphSchema> {
 

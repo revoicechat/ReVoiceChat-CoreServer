@@ -19,8 +19,10 @@ import fr.revoicechat.notification.data.UserNotificationRepresentation;
 import fr.revoicechat.opengraph.OpenGraphExtractor;
 import fr.revoicechat.web.mapper.Mapper;
 import fr.revoicechat.web.mapper.RepresentationMapper;
+import io.quarkus.arc.Unremovable;
 import jakarta.enterprise.context.ApplicationScoped;
 
+@Unremovable
 @ApplicationScoped
 public class MessageMapper implements RepresentationMapper<Message, MessageRepresentation> {
 

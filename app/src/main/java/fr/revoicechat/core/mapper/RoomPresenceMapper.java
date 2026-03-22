@@ -13,9 +13,11 @@ import fr.revoicechat.live.stream.service.StreamRetriever;
 import fr.revoicechat.live.voice.service.ConnectedUserRetriever;
 import fr.revoicechat.web.mapper.Mapper;
 import fr.revoicechat.web.mapper.RepresentationMapper;
+import io.quarkus.arc.Unremovable;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
+@Unremovable
 @Transactional
 @ApplicationScoped
 public class RoomPresenceMapper implements RepresentationMapper<RoomPresence, RoomPresenceRepresentation> {
