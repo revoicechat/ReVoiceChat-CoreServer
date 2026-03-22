@@ -3,7 +3,6 @@ package fr.revoicechat.moderation.web;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import jakarta.annotation.security.RolesAllowed;
 
 import fr.revoicechat.moderation.model.Sanction;
 import fr.revoicechat.moderation.representation.NewSanction;
@@ -11,21 +10,27 @@ import fr.revoicechat.moderation.representation.SanctionFilterParams;
 import fr.revoicechat.moderation.representation.SanctionRepresentation;
 import fr.revoicechat.moderation.service.SanctionCreator;
 import fr.revoicechat.moderation.service.SanctionEntityService;
+import fr.revoicechat.moderation.service.SanctionRevoker;
 import fr.revoicechat.moderation.web.api.ServerSanctionController;
 import fr.revoicechat.risk.RisksMembershipData;
 import fr.revoicechat.risk.retriever.ServerIdRetriever;
 import fr.revoicechat.security.utils.RevoiceChatRoles;
 import fr.revoicechat.web.error.ResourceNotFoundException;
 import fr.revoicechat.web.mapper.Mapper;
+import jakarta.annotation.security.RolesAllowed;
 
 @RolesAllowed(RevoiceChatRoles.ROLE_USER)
 public class ServerSanctionControllerImpl implements ServerSanctionController {
   private final SanctionEntityService sanctionEntityService;
   private final SanctionCreator sanctionCreator;
+  private final SanctionRevoker sanctionRevoker;
 
-  public ServerSanctionControllerImpl(SanctionEntityService sanctionEntityService, SanctionCreator sanctionCreator) {
+  public ServerSanctionControllerImpl(SanctionEntityService sanctionEntityService,
+                                      SanctionCreator sanctionCreator,
+                                      SanctionRevoker sanctionRevoker) {
     this.sanctionEntityService = sanctionEntityService;
     this.sanctionCreator = sanctionCreator;
+    this.sanctionRevoker = sanctionRevoker;
   }
 
   @Override
@@ -51,6 +56,13 @@ public class ServerSanctionControllerImpl implements ServerSanctionController {
   @Override
   @RisksMembershipData(risks = "REVOKE_SANCTION", retriever = ServerIdRetriever.class)
   public void revokeServerLevelSanction(final UUID serverId, final UUID id) {
-    sanctionCreator.revoke(serverId, id);
+    sanctionRevoker.revoke(serverId, id);
+  }
+
+
+  @Override
+  @RisksMembershipData(risks = "REVOKE_SANCTION", retriever = ServerIdRetriever.class)
+  public void rejectRevokeSanctionRequest(final UUID serverId, final UUID sanctionId) {
+    sanctionRevoker.rejectRequest(serverId, sanctionId);
   }
 }
