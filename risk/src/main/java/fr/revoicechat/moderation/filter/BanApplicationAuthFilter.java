@@ -13,18 +13,15 @@ import jakarta.ws.rs.ext.Provider;
 
 @Provider
 @Priority(Priorities.AUTHORIZATION + 1)
+@SuppressWarnings("java:S6813") // inject annotation must be used in request filter
 public class BanApplicationAuthFilter implements ContainerRequestFilter {
 
-  @SuppressWarnings("java:S6813") // inject annotation must be used in request filter
-  @Inject
-  SecurityIdentity identity;
-  @SuppressWarnings("java:S6813") // inject annotation must be used in request filter
-  @Inject
-  SanctionService sanctionService;
+  @Inject SecurityIdentity identity;
+  @Inject SanctionService sanctionService;
 
   @Override
   public void filter(ContainerRequestContext requestContext) {
-    if (identity.isAnonymous()) {
+    if (identity.isAnonymous() || requestContext.getUriInfo().getPath().startsWith("/sanction")) {
       return;
     }
     if (sanctionService.isAppBanned()) {

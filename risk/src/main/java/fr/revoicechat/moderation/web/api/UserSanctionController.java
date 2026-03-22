@@ -2,11 +2,11 @@ package fr.revoicechat.moderation.web.api;
 
 import java.util.List;
 import java.util.UUID;
+
+import fr.revoicechat.moderation.representation.SanctionRepresentation;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-
-import fr.revoicechat.moderation.representation.SanctionRepresentation;
 
 @Path("user/{userId}/sanctions")
 public interface UserSanctionController {
