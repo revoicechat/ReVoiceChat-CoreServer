@@ -8,8 +8,10 @@ import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.representation.ServerRoomRepresentation;
 import fr.revoicechat.core.service.room.RoomReadStatusService;
 import fr.revoicechat.web.mapper.RepresentationMapper;
+import io.quarkus.arc.Unremovable;
 import jakarta.enterprise.context.ApplicationScoped;
 
+@Unremovable
 @ApplicationScoped
 public class ServerRoomMapper implements RepresentationMapper<ServerRoom, ServerRoomRepresentation> {
 

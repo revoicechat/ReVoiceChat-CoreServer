@@ -5,8 +5,10 @@ import fr.revoicechat.core.representation.PrivateMessageRoomRepresentation;
 import fr.revoicechat.core.service.room.RoomReadStatusService;
 import fr.revoicechat.web.mapper.Mapper;
 import fr.revoicechat.web.mapper.RepresentationMapper;
+import io.quarkus.arc.Unremovable;
 import jakarta.enterprise.context.ApplicationScoped;
 
+@Unremovable
 @ApplicationScoped
 public class PrivateMessageRoomMapper implements RepresentationMapper<PrivateMessageRoom, PrivateMessageRoomRepresentation> {
 
