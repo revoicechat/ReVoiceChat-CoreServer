@@ -10,7 +10,7 @@ import java.util.UUID;
 import fr.revoicechat.moderation.model.RequestStatus;
 import fr.revoicechat.moderation.model.SanctionRevocationRequest;
 import fr.revoicechat.moderation.model.Sanction;
-import fr.revoicechat.moderation.repository.RevokeSanctionRequestRepository;
+import fr.revoicechat.moderation.repository.SanctionRevocationRequestRepository;
 import fr.revoicechat.moderation.representation.SanctionNotification;
 import fr.revoicechat.notification.Notification;
 import fr.revoicechat.notification.model.NotificationRegistrable.OnlineNotificationRegistrable;
@@ -27,12 +27,12 @@ public class SanctionRevoker {
   private final UserHolder userHolder;
   private final EntityManager entityManager;
   private final SanctionEntityService sanctionEntityService;
-  private final RevokeSanctionRequestRepository repository;
+  private final SanctionRevocationRequestRepository repository;
 
   public SanctionRevoker(UserHolder userHolder,
                          EntityManager entityManager,
                          SanctionEntityService sanctionEntityService,
-                         RevokeSanctionRequestRepository repository) {
+                         SanctionRevocationRequestRepository repository) {
     this.userHolder = userHolder;
     this.entityManager = entityManager;
     this.sanctionEntityService = sanctionEntityService;

@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import fr.revoicechat.moderation.model.RequestStatus;
 
-public record SanctionSanctionRevocationRequestRepresentation(
+public record SanctionRevocationRequestRepresentation(
     UUID id,
     UUID sanctionId,
     String message,

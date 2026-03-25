@@ -10,7 +10,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import fr.revoicechat.moderation.representation.NewSanction;
 import fr.revoicechat.moderation.representation.SanctionFilterParams;
 import fr.revoicechat.moderation.representation.SanctionRepresentation;
-import fr.revoicechat.moderation.representation.SanctionSanctionRevocationRequestRepresentation;
+import fr.revoicechat.moderation.representation.SanctionRevocationRequestRepresentation;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -49,11 +49,15 @@ public interface AppSanctionController {
   @APIResponse(responseCode = "204", description = "Sanction successfully asked")
   @PATCH
   @Path("{id}")
-  SanctionSanctionRevocationRequestRepresentation askToRevokeSanction(@PathParam("id") UUID sanctionId, String pledgeMessage);
+  SanctionRevocationRequestRepresentation askToRevokeSanction(@PathParam("id") UUID sanctionId, String pledgeMessage);
 
   @Operation(summary = "Reject an active app-level sanction")
   @APIResponse(responseCode = "204", description = "Sanction successfully reject")
   @PATCH
   @Path("{id}")
   void rejectRevokeSanctionRequest(@PathParam("id") UUID sanctionId);
+
+  @GET
+  @Path("revocation-requests")
+  List<SanctionRevocationRequestRepresentation> fetchActiveRevocationRequest();
 }

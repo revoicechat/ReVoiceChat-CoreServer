@@ -22,6 +22,7 @@ import fr.revoicechat.core.technicaldata.user.AdminUpdatableUserData;
 import fr.revoicechat.core.technicaldata.user.NewUserSignup;
 import fr.revoicechat.core.technicaldata.user.UpdatableUserData;
 import fr.revoicechat.core.technicaldata.user.UpdatableUserData.PasswordUpdated;
+import fr.revoicechat.risk.service.user.AuthenticatedUserEntityFinder;
 import fr.revoicechat.security.UserHolder;
 import fr.revoicechat.security.utils.PasswordUtils;
 import fr.revoicechat.web.error.BadRequestException;
@@ -31,7 +32,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
-public class UserService {
+public class UserService implements AuthenticatedUserEntityFinder {
 
   private final EntityManager entityManager;
   private final UserRepository userRepository;
@@ -119,6 +120,8 @@ public class UserService {
     return user;
   }
 
+  @Override
+  @SuppressWarnings("unchecked")
   public User getUser(final UUID id) {
     return Optional.ofNullable(getUserOrNull(id)).orElseThrow(() -> new NotFoundException("User not found"));
   }

@@ -1,17 +1,21 @@
 package fr.revoicechat.moderation.mapper;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
+
 import fr.revoicechat.moderation.model.SanctionRevocationRequest;
-import fr.revoicechat.moderation.representation.SanctionSanctionRevocationRequestRepresentation;
+import fr.revoicechat.moderation.representation.SanctionRevocationRequestRepresentation;
 import fr.revoicechat.web.mapper.RepresentationMapper;
 import io.quarkus.arc.Unremovable;
-import jakarta.enterprise.context.ApplicationScoped;
 
 @Unremovable
 @ApplicationScoped
-public class SanctionRevocationRequestMapper implements RepresentationMapper<SanctionRevocationRequest, SanctionSanctionRevocationRequestRepresentation> {
+public class SanctionRevocationRequestMapper implements RepresentationMapper<SanctionRevocationRequest, SanctionRevocationRequestRepresentation> {
+
   @Override
-  public SanctionSanctionRevocationRequestRepresentation map(final SanctionRevocationRequest request) {
-    return new SanctionSanctionRevocationRequestRepresentation(
+  @Transactional
+  public SanctionRevocationRequestRepresentation map(final SanctionRevocationRequest request) {
+    return new SanctionRevocationRequestRepresentation(
         request.getId(),
         request.getSanction().getId(),
         request.getMessage(),

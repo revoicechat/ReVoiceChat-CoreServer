@@ -6,8 +6,8 @@ import java.util.stream.Stream;
 import fr.revoicechat.moderation.model.SanctionRevocationRequest;
 import fr.revoicechat.moderation.model.Sanction;
 
-public interface RevokeSanctionRequestRepository {
+public interface SanctionRevocationRequestRepository {
   Stream<SanctionRevocationRequest> getBySanction(Sanction sanction);
   Stream<SanctionRevocationRequest> getByUser(UUID userId);
-
+  Stream<SanctionRevocationRequest> getByServer(UUID serverId);
 }
