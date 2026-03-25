@@ -1,29 +1,46 @@
 package fr.revoicechat.moderation.mapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
 import fr.revoicechat.moderation.model.Sanction;
 import fr.revoicechat.moderation.representation.SanctionRepresentation;
+import fr.revoicechat.moderation.representation.UserRepresentation;
+import fr.revoicechat.risk.service.user.AuthenticatedUserEntityFinder;
+import fr.revoicechat.security.model.AuthenticatedUser;
 import fr.revoicechat.web.mapper.RepresentationMapper;
 import io.quarkus.arc.Unremovable;
+import io.quarkus.security.User;
 
 @Unremovable
 @ApplicationScoped
 public class SanctionMapper implements RepresentationMapper<Sanction, SanctionRepresentation> {
+
+  private final AuthenticatedUserEntityFinder userEntityFinder;
+
+  public SanctionMapper(final AuthenticatedUserEntityFinder userEntityFinder) {
+    this.userEntityFinder = userEntityFinder;
+  }
+
   @Override
+  @Transactional
   public SanctionRepresentation map(final Sanction sanction) {
     return new SanctionRepresentation(
         sanction.getId(),
-        sanction.getTargetedUser(),
+        mapUser(userEntityFinder.getUser(sanction.getTargetedUser())),
         sanction.getServer(),
         sanction.getType(),
         sanction.getStartAt(),
         sanction.getExpiresAt(),
-        sanction.getIssuedBy(),
+        mapUser(userEntityFinder.getUser(sanction.getIssuedBy())),
         sanction.getReason(),
-        sanction.getRevokedBy(),
+        mapUser(userEntityFinder.getUser(sanction.getRevokedBy())),
         sanction.getRevokedAt(),
         sanction.isActive()
     );
+  }
+
+  private UserRepresentation mapUser(final AuthenticatedUser user) {
+    return new UserRepresentation(user.getId(), user.getDisplayName());
   }
 }

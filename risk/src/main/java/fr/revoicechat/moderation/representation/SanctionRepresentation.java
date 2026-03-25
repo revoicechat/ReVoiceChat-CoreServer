@@ -6,13 +6,13 @@ import java.util.UUID;
 import fr.revoicechat.moderation.model.SanctionType;
 
 public record SanctionRepresentation(UUID id,
-                                     UUID targetedUser,
+                                     UserRepresentation targetedUser,
                                      UUID server,
                                      SanctionType type,
                                      LocalDateTime startAt,
                                      LocalDateTime expiresAt,
-                                     UUID issuedBy,
+                                     UserRepresentation issuedBy,
                                      String reason,
-                                     UUID revokedBy,
+                                     UserRepresentation revokedBy,
                                      LocalDateTime revokedAt,
                                      boolean active) {}

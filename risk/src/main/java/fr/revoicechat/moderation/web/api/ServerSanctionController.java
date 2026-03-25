@@ -10,6 +10,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import fr.revoicechat.moderation.representation.NewSanction;
 import fr.revoicechat.moderation.representation.SanctionFilterParams;
 import fr.revoicechat.moderation.representation.SanctionRepresentation;
+import fr.revoicechat.moderation.representation.SanctionRevocationRequestRepresentation;
+
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -53,4 +55,8 @@ public interface ServerSanctionController {
   @PATCH
   @Path("{id}")
   void rejectRevokeSanctionRequest(@PathParam("serverId") UUID serverId, @PathParam("id") UUID id);
+
+  @GET
+  @Path("revocation-requests")
+  List<SanctionRevocationRequestRepresentation> fetchActiveRevocationRequest(@PathParam("serverId") UUID serverId);
 }
