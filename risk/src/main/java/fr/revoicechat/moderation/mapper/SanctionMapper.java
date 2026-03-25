@@ -1,5 +1,7 @@
 package fr.revoicechat.moderation.mapper;
 
+import java.util.Optional;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -34,7 +36,9 @@ public class SanctionMapper implements RepresentationMapper<Sanction, SanctionRe
         sanction.getExpiresAt(),
         mapUser(userEntityFinder.getUser(sanction.getIssuedBy())),
         sanction.getReason(),
-        mapUser(userEntityFinder.getUser(sanction.getRevokedBy())),
+        Optional.ofNullable(sanction.getRevokedBy())
+                .<AuthenticatedUser>map(userEntityFinder::getUser)
+                .map(this::mapUser).orElse(null),
         sanction.getRevokedAt(),
         sanction.isActive()
     );
