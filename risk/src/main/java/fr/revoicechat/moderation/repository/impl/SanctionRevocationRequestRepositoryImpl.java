@@ -51,7 +51,7 @@ public class SanctionRevocationRequestRepositoryImpl implements SanctionRevocati
                                            and rsr.status = :status
                                          """, SanctionRevocationRequest.class)
                         .setParameter(SERVER_ID, serverId)
-                        .setParameter("status", RequestStatus.CREATED)
+                        .setParameter("status", RequestStatus.CREATED.name())
                         .getResultStream();
   }
 }
