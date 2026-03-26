@@ -1,5 +1,7 @@
 package fr.revoicechat.moderation.mapper;
 
+import java.util.Optional;
+import java.util.UUID;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -10,7 +12,6 @@ import fr.revoicechat.risk.service.user.AuthenticatedUserEntityFinder;
 import fr.revoicechat.security.model.AuthenticatedUser;
 import fr.revoicechat.web.mapper.RepresentationMapper;
 import io.quarkus.arc.Unremovable;
-import io.quarkus.security.User;
 
 @Unremovable
 @ApplicationScoped
@@ -27,17 +28,24 @@ public class SanctionMapper implements RepresentationMapper<Sanction, SanctionRe
   public SanctionRepresentation map(final Sanction sanction) {
     return new SanctionRepresentation(
         sanction.getId(),
-        mapUser(userEntityFinder.getUser(sanction.getTargetedUser())),
+        mapUser(sanction.getTargetedUser()),
         sanction.getServer(),
         sanction.getType(),
         sanction.getStartAt(),
         sanction.getExpiresAt(),
-        mapUser(userEntityFinder.getUser(sanction.getIssuedBy())),
+        mapUser(sanction.getIssuedBy()),
         sanction.getReason(),
-        mapUser(userEntityFinder.getUser(sanction.getRevokedBy())),
+        mapUser(sanction.getRevokedBy()),
         sanction.getRevokedAt(),
         sanction.isActive()
     );
+  }
+
+  private UserRepresentation mapUser(final UUID userId) {
+    return Optional.ofNullable(userId)
+                   .<AuthenticatedUser>map(userEntityFinder::getUser)
+                   .map(this::mapUser)
+                   .orElse(null);
   }
 
   private UserRepresentation mapUser(final AuthenticatedUser user) {
