@@ -24,7 +24,7 @@ import jakarta.ws.rs.sse.SseEventSink;
 
 @PermitAll
 @Path("/sse")
-@Tag(name = "Notification", description = "Endpoints for real-time notification using Server-Sent Events (SSE)")
+@Tag(name = "Notification", description = "Manage real-time notification using Server-Sent Events (SSE)")
 public class NotificationController implements LoggedApi {
   private static final Logger LOG = LoggerFactory.getLogger(NotificationController.class);
 

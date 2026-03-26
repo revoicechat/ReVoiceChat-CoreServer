@@ -1,20 +1,19 @@
 package fr.revoicechat.core.model;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
 import fr.revoicechat.notification.model.ActiveStatus;
+import fr.revoicechat.notification.model.NotificationRegistrable;
+import fr.revoicechat.security.model.AuthenticatedUser;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import fr.revoicechat.security.model.AuthenticatedUser;
-import fr.revoicechat.notification.model.NotificationRegistrable;
 
 @Entity
 @Table(name = "RVC_USER")
@@ -32,7 +31,7 @@ public class User implements NotificationRegistrable, AuthenticatedUser {
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private ActiveStatus status = ActiveStatus.ONLINE;
-  private LocalDateTime createdDate;
+  private OffsetDateTime createdDate;
   @Enumerated(EnumType.STRING)
   private UserType type = UserType.USER;
   /**
@@ -89,11 +88,11 @@ public class User implements NotificationRegistrable, AuthenticatedUser {
     this.password = password;
   }
 
-  public LocalDateTime getCreatedDate() {
+  public OffsetDateTime getCreatedDate() {
     return createdDate;
   }
 
-  public void setCreatedDate(final LocalDateTime createdDate) {
+  public void setCreatedDate(final OffsetDateTime createdDate) {
     this.createdDate = createdDate;
   }
 

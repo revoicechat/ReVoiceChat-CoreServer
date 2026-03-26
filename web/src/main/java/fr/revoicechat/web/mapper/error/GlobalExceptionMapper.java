@@ -46,10 +46,10 @@ public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {
     return switch (exception) {
       case BadRequestException ex -> toResponse(Status.BAD_REQUEST, ex.getMessage());
       case ResourceNotFoundException ex -> toResponse(Status.NOT_FOUND, ex.getMessage());
-      case UnauthorizedException ignore -> toResponse(Status.UNAUTHORIZED, HttpStatusErrorCode.UNAUTHORIZED_TITLE, HttpStatusErrorCode.UNAUTHORIZED_MESSAGE);
-      case ForbiddenException ignore -> toResponse(Status.FORBIDDEN, HttpStatusErrorCode.FORBIDDEN_TITLE, HttpStatusErrorCode.FORBIDDEN_MESSAGE);
-      case NotFoundException ignore -> toResponse(Status.NOT_FOUND, HttpStatusErrorCode.NOT_FOUND_TITLE, HttpStatusErrorCode.NOT_FOUND_MESSAGE);
-      case NotAllowedException ignore -> toResponse(Status.METHOD_NOT_ALLOWED, HttpStatusErrorCode.METHOD_NOT_ALLOWED_TITLE, HttpStatusErrorCode.METHOD_NOT_ALLOWED_MESSAGE);
+      case UnauthorizedException _ -> toResponse(Status.UNAUTHORIZED, HttpStatusErrorCode.UNAUTHORIZED_TITLE, HttpStatusErrorCode.UNAUTHORIZED_MESSAGE);
+      case ForbiddenException _ -> toResponse(Status.FORBIDDEN, HttpStatusErrorCode.FORBIDDEN_TITLE, HttpStatusErrorCode.FORBIDDEN_MESSAGE);
+      case NotFoundException _ -> toResponse(Status.NOT_FOUND, HttpStatusErrorCode.NOT_FOUND_TITLE, HttpStatusErrorCode.NOT_FOUND_MESSAGE);
+      case NotAllowedException _ -> toResponse(Status.METHOD_NOT_ALLOWED, HttpStatusErrorCode.METHOD_NOT_ALLOWED_TITLE, HttpStatusErrorCode.METHOD_NOT_ALLOWED_MESSAGE);
       default -> {
         String fileName = errorFileGenerator.generate(exception);
         var type = determineResponseType(headers);

@@ -2,10 +2,10 @@ package fr.revoicechat.core.service.message;
 
 import java.util.UUID;
 
+import fr.revoicechat.core.model.Message;
 import fr.revoicechat.core.repository.impl.MessageRepositoryImpl;
 import fr.revoicechat.core.repository.page.PageResult;
-import fr.revoicechat.core.representation.message.MessageRepresentation;
-import fr.revoicechat.core.service.MessageService;
+import fr.revoicechat.core.technicaldata.message.MessageFilterParams;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -13,11 +13,9 @@ import jakarta.transaction.Transactional;
 public class MessagePageResult {
 
   private final MessageRepositoryImpl messageRepositoryImpl;
-  private final MessageService messageService;
 
-  public MessagePageResult(final MessageRepositoryImpl messageRepositoryImpl, final MessageService messageService) {
+  public MessagePageResult(final MessageRepositoryImpl messageRepositoryImpl) {
     this.messageRepositoryImpl = messageRepositoryImpl;
-    this.messageService = messageService;
   }
 
   /**
@@ -27,12 +25,8 @@ public class MessagePageResult {
    * @return list of messages in the room, possibly empty if no messages exist
    */
   @Transactional
-  public PageResult<MessageRepresentation> getMessagesByRoom(UUID roomId, int page, int size) {
-    var pageResult = messageRepositoryImpl.findByRoomId(roomId, page, size);
-    return new PageResult<>(pageResult.content()
-                                      .stream()
-                                      .map(messageService::toRepresentation)
-                                      .toList(),
-        pageResult.pageNumber(), pageResult.pageSize(), pageResult.totalElements());
+  public PageResult<Message> getMessagesByRoom(UUID roomId, MessageFilterParams params) {
+    params.setRoomId(roomId);
+    return messageRepositoryImpl.search(params);
   }
 }

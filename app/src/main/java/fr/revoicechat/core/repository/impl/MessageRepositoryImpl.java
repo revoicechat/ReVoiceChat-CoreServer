@@ -1,53 +1,56 @@
 package fr.revoicechat.core.repository.impl;
 
-import java.util.List;
 import java.util.UUID;
-
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import java.util.stream.Stream;
 
 import fr.revoicechat.core.model.Message;
+import fr.revoicechat.core.model.room.ServerRoom;
 import fr.revoicechat.core.repository.MessageRepository;
+import fr.revoicechat.core.repository.impl.message.MessageSearcher;
 import fr.revoicechat.core.repository.page.PageResult;
+import fr.revoicechat.core.technicaldata.message.MessageFilterParams;
+import fr.revoicechat.security.UserHolder;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
 
 @ApplicationScoped
 public class MessageRepositoryImpl implements MessageRepository {
 
-  @PersistenceContext
-  private EntityManager em;
+  private final EntityManager entityManager;
+  private final UserHolder userHolder;
+  private final MessageSearcher messageSearcher;
+
+  public MessageRepositoryImpl(EntityManager entityManager, UserHolder userHolder, MessageSearcher messageSearcher) {
+    this.entityManager = entityManager;
+    this.userHolder = userHolder;
+    this.messageSearcher = messageSearcher;
+  }
 
   @Override
-  public PageResult<Message> findByRoomId(UUID roomId, int page, int size) {
-    // Fetch content
-    List<Message> content = em.createQuery("""
-                                  SELECT m
-                                  FROM Message m
-                                  WHERE m.room.id = :roomId
-                                  ORDER BY m.createdDate DESC""", Message.class)
-                              .setParameter("roomId", roomId)
-                              .setFirstResult(page * size)   // offset
-                              .setMaxResults(size)           // limit
-                              .getResultList();
-    // Count total
-    Long total = em.createQuery(
-                       "SELECT COUNT(m) FROM Message m WHERE m.room.id = :roomId",
-                       Long.class)
-                   .setParameter("roomId", roomId)
-                   .getSingleResult();
+  public PageResult<Message> search(MessageFilterParams params) {
+    return messageSearcher.search(userHolder.getId(), params);
+  }
 
-    return new PageResult<>(content, page, size, total);
+  @Override
+  public Stream<Message> findByRoom(ServerRoom room) {
+    return entityManager.createQuery("""
+                 SELECT m
+                 FROM Message m
+                 WHERE m.room = :room
+                 ORDER BY m.createdDate DESC""", Message.class)
+                        .setParameter("room", room)
+                        .getResultStream();
   }
 
   @Override
   public Message findByMedia(final UUID mediaId) {
-    return em.createQuery("""
+    return entityManager.createQuery("""
                  select m
                  from Message m
                  join m.mediaDatas md
                  where md.id = :id""", Message.class)
-             .setParameter("id", mediaId)
-             .getSingleResult();
+                        .setParameter("id", mediaId)
+                        .getSingleResult();
   }
 
 }

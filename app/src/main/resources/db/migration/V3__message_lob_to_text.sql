@@ -1,1 +1,0 @@
-alter table RVC_MEDIA_DATA drop column URL;

@@ -2,16 +2,18 @@ package fr.revoicechat.core.model;
 
 import java.util.Objects;
 import java.util.UUID;
+
+import fr.revoicechat.core.model.server.ServerStructure;
+import fr.revoicechat.core.repository.jpa.ServerStructureConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import fr.revoicechat.core.model.server.ServerStructure;
-import fr.revoicechat.core.repository.jpa.ServerStructureConverter;
 
 @Entity
 @Table(name = "RVC_SERVER")
@@ -26,6 +28,9 @@ public class Server {
   @Convert(converter = ServerStructureConverter.class)
   @Column(columnDefinition = "TEXT")
   private ServerStructure structure;
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private ServerType type;
 
   public Server() {
     super();
@@ -61,6 +66,18 @@ public class Server {
 
   public void setStructure(final ServerStructure structure) {
     this.structure = structure;
+  }
+
+  public ServerType getType() {
+    return type;
+  }
+
+  public void setType(final ServerType type) {
+    this.type = type;
+  }
+
+  public boolean isPublic() {
+    return ServerType.PUBLIC.equals(type);
   }
 
   @Override

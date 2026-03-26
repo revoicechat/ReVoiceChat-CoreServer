@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import fr.revoicechat.notification.model.ActiveStatus;
 import fr.revoicechat.notification.model.NotificationData;
 import fr.revoicechat.notification.model.NotificationRegistrable;
-import fr.revoicechat.notification.representation.UserStatusUpdate;
+import fr.revoicechat.notification.data.UserStatusUpdate;
 import fr.revoicechat.notification.service.NotificationService.SseHolder;
 import fr.revoicechat.notification.stub.NotificationPayloadMock;
 import fr.revoicechat.notification.stub.SseEventSinkMock;

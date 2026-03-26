@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import fr.revoicechat.risk.model.RiskMode;
 import fr.revoicechat.risk.model.ServerRoles;
+import fr.revoicechat.risk.technicaldata.AffectedRisk;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
 import fr.revoicechat.risk.type.RiskType;
 
@@ -13,7 +14,9 @@ public interface ServerRolesRepository {
 
   List<ServerRoles> getServerRoles(final UUID userId);
 
-  List<AffectedRisk> getAffectedRisks(RiskEntity entity, RiskType riskType);
+  List<ServerRoles> getDefaultServerRoles(final UUID id);
+
+  Stream<AffectedRisk> getAffectedRisks(RiskEntity entity, RiskType riskType);
 
   Stream<ServerRoles> getByServer(UUID serverId);
 
@@ -21,5 +24,5 @@ public interface ServerRolesRepository {
 
   List<UUID> getMembers(UUID server);
 
-  record AffectedRisk(UUID role, RiskMode mode) {}
+  void deleteMembership(ServerRoles roles);
 }

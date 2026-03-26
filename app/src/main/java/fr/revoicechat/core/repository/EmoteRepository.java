@@ -7,4 +7,6 @@ import fr.revoicechat.core.model.Emote;
 
 public interface EmoteRepository {
   Stream<Emote> findByEntity(UUID entity);
+
+  Stream<Emote> findGlobal();
 }

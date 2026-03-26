@@ -2,8 +2,8 @@ package fr.revoicechat.core.service.room;
 
 import java.util.UUID;
 
-import fr.revoicechat.core.model.Room;
-import fr.revoicechat.voice.service.room.VoiceRoomPredicate;
+import fr.revoicechat.core.model.room.ServerRoom;
+import fr.revoicechat.live.voice.service.VoiceRoomPredicate;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 
@@ -15,7 +15,7 @@ public class VoiceRoomPredicateImpl implements VoiceRoomPredicate {
 
   @Override
   public boolean isVoiceRoom(final UUID roomId) {
-    var room = entityManager.find(Room.class, roomId);
+    var room = entityManager.find(ServerRoom.class, roomId);
     return room != null && room.isVoiceRoom();
   }
 }

@@ -26,7 +26,7 @@ public class TranslationUtils {
         ResourceBundle bundle = ResourceBundle.getBundle(fileName, locale, new FallbackToEnglishControl());
         String pattern = bundle.getString(name);
         return MessageFormat.format(pattern, args);
-      } catch (MissingResourceException e) {
+      } catch (MissingResourceException _) {
         // is the first accepted language is not present, we test the next one
       }
     }

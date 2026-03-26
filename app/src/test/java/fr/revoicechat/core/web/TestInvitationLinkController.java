@@ -3,10 +3,6 @@ package fr.revoicechat.core.web;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.UUID;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Test;
 
@@ -14,17 +10,22 @@ import fr.revoicechat.core.junit.CleanDatabase;
 import fr.revoicechat.core.model.InvitationLink;
 import fr.revoicechat.core.model.InvitationLinkStatus;
 import fr.revoicechat.core.model.InvitationType;
-import fr.revoicechat.core.quarkus.profile.MultiServerProfile;
-import fr.revoicechat.core.representation.invitation.InvitationRepresentation;
-import fr.revoicechat.core.representation.server.ServerCreationRepresentation;
-import fr.revoicechat.core.representation.server.ServerRepresentation;
+import fr.revoicechat.core.model.ServerType;
+import fr.revoicechat.core.quarkus.profile.BasicIntegrationTestProfile;
+import fr.revoicechat.core.representation.InvitationRepresentation;
+import fr.revoicechat.core.technicaldata.server.NewServer;
+import fr.revoicechat.core.representation.ServerRepresentation;
 import fr.revoicechat.core.web.tests.RestTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
-@TestProfile(MultiServerProfile.class)
+@TestProfile(BasicIntegrationTestProfile.class)
 @CleanDatabase
 class TestInvitationLinkController {
 
@@ -169,7 +170,7 @@ class TestInvitationLinkController {
   }
 
   private static ServerRepresentation createServer(String token) {
-    var representation = new ServerCreationRepresentation("test");
+    var representation = new NewServer("test", ServerType.PUBLIC);
     return RestAssured.given()
                       .contentType(MediaType.APPLICATION_JSON)
                       .header("Authorization", "Bearer " + token)
