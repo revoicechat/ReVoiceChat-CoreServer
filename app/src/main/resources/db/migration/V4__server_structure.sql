@@ -1,1 +1,0 @@
-alter table RVC_SERVER add column structure text;

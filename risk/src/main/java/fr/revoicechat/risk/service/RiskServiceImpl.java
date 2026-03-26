@@ -1,83 +1,54 @@
 package fr.revoicechat.risk.service;
 
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
+import jakarta.inject.Singleton;
 
-import fr.revoicechat.i18n.TranslationUtils;
+import fr.revoicechat.moderation.model.SanctionType;
+import fr.revoicechat.moderation.service.SanctionService;
 import fr.revoicechat.risk.model.RiskMode;
-import fr.revoicechat.risk.model.ServerRoles;
-import fr.revoicechat.risk.repository.ServerRolesRepository;
-import fr.revoicechat.risk.repository.ServerRolesRepository.AffectedRisk;
-import fr.revoicechat.risk.representation.RiskCategoryRepresentation;
+import fr.revoicechat.risk.technicaldata.AffectedRisk;
 import fr.revoicechat.risk.technicaldata.RiskEntity;
-import fr.revoicechat.risk.type.RiskCategory;
 import fr.revoicechat.risk.type.RiskType;
 import fr.revoicechat.security.UserHolder;
 import io.quarkus.arc.Unremovable;
-import jakarta.inject.Singleton;
 
 @Singleton
 @Unremovable
 public class RiskServiceImpl implements RiskService {
 
-  private final ServerRolesRepository serverRolesRepository;
+  private final SanctionService sanctionService;
+  private final AffectedRiskService affectedRiskService;
   private final UserHolder userHolder;
 
-  public RiskServiceImpl(final ServerRolesRepository serverRolesRepository, final UserHolder userHolder) {
-    this.serverRolesRepository = serverRolesRepository;
+  public RiskServiceImpl(SanctionService sanctionService, AffectedRiskService affectedRiskService, UserHolder userHolder) {
+    this.sanctionService = sanctionService;
+    this.affectedRiskService = affectedRiskService;
     this.userHolder = userHolder;
   }
 
   @Override
   public boolean hasRisk(final RiskEntity entity, final RiskType riskType) {
-    return hasRisk(userHolder.get().getId(), entity, riskType);
+    return hasRisk(userHolder.get().getId(), entity, riskType, SanctionType.BAN);
+  }
+
+  @Override
+  public boolean hasRisk(final RiskEntity entity, final RiskType riskType, final SanctionType sanctionType) {
+    return hasRisk(userHolder.get().getId(), entity, riskType, sanctionType);
   }
 
   @Override
   public boolean hasRisk(final UUID userId, final RiskEntity entity, final RiskType riskType) {
-    if (serverRolesRepository.isOwner(entity.serverId(), userId)) {
-      return true;
-    }
-    List<ServerRoles> membership = serverRolesRepository.getServerRoles(userId);
-    if (membership.isEmpty()) {
-      return false;
-    }
-    var serverAffectedRisk = serverRolesRepository.getAffectedRisks(entity, riskType);
-    return serverAffectedRisk.stream()
-                             .filter(affectedRisk -> isUserMembership(affectedRisk, membership))
-                             .filter(affectedRisk -> !affectedRisk.mode().equals(RiskMode.DEFAULT))
-                             .findFirst()
-                             .map(AffectedRisk::mode)
-                             .orElse(RiskMode.DISABLE)
-                             .isEnable();
-  }
-
-  private boolean isUserMembership(final AffectedRisk affectedRisk, final List<ServerRoles> membership) {
-    return membership.stream().anyMatch(role -> role.getId().equals(affectedRisk.role()));
+    return hasRisk(userId, entity, riskType, SanctionType.BAN);
   }
 
   @Override
-  public List<RiskCategoryRepresentation> getAllRisks() {
-    return RiskTypeClassesHolder.INSTANCE.getRiskType()
-                                         .stream()
-                                         .filter(Class::isEnum)
-                                         .filter(clazz -> clazz.isAnnotationPresent(RiskCategory.class))
-                                         .map(clazz -> new RiskData(clazz.getEnumConstants(), clazz.getAnnotation(RiskCategory.class)))
-                                         .filter(data -> data.riskTypes.length != 0)
-                                         .map(this::mapToRiskCategory)
-                                         .toList();
+  public boolean hasRisk(final UUID userId, final RiskEntity entity, final RiskType riskType, final SanctionType sanctionType) {
+    if (sanctionService.isSanctioned(userId, entity.serverId(), sanctionType)) {
+      return false;
+    }
+    return affectedRiskService.get(userId, entity, riskType)
+                              .map(AffectedRisk::mode)
+                              .orElse(RiskMode.DISABLE)
+                              .isEnable();
   }
-
-  private RiskCategoryRepresentation mapToRiskCategory(RiskData data) {
-    var risk = data.riskTypes[0];
-    return new RiskCategoryRepresentation(
-        data.category.value(),
-        TranslationUtils.translate(risk.fileName(), data.category.value()),
-        Set.of(data.riskTypes)
-    );
-  }
-
-  @SuppressWarnings("java:S6218") // equals and hashcode is not necessary here
-  private record RiskData(RiskType[] riskTypes, RiskCategory category) {}
 }

@@ -47,7 +47,7 @@ public class JwtService implements SecurityTokenService {
     try {
       JsonWebToken jwt = jwtParser.parse(jwtToken);
       return UUID.fromString(jwt.getName());
-    } catch (Exception e) {
+    } catch (Exception _) {
       throw new WebApplicationException("Invalid token", 401);
     }
   }

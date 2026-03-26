@@ -16,12 +16,19 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 
-@Tag(name = "Role", description = "Endpoints for managing roles")
 @Path("server/{id}/role")
+@Tag(name = "Role", description = "Manage server roles and permissions")
 public interface ServerRoleController {
 
-  @Operation(summary = "Get role of a server", description = "Get role list of a specific server")
-  @APIResponse(responseCode = "200", description = "Role successfully retrieved")
+  @Operation(
+      summary = "Get server roles",
+      description = "Retrieve all roles configured for a specific server, including their permissions and hierarchy. Users must have access to the server to view its roles."
+  )
+  @APIResponse(responseCode = "200", description = "Server roles retrieved successfully")
+  @APIResponse(
+      responseCode = "403",
+      description = "Insufficient permissions to access this server"
+  )
   @APIResponse(
       responseCode = "404",
       description = "Server not found",
@@ -33,8 +40,16 @@ public interface ServerRoleController {
   @GET
   List<ServerRoleRepresentation> getByServer(@PathParam("id") UUID serverId);
 
-  @Operation(summary = "Create role of a server", description = "Create a role for specific server")
-  @APIResponse(responseCode = "200", description = "Role successfully created")
+  @Operation(
+      summary = "Create server role",
+      description = "Create a new role within a specific server with custom permissions and settings. Requires server administrative permissions."
+  )
+  @APIResponse(responseCode = "200", description = "Role created successfully")
+  @APIResponse(responseCode = "400", description = "Invalid role data provided")
+  @APIResponse(
+      responseCode = "403",
+      description = "Insufficient permissions to create roles in this server"
+  )
   @APIResponse(
       responseCode = "404",
       description = "Server not found",

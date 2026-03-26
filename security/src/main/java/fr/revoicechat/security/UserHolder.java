@@ -13,7 +13,7 @@ public interface UserHolder {
   default <T extends AuthenticatedUser> T getOrNull() {
     try {
       return get();
-    } catch (Exception e) {
+    } catch (Exception _) {
       return null;
     }
   }

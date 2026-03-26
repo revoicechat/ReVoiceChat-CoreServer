@@ -1,12 +1,18 @@
 package fr.revoicechat.core.model;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
+import fr.revoicechat.core.model.room.Room;
+import fr.revoicechat.core.repository.jpa.MessageReactionsConverter;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -21,18 +27,26 @@ public class Message {
   private UUID id;
   @Column(columnDefinition = "TEXT")
   private String text;
-  private LocalDateTime createdDate;
+  private OffsetDateTime createdDate;
+  @Nullable
+  private OffsetDateTime updatedDate;
   @ManyToOne
   @JoinColumn(name="ROOM_ID", nullable=false)
   private Room room;
   @ManyToOne
   @JoinColumn(name="USER_ID", nullable=false)
   private User user;
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "RVC_MEASSAGE_MEDIA",
       joinColumns = @JoinColumn(name = "MEASSAGE_ID", referencedColumnName = "ID"),
       inverseJoinColumns = @JoinColumn(name = "MEDIA_ID", referencedColumnName = "ID"))
   private List<MediaData> mediaDatas;
+  @ManyToOne
+  @JoinColumn(name="MESSAGE_ID")
+  private Message answerTo;
+  @Convert(converter = MessageReactionsConverter.class)
+  @Column(columnDefinition = "TEXT")
+  private MessageReactions reactions;
 
   public Message() {
     super();
@@ -54,12 +68,21 @@ public class Message {
     this.text = text;
   }
 
-  public LocalDateTime getCreatedDate() {
+  public OffsetDateTime getCreatedDate() {
     return createdDate;
   }
 
-  public void setCreatedDate(final LocalDateTime createdDate) {
+  public void setCreatedDate(final OffsetDateTime createdDate) {
     this.createdDate = createdDate;
+  }
+
+  @Nullable
+  public OffsetDateTime getUpdatedDate() {
+    return updatedDate;
+  }
+
+  public void setUpdatedDate(@Nullable OffsetDateTime updatedDate) {
+    this.updatedDate = updatedDate;
   }
 
   public Room getRoom() {
@@ -92,6 +115,22 @@ public class Message {
     mediaDatas.add(mediaData);
   }
 
+  public Message getAnswerTo() {
+    return answerTo;
+  }
+
+  public void setAnswerTo(final Message answerTo) {
+    this.answerTo = answerTo;
+  }
+
+  public MessageReactions getReactions() {
+    return reactions;
+  }
+
+  public void setReactions(final MessageReactions reactions) {
+    this.reactions = reactions;
+  }
+
   @Override
   public boolean equals(final Object o) {
     if (this == o) { return true; }
@@ -102,5 +141,10 @@ public class Message {
   @Override
   public int hashCode() {
     return Objects.hashCode(getId());
+  }
+
+  @Override
+  public String toString() {
+    return "Message [%s] %s : %s".formatted(getId(), getCreatedDate(), getText());
   }
 }

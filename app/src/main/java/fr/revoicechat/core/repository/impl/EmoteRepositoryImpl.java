@@ -21,4 +21,10 @@ public class EmoteRepositoryImpl implements EmoteRepository {
                         .setParameter("entity", entity)
                         .getResultStream();
   }
+
+  @Override
+  public Stream<Emote> findGlobal() {
+    return entityManager.createQuery("select e from Emote e where e.entity is null", Emote.class)
+                        .getResultStream();
+  }
 }

@@ -14,18 +14,32 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 
-@Tags(refs = {"Role", "User"})
 @Path("user")
+@Tags(refs = {"Role", "User"})
 public interface UserMembershipController {
 
-  @Operation(summary = "Get role of self user", description = "Get role list of the connected user")
-  @APIResponse(responseCode = "200", description = "Role successfully retrieved")
+  @Operation(
+      summary = "Get my roles",
+      description = "Retrieve all roles assigned to the currently authenticated user across all servers they are a member of."
+  )
+  @APIResponse(responseCode = "200", description = "User roles retrieved successfully")
   @Path("/me/role")
   @GET
   List<ServerRoleRepresentation> getMyRolesMembership();
 
-  @Operation(summary = "Get role of self user", description = "Get role list of the connected user")
-  @APIResponse(responseCode = "200", description = "Role successfully retrieved")
+  @Operation(
+      summary = "Get my permissions in server",
+      description = "Retrieve all effective permissions (risk types) for the currently authenticated user within a specific server, calculated from all assigned roles."
+  )
+  @APIResponse(responseCode = "200", description = "User permissions retrieved successfully")
+  @APIResponse(
+      responseCode = "403",
+      description = "User is not a member of this server"
+  )
+  @APIResponse(
+      responseCode = "404",
+      description = "Server not found"
+  )
   @Path("/server/{id}/risks")
   @GET
   List<RiskType> getMyRiskType(@PathParam("id") UUID serverId);

@@ -2,9 +2,9 @@ package fr.revoicechat.core.service.media;
 
 import java.util.List;
 import java.util.stream.Stream;
-import jakarta.enterprise.context.ApplicationScoped;
 
 import fr.revoicechat.core.model.FileType;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 class FileTypeDetermination {
